@@ -16,7 +16,7 @@ except ImportError:
 __version__ = version()
 
 from leke.corpus import CorpusProcessor, split_dataset, temperature_upsample, run_pipeline
-from leke.trainer import train_bpe
+from leke.trainer import train_bpe, train_unigram
 from leke.tokenizer import LekeTokenizer
 from leke.evaluate import calculate_metrics, evaluate_all
 
@@ -35,6 +35,7 @@ __all__ = [
     "temperature_upsample",
     "run_pipeline",
     "train_bpe",
+    "train_unigram",
     "LekeTokenizer",
     "Encoding",
     "calculate_metrics",

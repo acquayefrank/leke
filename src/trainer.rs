@@ -4,9 +4,12 @@ use std::io::Read;
 use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use tokenizers::models::bpe::{BpeTrainerBuilder, BPE};
+use tokenizers::models::unigram::{Unigram, UnigramTrainerBuilder};
 use tokenizers::normalizers::{Replace, Sequence, NFC};
 use tokenizers::pre_tokenizers::byte_level::ByteLevel as ByteLevelPreTokenizer;
 use tokenizers::decoders::byte_level::ByteLevel as ByteLevelDecoder;
+use tokenizers::pre_tokenizers::metaspace::Metaspace as MetaspacePreTokenizer;
+use tokenizers::decoders::metaspace::Metaspace as MetaspaceDecoder;
 use tokenizers::models::TrainerWrapper;
 use tokenizers::{AddedToken, Tokenizer};
 
@@ -128,6 +131,92 @@ pub fn train_bpe(
 
     let receipt = TrainingReceipt {
         algorithm: "ByteLevel-BPE".to_string(),
+        vocab_size: config.vocab_size,
+        actual_vocab_size: actual_vocab,
+        special_tokens: config.special_tokens.clone(),
+        seed: config.seed,
+        corpus_path: files_as_strings.join(", "),
+        corpus_sha256: sha256,
+    };
+
+    Ok((tokenizer, receipt))
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UnigramTrainingConfig {
+    pub vocab_size: usize,
+    pub special_tokens: Vec<String>,
+    pub seed: u64,
+}
+
+impl Default for UnigramTrainingConfig {
+    fn default() -> Self {
+        Self {
+            vocab_size: 8192,
+            special_tokens: vec![
+                "<unk>".to_string(),
+                "<s>".to_string(),
+                "</s>".to_string(),
+                "<pad>".to_string(),
+                "<mask>".to_string(),
+            ],
+            seed: 42,
+        }
+    }
+}
+
+/// Trains a Unigram tokenizer on a list of input corpus text files.
+pub fn train_unigram(
+    corpus_files: &[PathBuf],
+    config: &UnigramTrainingConfig,
+) -> Result<(Tokenizer, TrainingReceipt), Box<dyn std::error::Error>> {
+    let mut tokenizer = Tokenizer::new(Unigram::default());
+
+    // Attach normalizer
+    let normalizer = build_kwa_normalizer_sequence()?;
+    tokenizer.with_normalizer(Some(normalizer));
+
+    // Attach Metaspace pre-tokenizer and decoder
+    let pre_tok = MetaspacePreTokenizer::default();
+    tokenizer.with_pre_tokenizer(Some(pre_tok));
+
+    let decoder = MetaspaceDecoder::default();
+    tokenizer.with_decoder(Some(decoder));
+
+    let special_added_tokens: Vec<AddedToken> = config
+        .special_tokens
+        .iter()
+        .map(|s| AddedToken::from(s.clone(), true))
+        .collect();
+
+    let mut trainer_builder = UnigramTrainerBuilder::default();
+    trainer_builder
+        .show_progress(false)
+        .vocab_size(config.vocab_size as u32)
+        .special_tokens(special_added_tokens)
+        .unk_token(Some("<unk>".to_string()));
+
+    let mut trainer: TrainerWrapper = trainer_builder.build()?.into();
+
+    let files_as_strings: Vec<String> = corpus_files
+        .iter()
+        .map(|p| p.to_string_lossy().to_string())
+        .collect();
+
+    tokenizer
+        .train_from_files(&mut trainer, files_as_strings.clone())
+        .map_err(|e| format!("{e}"))?;
+
+    let sha256 = if let Some(first) = corpus_files.first() {
+        compute_sha256(first).ok()
+    } else {
+        None
+    };
+
+    let actual_vocab = tokenizer.get_vocab_size(true);
+
+    let receipt = TrainingReceipt {
+        algorithm: "Unigram".to_string(),
         vocab_size: config.vocab_size,
         actual_vocab_size: actual_vocab,
         special_tokens: config.special_tokens.clone(),
