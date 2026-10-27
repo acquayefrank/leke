@@ -16,6 +16,7 @@ except ImportError:
 __version__ = version()
 
 from leke.corpus import CorpusProcessor, split_dataset, temperature_upsample, run_pipeline
+from leke.trainer import train_bpe
 
 __all__ = [
     "KwaNormalizer",
@@ -26,4 +27,5 @@ __all__ = [
     "split_dataset",
     "temperature_upsample",
     "run_pipeline",
+    "train_bpe",
 ]
