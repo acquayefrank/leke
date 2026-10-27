@@ -1,0 +1,15 @@
+{
+  "algorithm": "Unigram",
+  "vocab_size": 8192,
+  "actual_vocab_size": 333,
+  "special_tokens": [
+    "<unk>",
+    "<s>",
+    "</s>",
+    "<pad>",
+    "<mask>"
+  ],
+  "seed": 42,
+  "corpus_path": "data/splits/pooled_train.txt",
+  "corpus_sha256": "1fe721e4c35290eeffb39f3de43419fb"
+}

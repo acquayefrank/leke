@@ -104,6 +104,44 @@ fn train_bpe_model(
     Ok(receipt_json)
 }
 
+/// Trains a Unigram tokenizer on corpus files and saves tokenizer.json and training_receipt.json.
+#[pyfunction]
+#[pyo3(signature = (corpus_paths, output_dir, vocab_size=8192, special_tokens=None, seed=42))]
+fn train_unigram_model(
+    corpus_paths: Vec<String>,
+    output_dir: String,
+    vocab_size: usize,
+    special_tokens: Option<Vec<String>>,
+    seed: u64,
+) -> PyResult<String> {
+    let files: Vec<PathBuf> = corpus_paths.into_iter().map(PathBuf::from).collect();
+    let config = trainer::UnigramTrainingConfig {
+        vocab_size,
+        special_tokens: special_tokens.unwrap_or_else(|| {
+            vec![
+                "<unk>".to_string(),
+                "<s>".to_string(),
+                "</s>".to_string(),
+                "<pad>".to_string(),
+                "<mask>".to_string(),
+            ]
+        }),
+        seed,
+    };
+
+    let (tok, receipt) = trainer::train_unigram(&files, &config)
+        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("Unigram training failed: {e}")))?;
+
+    let out_path = Path::new(&output_dir);
+    save_tokenizer_bundle(&tok, &receipt, out_path)
+        .map_err(|e| pyo3::exceptions::PyIOError::new_err(format!("Failed to save tokenizer: {e}")))?;
+
+    let receipt_json = serde_json::to_string(&receipt)
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
+
+    Ok(receipt_json)
+}
+
 #[pymodule]
 fn _leke(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyKwaNormalizer>()?;
@@ -112,6 +150,7 @@ fn _leke(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(version, m)?)?;
     m.add_function(wrap_pyfunction!(normalize, m)?)?;
     m.add_function(wrap_pyfunction!(train_bpe_model, m)?)?;
+    m.add_function(wrap_pyfunction!(train_unigram_model, m)?)?;
     Ok(())
 }
 
