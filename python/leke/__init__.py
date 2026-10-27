@@ -18,6 +18,7 @@ __version__ = version()
 from leke.corpus import CorpusProcessor, split_dataset, temperature_upsample, run_pipeline
 from leke.trainer import train_bpe
 from leke.tokenizer import LekeTokenizer
+from leke.evaluate import calculate_metrics, evaluate_all
 
 try:
     from leke._leke import Encoding
@@ -36,4 +37,6 @@ __all__ = [
     "train_bpe",
     "LekeTokenizer",
     "Encoding",
+    "calculate_metrics",
+    "evaluate_all",
 ]
