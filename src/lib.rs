@@ -1,7 +1,9 @@
 pub mod normalizer;
+pub mod py_tokenizer;
 pub mod trainer;
 
 use normalizer::KwaNormalizer;
+use py_tokenizer::{PyEncoding, PyLekeTokenizer};
 use trainer::{train_bpe, BpeTrainingConfig, save_tokenizer_bundle};
 use std::path::{Path, PathBuf};
 use pyo3::prelude::*;
@@ -105,6 +107,8 @@ fn train_bpe_model(
 #[pymodule]
 fn _leke(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyKwaNormalizer>()?;
+    m.add_class::<PyEncoding>()?;
+    m.add_class::<PyLekeTokenizer>()?;
     m.add_function(wrap_pyfunction!(version, m)?)?;
     m.add_function(wrap_pyfunction!(normalize, m)?)?;
     m.add_function(wrap_pyfunction!(train_bpe_model, m)?)?;

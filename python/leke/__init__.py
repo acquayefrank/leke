@@ -17,6 +17,12 @@ __version__ = version()
 
 from leke.corpus import CorpusProcessor, split_dataset, temperature_upsample, run_pipeline
 from leke.trainer import train_bpe
+from leke.tokenizer import LekeTokenizer
+
+try:
+    from leke._leke import Encoding
+except ImportError:
+    Encoding = None  # type: ignore
 
 __all__ = [
     "KwaNormalizer",
@@ -28,4 +34,6 @@ __all__ = [
     "temperature_upsample",
     "run_pipeline",
     "train_bpe",
+    "LekeTokenizer",
+    "Encoding",
 ]
