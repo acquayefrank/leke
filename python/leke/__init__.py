@@ -15,4 +15,15 @@ except ImportError:
 
 __version__ = version()
 
-__all__ = ["KwaNormalizer", "normalize", "version", "__version__"]
+from leke.corpus import CorpusProcessor, split_dataset, temperature_upsample, run_pipeline
+
+__all__ = [
+    "KwaNormalizer",
+    "normalize",
+    "version",
+    "__version__",
+    "CorpusProcessor",
+    "split_dataset",
+    "temperature_upsample",
+    "run_pipeline",
+]
