@@ -1,0 +1,36 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Python & Virtual Environments
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.so
+*.pyd
+*.dylib
+
+# Maturin & Wheels
+wheels/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data artifacts
+data/raw/
+data/processed/
+artifacts/
