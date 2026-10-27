@@ -1,6 +1,9 @@
 pub mod normalizer;
+pub mod trainer;
 
 use normalizer::KwaNormalizer;
+use trainer::{train_bpe, BpeTrainingConfig, save_tokenizer_bundle};
+use std::path::{Path, PathBuf};
 use pyo3::prelude::*;
 
 /// Python wrapper for KwaNormalizer
@@ -58,11 +61,53 @@ fn version() -> PyResult<&'static str> {
     Ok(leke_version())
 }
 
+/// Trains a Byte-Level BPE tokenizer on corpus files and saves tokenizer.json and training_receipt.json.
+#[pyfunction]
+#[pyo3(signature = (corpus_paths, output_dir, vocab_size=8192, min_frequency=1, special_tokens=None, seed=42))]
+fn train_bpe_model(
+    corpus_paths: Vec<String>,
+    output_dir: String,
+    vocab_size: usize,
+    min_frequency: u32,
+    special_tokens: Option<Vec<String>>,
+    seed: u64,
+) -> PyResult<String> {
+    let files: Vec<PathBuf> = corpus_paths.into_iter().map(PathBuf::from).collect();
+    let config = BpeTrainingConfig {
+        vocab_size,
+        min_frequency,
+        special_tokens: special_tokens.unwrap_or_else(|| {
+            vec![
+                "<unk>".to_string(),
+                "<s>".to_string(),
+                "</s>".to_string(),
+                "<pad>".to_string(),
+                "<mask>".to_string(),
+            ]
+        }),
+        strip_accents: false,
+        seed,
+    };
+
+    let (tok, receipt) = train_bpe(&files, &config)
+        .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(format!("Training failed: {e}")))?;
+
+    let out_path = Path::new(&output_dir);
+    save_tokenizer_bundle(&tok, &receipt, out_path)
+        .map_err(|e| pyo3::exceptions::PyIOError::new_err(format!("Failed to save tokenizer: {e}")))?;
+
+    let receipt_json = serde_json::to_string(&receipt)
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
+
+    Ok(receipt_json)
+}
+
 #[pymodule]
 fn _leke(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyKwaNormalizer>()?;
     m.add_function(wrap_pyfunction!(version, m)?)?;
     m.add_function(wrap_pyfunction!(normalize, m)?)?;
+    m.add_function(wrap_pyfunction!(train_bpe_model, m)?)?;
     Ok(())
 }
 
