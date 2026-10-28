@@ -1,11 +1,14 @@
 # Leke (Kwa Tokenizer)
 
 [![CI](https://github.com/acquayefrank/leke/actions/workflows/ci.yml/badge.svg)](https://github.com/acquayefrank/leke)
+[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blueviolet.svg)](https://acquayefrank.github.io/leke/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](pyproject.toml)
 [![Rust](https://img.shields.io/badge/rust-2021-orange.svg)](Cargo.toml)
 
 **Leke** is a high-performance, open-source subword tokenizer engineered specifically for Kwa languages: **Akan / Twi**, **Ewe**, **Ga**, and **Fante**. Built with a Rust core and Python bindings via PyO3, Leke delivers compact subword fertility, linguistic orthographic normalization, tone preservation, and a guaranteed **0.0% unknown-token rate**.
+
+> 🌐 **Interactive Showcase & Documentation**: Test live in-browser tokenization, inspect benchmark leaderboards, and view API guides at [https://acquayefrank.github.io/leke/](https://acquayefrank.github.io/leke/).
 
 ---
 
