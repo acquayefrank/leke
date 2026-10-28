@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The Leke Field Manual &amp; Documentation — Subword Tokenization for Kwa Languages</title>
+  <title>Leke Documentation — Subword Tokenization for Kwa Languages</title>
   <meta name="description" content="A self-contained interactive tutorial and reference covering the science of subword tokenization, Kwa linguistics, Byte-Level BPE, and the Leke Rust/Python library.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -515,15 +515,15 @@
       <span class="brand-icon">L</span>
       <span>leke</span>
     </a>
-    <span class="docs-pill">Field Manual &amp; Docs</span>
+    <span class="docs-pill">Docs</span>
 
     <div class="search">
       <label class="search-box">
         <i class="ph-duotone ph-magnifying-glass"></i>
-        <input id="search" type="search" placeholder="Search the manual (⌘K)" aria-label="Search the manual" autocomplete="off">
+        <input id="search" type="search" placeholder="Search documentation (⌘K)" aria-label="Search documentation" autocomplete="off">
         <span style="font-size: 11px; color: var(--ink-3);">⌘K</span>
       </label>
-      <div class="results" id="results" hidden></div>
+      <div id="results" class="results" hidden></div>
     </div>
 
     <div class="progress" title="Reading progress saved in this browser">
@@ -541,7 +541,7 @@
     <nav class="toc" id="toc" aria-label="Contents">
       <div class="part" style="color: var(--accent)">Orientation</div>
       <ol>
-        <li><a href="#how-to-read"><span class="n">00</span><span>How to read this manual</span><span class="tick">✓</span></a></li>
+        <li><a href="#how-to-read"><span class="n">00</span><span>How to read these docs</span><span class="tick">✓</span></a></li>
         <li><a href="#why-tokenize"><span class="n">01</span><span>Why we tokenize: characters to subwords</span><span class="tick">✓</span></a></li>
       </ol>
 
@@ -582,7 +582,7 @@
     <main>
       <div class="cover">
         <span class="label">Interactive Tutorial &amp; Reference · Leke Subword Tokenizer</span>
-        <h1>The Leke <em>Field Manual</em></h1>
+        <h1>Leke <em>Documentation</em></h1>
         <p class="lede">The information theory, West African Kwa linguistics, subword algorithms, and Rust/PyO3 systems engineering behind a dedicated tokenizer for Akan/Twi, Ewe, Ga, and Fante — taught from first principles on Leke's own data, benchmarks, and code.</p>
         <div class="parts">
           <a href="#fertility-metrics" style="--c: var(--info)"><b>Information Theory</b><span>Fertility, byte compression, attention cost, temperature upsampling</span></a>
@@ -594,12 +594,12 @@
       </div>
 
       <!-- ================================================================
-           CHAPTER 00: HOW TO READ THIS MANUAL
+           CHAPTER 00: HOW TO READ THESE DOCS
            ================================================================ -->
-      <section class="chapter" id="how-to-read" data-track="1" data-title="How to read this manual" style="--c: var(--accent)">
+      <section class="chapter" id="how-to-read" data-track="1" data-title="How to read these docs" style="--c: var(--accent)">
         <div class="eyebrow"><span class="num">00</span> Orientation</div>
-        <h2>How to read this manual</h2>
-        <p class="intro">This manual is a self-contained course and engineering reference. It starts with why neural language models tokenize text at all, builds up the mathematics and linguistics of West African subword segmentation, and finishes with how to use the <code>leke</code> library in Python, Rust, Hugging Face, and the command line.</p>
+        <h2>How to read these docs</h2>
+        <p class="intro">This documentation is a self-contained tutorial and engineering reference. It starts with why neural language models tokenize text at all, builds up the mathematics and linguistics of West African subword segmentation, and finishes with how to use the <code>leke</code> library in Python, Rust, Hugging Face, and the command line.</p>
 
         <h3>How each principle is laid out</h3>
         <div class="facets">
@@ -1527,7 +1527,7 @@ uv run python -m leke.evaluate \
       <section class="chapter" id="glossary" data-title="Glossary" style="--c: var(--ink-3)">
         <div class="eyebrow"><span class="num">G</span> Reference</div>
         <h2>Glossary</h2>
-        <p class="intro">Every dotted term in this manual, defined in one place.</p>
+        <p class="intro">Every dotted term in the documentation, defined in one place.</p>
         <dl class="glossary">
           <dt id="g-abi3">ABI3 Wheel</dt>
           <dd>CPython's stable Application Binary Interface (`abi3-py39`), allowing a single compiled Rust PyO3 wheel to run across Python 3.9 through 3.13+.</dd>
