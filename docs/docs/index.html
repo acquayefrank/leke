@@ -685,15 +685,15 @@
             <label for="gran-words">Document length (words) <output id="gran-words-out">400</output>
               <input id="gran-words" type="range" min="50" max="2000" step="50" value="400">
             </label>
-            <label for="gran-fert">Custom tokenizer fertility (tok/word) <output id="gran-fert-out">2.23</output>
-              <input id="gran-fert" type="range" min="1.20" max="6.00" step="0.05" value="2.23">
+            <label for="gran-fert">Custom tokenizer fertility (tok/word) <output id="gran-fert-out">1.48</output>
+              <input id="gran-fert" type="range" min="1.20" max="6.00" step="0.01" value="1.48">
             </label>
           </div>
           <div class="readouts">
-            <div class="readout"><span>Leke (F = 2.23) tokens</span><b id="gran-leke-tok">892</b></div>
+            <div class="readout"><span>Leke (F = 1.48) tokens</span><b id="gran-leke-tok">592</b></div>
             <div class="readout"><span>NLLB-200 (F = 2.92) tokens</span><b id="gran-nllb-tok">1,168</b></div>
             <div class="readout"><span>Raw UTF-8 bytes (F ≈ 5.8)</span><b id="gran-byte-tok">2,320</b></div>
-            <div class="readout"><span>Attention FLOPs saved vs. NLLB</span><b id="gran-flops" style="color: var(--good);">−41.7%</b></div>
+            <div class="readout"><span>Attention FLOPs saved vs. NLLB</span><b id="gran-flops" style="color: var(--good);">−74.3%</b></div>
           </div>
           <div class="canvas-wrap"><canvas id="gran-canvas" width="900" height="220" aria-label="Comparison of relative quadratic attention cost across tokenization schemes"></canvas></div>
         </div>
@@ -759,22 +759,22 @@
               <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>vs. NLLB-200</th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Leke BPE (8k)</b></td><td>Akan / Twi</td><td class="n"><b>2.23</b></td><td class="n">38.5%</td><td class="n"><b>0.0%</b></td><td class="n">2.40</td><td><b>−23.6% fertility</b></td></tr>
+              <tr><td><b>Leke BPE (8k)</b></td><td>Akan / Twi</td><td class="n"><b>1.48</b></td><td class="n">21.5%</td><td class="n"><b>0.0%</b></td><td class="n">3.75</td><td><b>−49.3% fertility</b></td></tr>
               <tr><td>Goldfish Twi (monolingual)</td><td>Akan / Twi</td><td class="n">1.62</td><td class="n">16.8%</td><td class="n">0.4%</td><td class="n">4.12</td><td>Emits 0.4% <code>&lt;unk&gt;</code></td></tr>
               <tr><td>NLLB-200 (256k multilingual)</td><td>Akan / Twi</td><td class="n">2.92</td><td class="n">38.4%</td><td class="n">0.0%</td><td class="n">2.45</td><td>Baseline</td></tr>
-              <tr><td><b>Leke BPE (8k)</b></td><td>Ewe</td><td class="n"><b>2.77</b></td><td class="n">54.8%</td><td class="n"><b>0.0%</b></td><td class="n">2.17</td><td><b>−12.1% fertility</b></td></tr>
+              <tr><td><b>Leke BPE (8k)</b></td><td>Ewe</td><td class="n"><b>1.37</b></td><td class="n">16.5%</td><td class="n"><b>0.0%</b></td><td class="n">4.27</td><td><b>−56.5% fertility</b></td></tr>
               <tr><td>Wikilangs Ewe (monolingual)</td><td>Ewe</td><td class="n">1.71</td><td class="n">19.3%</td><td class="n">0.6%</td><td class="n">3.95</td><td>Emits 0.6% <code>&lt;unk&gt;</code></td></tr>
               <tr><td>NLLB-200 (256k multilingual)</td><td>Ewe</td><td class="n">3.15</td><td class="n">44.1%</td><td class="n">0.0%</td><td class="n">2.28</td><td>Baseline</td></tr>
-              <tr><td><b>Leke BPE (8k)</b></td><td>Ga</td><td class="n"><b>2.38</b></td><td class="n">41.7%</td><td class="n"><b>0.0%</b></td><td class="n">2.16</td><td><b>−25.6% fertility</b></td></tr>
+              <tr><td><b>Leke BPE (8k)</b></td><td>Ga</td><td class="n"><b>1.41</b></td><td class="n">17.7%</td><td class="n"><b>0.0%</b></td><td class="n">4.33</td><td><b>−55.9% fertility</b></td></tr>
               <tr><td>NLLB-200 (256k multilingual)</td><td>Ga</td><td class="n">3.20</td><td class="n">46.2%</td><td class="n">0.0%</td><td class="n">2.20</td><td>Baseline</td></tr>
-              <tr><td><b>Leke BPE (8k)</b></td><td>Fante</td><td class="n"><b>2.16</b></td><td class="n">47.4%</td><td class="n"><b>0.0%</b></td><td class="n">2.51</td><td><b>−27.5% fertility</b></td></tr>
+              <tr><td><b>Leke BPE (8k)</b></td><td>Fante</td><td class="n"><b>1.34</b></td><td class="n">15.4%</td><td class="n"><b>0.0%</b></td><td class="n">4.11</td><td><b>−55.0% fertility</b></td></tr>
               <tr><td>NLLB-200 (256k multilingual)</td><td>Fante</td><td class="n">2.98</td><td class="n">39.5%</td><td class="n">0.0%</td><td class="n">2.40</td><td>Baseline</td></tr>
             </tbody>
           </table>
         </div>
 
-        <div class="pitfall"><span class="label">Why monolingual baselines have lower fertility but fail the &lt;unk&gt; gate</span>
-          <p>Notice that Goldfish Twi (`1.62`) and Wikilangs Ewe (`1.71`) achieve lower raw fertility because they dedicate 100% of their vocabulary to a single language without byte-level fallback. However, on held-out text they emit <b>0.4% to 0.6% unknown <code>&lt;unk&gt;</code> tokens</b> — permanently erasing roughly 1 in every 200 tokens (often proper nouns, numbers, or punctuation). Leke trades a shared 4-language 8k budget for a <b>strict 0.0% unknown rate</b> while still beating NLLB-200 by 12%–28% across every language.</p>
+        <div class="pitfall"><span class="label">Why a shared 8k vocabulary can beat monolingual baselines</span>
+          <p>Goldfish Twi (`1.62`) and Wikilangs Ewe (`1.71`) dedicate 100% of their vocabulary to a single language, yet Leke still produces fewer tokens per word (`1.48` on Twi, `1.37` on Ewe) on these held-out splits. The monolingual baselines have no byte-level fallback and emit <b>0.4% to 0.6% unknown <code>&lt;unk&gt;</code> tokens</b> on held-out text — permanently erasing roughly 1 in every 200 tokens (often proper nouns, numbers, or punctuation). Leke keeps a <b>strict 0.0% unknown rate</b> while beating NLLB-200 by 49%–57% across every language.</p>
         </div>
 
         <div class="quiz">
@@ -999,19 +999,19 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
         <h3>Linguistic profile of the four supported languages</h3>
         <div class="facets">
           <div class="facet">
-            <span class="label">Tw · Akan / Twi (2.23 fertility)</span>
+            <span class="label">Tw · Akan / Twi (1.48 fertility)</span>
             <p>Covers Asante and Akuapem dialects. Features 7 oral vowels (`a, e, ɛ, i, o, ɔ, u`), ATR vowel harmony, and rich verbal prefixing (`re-` progressive, `bɛ-` future, `kɔ-` motional, `n-`/`m-` negative).</p>
           </div>
           <div class="facet">
-            <span class="label">Ee · Ewe / Èʋegbe (2.77 fertility)</span>
+            <span class="label">Ee · Ewe / Èʋegbe (1.37 fertility)</span>
             <p>Uses 5 extended African Reference Alphabet consonants: retroflex <code>ɖ</code>, bilabial fricative <code>ƒ</code>, velar fricative <code>ɣ</code>, velar nasal <code>ŋ</code>, and bilabial v-hook <code>ʋ</code>, plus nasalized vowels (`ã, ẽ, ĩ, õ, ũ`).</p>
           </div>
           <div class="facet">
-            <span class="label">Ga · Gã (2.38 fertility)</span>
+            <span class="label">Ga · Gã (1.41 fertility)</span>
             <p>Spoken in Greater Accra. Relies heavily on labial-velar and palatal digraphs (`gb, kp, ny, ŋm, sh, ts, dz`) and nasalized open vowels (`ɛ̃, ɔ̃`) that BPE merges into intact onset units.</p>
           </div>
           <div class="facet">
-            <span class="label">Fa · Fante / Mfantse (2.16 fertility)</span>
+            <span class="label">Fa · Fante / Mfantse (1.34 fertility)</span>
             <p>Coastal Akan literary variety. Shares `ɛ` and `ɔ` harmony with Twi while featuring distinct palatalized and labialized consonant clusters (`dz, ts, kw, hw, tw, dw, hy`).</p>
           </div>
         </div>
@@ -1115,27 +1115,27 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
               <tr><th>Language</th><th class="n">BPE Fertility ↓</th><th class="n">Unigram Fertility ↓</th><th class="n">BPE Split &gt;2 ↓</th><th class="n">Unigram Split &gt;2 ↓</th><th class="n">BPE Bytes/Tok ↑</th><th class="n">Uni Bytes/Tok ↑</th><th>Winner</th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Akan / Twi</b></td><td class="n"><b>2.23</b></td><td class="n">2.46</td><td class="n"><b>38.5%</b></td><td class="n">42.3%</td><td class="n"><b>2.40</b></td><td class="n">2.17</td><td><b>BPE</b></td></tr>
-              <tr><td><b>Ewe</b></td><td class="n"><b>2.77</b></td><td class="n">3.55</td><td class="n"><b>54.8%</b></td><td class="n">64.5%</td><td class="n"><b>2.17</b></td><td class="n">1.70</td><td><b>BPE</b></td></tr>
-              <tr><td><b>Ga</b></td><td class="n"><b>2.38</b></td><td class="n">2.54</td><td class="n"><b>41.7%</b></td><td class="n">54.2%</td><td class="n"><b>2.16</b></td><td class="n">2.02</td><td><b>BPE</b></td></tr>
-              <tr><td><b>Fante</b></td><td class="n"><b>2.16</b></td><td class="n">2.74</td><td class="n">47.4%</td><td class="n"><b>42.1%</b></td><td class="n"><b>2.51</b></td><td class="n">1.98</td><td><b>BPE</b></td></tr>
-              <tr><td><b>Macro Average</b></td><td class="n"><b>2.38</b></td><td class="n">2.82</td><td class="n"><b>45.6%</b></td><td class="n">50.8%</td><td class="n"><b>2.31</b></td><td class="n">1.97</td><td><b>Byte-Level BPE</b></td></tr>
+              <tr><td><b>Akan / Twi</b></td><td class="n"><b>1.48</b></td><td class="n">1.52</td><td class="n">21.5%</td><td class="n"><b>11.6%</b></td><td class="n"><b>3.75</b></td><td class="n">3.63</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Ewe</b></td><td class="n"><b>1.37</b></td><td class="n">1.39</td><td class="n">16.5%</td><td class="n"><b>6.5%</b></td><td class="n"><b>4.27</b></td><td class="n">4.21</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Ga</b></td><td class="n"><b>1.41</b></td><td class="n">1.48</td><td class="n">17.7%</td><td class="n"><b>9.9%</b></td><td class="n"><b>4.33</b></td><td class="n">4.11</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Fante</b></td><td class="n"><b>1.34</b></td><td class="n">1.38</td><td class="n">15.4%</td><td class="n"><b>7.0%</b></td><td class="n"><b>4.11</b></td><td class="n">3.99</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Macro Average</b></td><td class="n"><b>1.40</b></td><td class="n">1.44</td><td class="n">17.8%</td><td class="n"><b>8.8%</b></td><td class="n"><b>4.12</b></td><td class="n">3.99</td><td><b>Byte-Level BPE</b></td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="project"><span class="label">Why Byte-Level BPE won on Kwa morphology</span>
-          <p>In Niger-Congo Kwa languages, words are formed by chaining short CV/CVC verbal prefixes (`mɛ-`, `re-`, `bɛ-`, `kɔ-`) onto stable roots. BPE's bottom-up pair merging naturally locks in these high-frequency 2- and 3-letter CV syllables early and keeps them intact. Unigram's global likelihood pruning aggressively pruned mid-frequency Ewe and Ga stems containing multi-byte characters (`ɖ, ƒ, ɣ, ɛ, ɔ`), inflating Ewe split `>2` rate to <b>64.5%</b> (`3.55` fertility vs. BPE's `2.77`).</p>
+          <p>In Niger-Congo Kwa languages, words are formed by chaining short CV/CVC verbal prefixes (`mɛ-`, `re-`, `bɛ-`, `kɔ-`) onto stable roots. BPE's bottom-up pair merging naturally locks in these high-frequency 2- and 3-letter CV syllables early and keeps them intact. Unigram's global likelihood pruning spreads segmentation more evenly — fewer words break into more than two pieces (<b>8.8%</b> vs. BPE's <b>17.8%</b> split `>2` rate) — but it produces longer sequences overall (<b>1.44</b> vs. <b>1.40</b> mean fertility, lower bytes per token on every language) and emits stray <code>&lt;unk&gt;</code> tokens on Twi (`0.05%`) and Ewe (`0.06%`), where BPE stays at a strict <b>0.0%</b>.</p>
         </div>
 
         <div class="quiz">
           <div class="label">Check yourself</div>
           <div class="q" data-answer="b">
             <p>Across the four Kwa languages, how much lower was Byte-Level BPE's mean fertility compared to Unigram LM at the same 8k vocabulary size?</p>
-            <label><input type="radio" name="q-08" value="a"> <span>They were identical (2.82 vs. 2.82)</span></label>
-            <label><input type="radio" name="q-08" value="b"> <span>2.38 vs. 2.82 tokens/word (15.6% fewer tokens per word on average, and 22% fewer on Ewe)</span></label>
+            <label><input type="radio" name="q-08" value="a"> <span>They were identical (1.44 vs. 1.44)</span></label>
+            <label><input type="radio" name="q-08" value="b"> <span>1.40 vs. 1.44 tokens/word (about 3% fewer tokens per word on average, and lower on all four languages)</span></label>
             <label><input type="radio" name="q-08" value="c"> <span>Unigram had lower fertility on every language</span></label>
-            <div class="why" hidden><b></b>Byte-Level BPE achieved 2.38 mean fertility vs. Unigram's 2.82, winning on all four languages (`2.23`, `2.77`, `2.38`, `2.16`).</div>
+            <div class="why" hidden><b></b>Byte-Level BPE achieved 1.40 mean fertility vs. Unigram's 1.44, winning on all four languages (`1.48`, `1.37`, `1.41`, `1.34`) while keeping a strict 0.0% <code>&lt;unk&gt;</code> rate.</div>
           </div>
         </div>
 
@@ -1228,9 +1228,9 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
               <tr><th>Operation (500 iterations × 120 Kwa sentences)</th><th class="n">Leke (Rust + PyO3)</th><th>Architecture Notes</th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Encode throughput (tokens / sec)</b></td><td class="n"><b>356,508 tok/s</b></td><td>Includes full <code>KwaNormalizer</code> pass + Byte-Level BPE merges</td></tr>
-              <tr><td><b>Encode bandwidth (MB / sec)</b></td><td class="n"><b>0.92 MB/s</b></td><td>Zero intermediate heap allocations per token</td></tr>
-              <tr><td><b>Decode throughput (sentences / sec)</b></td><td class="n"><b>59,407 sent/s</b></td><td>Sub-millisecond contiguous UTF-8 buffer reconstruction</td></tr>
+              <tr><td><b>Encode throughput (tokens / sec)</b></td><td class="n"><b>173,866 tok/s</b></td><td>Includes full <code>KwaNormalizer</code> pass + Byte-Level BPE merges</td></tr>
+              <tr><td><b>Encode bandwidth (MB / sec)</b></td><td class="n"><b>0.63 MB/s</b></td><td>Zero intermediate heap allocations per token</td></tr>
+              <tr><td><b>Decode throughput (sentences / sec)</b></td><td class="n"><b>51,044 sent/s</b></td><td>Sub-millisecond contiguous UTF-8 buffer reconstruction</td></tr>
             </tbody>
           </table>
         </div>
@@ -1464,7 +1464,7 @@ uv run python -m leke.evaluate \
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">5. Unigram shattering 64.5% of Ewe words · Algorithms</span>
-          <p><b>What happened.</b> Unigram LM pruned away mid-frequency Ewe syllables containing extended Latin consonants (`ɖ, ƒ, ɣ, ŋ, ʋ`), pushing Ewe fertility to `3.55` vs. Byte-Level BPE's `2.77`.</p>
+          <p><b>What happened.</b> On the early 100-sentence pilot corpus, Unigram LM pruned away mid-frequency Ewe syllables containing extended Latin consonants (`ɖ, ƒ, ɣ, ŋ, ʋ`), pushing Ewe fertility to `3.55` vs. Byte-Level BPE's `2.77`.</p>
           <p><b>The principle.</b> Test candidate subword algorithms head-to-head on held-out splits with fixed seeds before picking a default.</p>
           <p><a href="#bpe-vs-unigram">Related chapter: 08 · Byte-Level BPE vs. Unigram LM</a></p>
         </div>

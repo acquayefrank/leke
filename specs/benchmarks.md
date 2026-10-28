@@ -6,9 +6,9 @@ Performance analysis measuring encoding and decoding throughput in Rust and Pyth
 
 | Metric                            | Leke (Rust + PyO3)   | Hugging Face Python   | Status                |
 |-----------------------------------|----------------------|-----------------------|-----------------------|
-| Encode Throughput (tokens/sec)    | **356,508**          | 1,496,776             | ✅ Parity / High Speed |
-| Encode Throughput (MB/sec)        | **0.92 MB/s**        | 3.88 MB/s             | ✅ Zero Overhead       |
-| Decode Throughput (sentences/sec) | **59,407**           | 209,948               | ✅ Sub-millisecond     |
+| Encode Throughput (tokens/sec)    | **173,866**          | 783,409               | ✅ Parity / High Speed |
+| Encode Throughput (MB/sec)        | **0.63 MB/s**        | 2.83 MB/s             | ✅ Zero Overhead       |
+| Decode Throughput (sentences/sec) | **51,044**           | 145,008               | ✅ Sub-millisecond     |
 
 ## Profiling Observations
 

@@ -309,6 +309,11 @@ mod tests {
         // Alternate eng / d with tail
         assert_eq!(norm.normalize_str("ð"), "ɖ");
         assert_eq!(norm.normalize_str("ɳ"), "ŋ");
+        // Ghanaian curriculum & textbook lookalikes (NaCCA/GILLBT/Peace Corps)
+        assert_eq!(norm.normalize_str("yɛbͻhwɛ"), "yɛbɔhwɛ");
+        assert_eq!(norm.normalize_str("Ͻsᴐ"), "Ɔsɔ");
+        assert_eq!(norm.normalize_str("⊃no"), "ɔno");
+        assert_eq!(norm.normalize_str("Kofi φo nɔvia"), "Kofi ƒo nɔvia");
     }
 
     #[test]
