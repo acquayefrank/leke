@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leke Documentation — Subword Tokenization for Kwa Languages</title>
+  <meta name="description" content="Official documentation for Leke: a high-performance subword tokenizer for Akan/Twi, Ewe, Ga and Fante.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #131316;
+      --muted: #5e5f6e;
+      --subtle: #7a7b88;
+      --border: #ececef;
+      --card-border: #e8e8ec;
+      --card-border-hover: #d4d4da;
+      --input-border: #e3e3e7;
+      --hero-dec: #f0f0f2;
+      --fill-hover: #f4f4f5;
+      --accent: #006786;
+      --accent-hover: #0088b0;
+      --accent-badge-bg: #eef9fe;
+      --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "Geist Mono", ui-monospace, Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      text-wrap: pretty;
+    }
+
+    a { color: var(--accent); text-decoration: none; transition: color .15s; }
+    a:hover { color: var(--accent-hover); }
+    *:focus-visible { outline: 2px solid var(--accent-hover); outline-offset: 2px; }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+      align-items: flex-start;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      flex: 0 0 260px;
+      width: 260px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 0 12px 32px;
+      background: var(--bg);
+      z-index: 30;
+      transition: transform .2s ease;
+    }
+
+    .brand-row {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 8px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--text);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .docs-pill {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--muted);
+      border: 1px solid var(--input-border);
+      border-radius: 5px;
+      padding: 1px 6px;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 10px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      font-size: 14px;
+      color: var(--text);
+      text-decoration: none;
+      transition: background .12s, color .12s;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: var(--fill-hover);
+      color: var(--text);
+    }
+    .nav-item.active { font-weight: 600; }
+
+    .nav-item i {
+      font-size: 18px;
+      color: var(--muted);
+    }
+
+    .nav-group {
+      margin-top: 24px;
+    }
+
+    .nav-group-title {
+      font-size: 12.5px;
+      color: var(--subtle);
+      padding: 0 10px 8px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .glyph-badge {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      background: var(--accent-badge-bg);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      font-size: 10.5px;
+      font-weight: 600;
+      flex: none;
+    }
+
+    /* Content Area */
+    .content-pane {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+
+    .top-header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 clamp(16px, 3vw, 28px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      z-index: 25;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 0 1 280px;
+      min-width: 160px;
+    }
+
+    .search-box {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(19, 19, 22, 0.04);
+      color: var(--subtle);
+      background: var(--bg);
+    }
+
+    .search-box input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      font: inherit;
+      font-size: 13.5px;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .search-results {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: var(--bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(19, 19, 22, 0.1);
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 6px;
+    }
+
+    .search-results a {
+      display: block;
+      padding: 8px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .search-results a:hover {
+      background: var(--fill-hover);
+      color: var(--accent);
+    }
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .header-link {
+      font-size: 14px;
+      color: var(--muted);
+      white-space: nowrap;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-link:hover { color: var(--text); }
+    .header-link.highlight { color: var(--accent); font-weight: 500; }
+    .header-link.highlight:hover { color: var(--accent-hover); }
+
+    .menu-toggle {
+      display: none;
+      border: 1px solid var(--input-border);
+      background: #fff;
+      border-radius: 6px;
+      padding: 6px 9px;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    /* Main body */
+    main {
+      position: relative;
+      overflow: hidden;
+      padding: 0 clamp(20px, 5vw, 76px) 96px;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .hero-shape-1 {
+      position: absolute;
+      left: 52px;
+      top: -40px;
+      width: 280px;
+      height: 280px;
+      border: 1px solid var(--hero-dec);
+      border-radius: 40px;
+      pointer-events: none;
+    }
+    .hero-shape-2 {
+      position: absolute;
+      right: -60px;
+      top: -30px;
+      width: 300px;
+      height: 210px;
+      border: 1px solid var(--hero-dec);
+      border-radius: 40px;
+      pointer-events: none;
+    }
+    .hero-shape-3 {
+      position: absolute;
+      right: -120px;
+      top: 200px;
+      width: 220px;
+      height: 160px;
+      border: 1px solid var(--hero-dec);
+      border-radius: 40px;
+      pointer-events: none;
+    }
+
+    .section-intro {
+      position: relative;
+      padding-top: 68px;
+    }
+
+    .kicker {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 3.2vw, 34px);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+
+    .lede {
+      margin: 12px 0 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 60ch;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+      gap: 20px;
+      margin-top: 44px;
+    }
+
+    .entry-card {
+      display: flex;
+      flex-direction: column;
+      padding: 24px 22px;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(19, 19, 22, 0.04);
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color .15s, box-shadow .15s, transform .15s;
+    }
+    .entry-card:hover {
+      border-color: var(--card-border-hover);
+      box-shadow: 0 4px 14px rgba(19, 19, 22, 0.07);
+      transform: translateY(-2px);
+    }
+
+    .entry-card i {
+      font-size: 30px;
+      color: var(--muted);
+    }
+    .entry-card.featured i { color: var(--accent); }
+
+    .entry-card-title {
+      margin-top: 36px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .entry-card-body {
+      margin: 8px 0 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      margin: 10px 0 0;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: 34px 40px;
+      margin-top: 36px;
+    }
+
+    .grid-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .grid-item:hover .grid-item-title {
+      color: var(--accent);
+    }
+
+    .circle-glyph {
+      flex: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--text);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .grid-item i {
+      flex: none;
+      font-size: 32px;
+      color: var(--text);
+    }
+
+    .grid-item-title {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      transition: color .15s;
+    }
+
+    .grid-item-desc {
+      display: block;
+      margin-top: 6px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    /* Mobile drawer */
+    @media (max-width: 860px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .menu-toggle { display: block; }
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.3);
+        z-index: 28;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-row">
+        <a href="index.html" class="brand-logo">
+          <span class="brand-icon">L</span>
+          <span>leke</span>
+        </a>
+        <span class="docs-pill">Docs</span>
+      </div>
+
+      <nav class="nav-list">
+        <a href="docs.html" class="nav-item active">
+          <i class="ph-duotone ph-house"></i>
+          <span>Home</span>
+        </a>
+        <a href="manual.html" class="nav-item" style="color: var(--accent); font-weight: 500;">
+          <i class="ph-duotone ph-compass" style="color: var(--accent);"></i>
+          <span>Field Manual</span>
+        </a>
+        <a href="index.html#docs" class="nav-item">
+          <i class="ph-duotone ph-check-circle"></i>
+          <span>Quickstart</span>
+        </a>
+        <a href="index.html#playground" class="nav-item">
+          <i class="ph-duotone ph-play-circle"></i>
+          <span>Playground</span>
+        </a>
+        <a href="https://github.com/acquayefrank/leke#quickstart" target="_blank" rel="noopener noreferrer" class="nav-item">
+          <i class="ph-duotone ph-code"></i>
+          <span>API Reference</span>
+        </a>
+      </nav>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Core concepts</div>
+        <div class="nav-list">
+          <a href="index.html#architecture" class="nav-item">
+            <span>Introduction</span>
+          </a>
+          <a href="manual.html#unicode-norm" class="nav-item">
+            <span>Unicode normalization</span>
+          </a>
+          <a href="manual.html#lookalikes" class="nav-item">
+            <span>Lookalike mapping</span>
+          </a>
+          <a href="manual.html#tone-policy" class="nav-item">
+            <span>Tone preservation</span>
+          </a>
+          <a href="https://github.com/acquayefrank/leke/blob/main/specs/algorithm_decision.md" target="_blank" rel="noopener noreferrer" class="nav-item">
+            <span>Byte-level BPE</span>
+          </a>
+          <a href="index.html#docs" class="nav-item">
+            <span>Training a vocabulary</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Languages</div>
+        <div class="nav-list">
+          <a href="index.html#leaderboard" class="nav-item">
+            <span class="glyph-badge">Tw</span>
+            <span>Akan / Twi</span>
+          </a>
+          <a href="index.html#leaderboard" class="nav-item">
+            <span class="glyph-badge">Ee</span>
+            <span>Ewe</span>
+          </a>
+          <a href="index.html#leaderboard" class="nav-item">
+            <span class="glyph-badge">Ga</span>
+            <span>Ga</span>
+          </a>
+          <a href="index.html#leaderboard" class="nav-item">
+            <span class="glyph-badge">Fa</span>
+            <span>Fante</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Reference</div>
+        <div class="nav-list">
+          <a href="https://github.com/acquayefrank/leke#python" target="_blank" rel="noopener noreferrer" class="nav-item">
+            <span>Python API</span>
+          </a>
+          <a href="https://github.com/acquayefrank/leke#rust" target="_blank" rel="noopener noreferrer" class="nav-item">
+            <span>Rust API</span>
+          </a>
+          <a href="https://github.com/acquayefrank/leke/tree/main/models" target="_blank" rel="noopener noreferrer" class="nav-item">
+            <span>Pretrained models</span>
+          </a>
+          <a href="https://github.com/acquayefrank/leke/blob/main/specs/eval_results.md" target="_blank" rel="noopener noreferrer" class="nav-item">
+            <span>Evaluation leaderboard</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="content-pane">
+      <header class="top-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button type="button" class="menu-toggle" id="menu-btn" aria-label="Toggle navigation">
+            <i class="ph-duotone ph-list"></i>
+          </button>
+          <div class="search-wrapper">
+            <label class="search-box">
+              <i class="ph-duotone ph-magnifying-glass"></i>
+              <input id="search-input" type="search" placeholder="Search documentation" autocomplete="off">
+              <span style="font-size: 11.5px; color: var(--subtle); white-space: nowrap;">⌘K</span>
+            </label>
+            <div id="search-dropdown" class="search-results" hidden></div>
+          </div>
+        </div>
+
+        <div class="header-links">
+          <a href="manual.html" class="header-link highlight">
+            <i class="ph-duotone ph-compass" style="font-size: 17px;"></i>Field Manual
+          </a>
+          <a href="index.html#playground" class="header-link">Playground</a>
+          <a href="https://github.com/acquayefrank/leke" target="_blank" rel="noopener noreferrer" class="header-link">
+            <i class="ph-duotone ph-github-logo" style="font-size: 18px;"></i>GitHub
+          </a>
+        </div>
+      </header>
+
+      <main>
+        <div aria-hidden="true" class="hero-shape-1"></div>
+        <div aria-hidden="true" class="hero-shape-2"></div>
+        <div aria-hidden="true" class="hero-shape-3"></div>
+
+        <section class="section-intro">
+          <div class="kicker">Documentation & Guides</div>
+          <h1>Leke documentation</h1>
+          <p class="lede">Subword tokenization engineered specifically for Kwa languages: train, encode, and benchmark Akan / Twi, Ewe, Ga, and Fante text with 0.0% unknown tokens.</p>
+
+          <div class="card-grid">
+            <a href="index.html#docs" class="entry-card">
+              <i class="ph-duotone ph-play-circle"></i>
+              <div class="entry-card-title">Quickstart</div>
+              <p class="entry-card-body">Install Leke and tokenize your first sentence in Python, Rust, or the CLI in 4 lines.</p>
+            </a>
+
+            <a href="manual.html" class="entry-card featured" style="border-color: rgba(0, 103, 134, 0.35); background: linear-gradient(to bottom, #ffffff, #f7fbfd);">
+              <i class="ph-duotone ph-compass" style="color: var(--accent);"></i>
+              <div class="entry-card-title" style="color: var(--accent);">Interactive Field Manual</div>
+              <p class="entry-card-body">Hands-on literate tutorial with live simulation benches: lookalikes, fertility, BPE vs Unigram, and byte fallback.</p>
+            </a>
+
+            <a href="index.html#leaderboard" class="entry-card">
+              <i class="ph-duotone ph-chart-bar"></i>
+              <div class="entry-card-title">Benchmarks & Leaderboard</div>
+              <p class="entry-card-body">Fertility and unknown-token rates on held-out test splits against NLLB-200 and Goldfish.</p>
+            </a>
+
+            <a href="https://github.com/acquayefrank/leke#quickstart" target="_blank" rel="noopener noreferrer" class="entry-card">
+              <i class="ph-duotone ph-brackets-angle"></i>
+              <div class="entry-card-title">API Reference</div>
+              <p class="entry-card-body">Complete PyO3 and Rust documentation with zero-copy buffer examples and transformers integration.</p>
+            </a>
+          </div>
+        </section>
+
+        <section style="position: relative; padding-top: 80px;">
+          <h2 class="section-title">Explore by language</h2>
+          <p class="section-subtitle">Normalization rules, phonemic tone policies, and benchmark results for each target language.</p>
+          <div class="link-grid">
+            <a href="index.html#leaderboard" class="grid-item">
+              <span class="circle-glyph">Tw</span>
+              <span>
+                <span class="grid-item-title">Akan / Twi</span>
+                <span class="grid-item-desc">Asante & Akuapem Twi. 2.23 fertility (24% lower than NLLB), ɛ and ɔ lookalike harmonization.</span>
+              </span>
+            </a>
+            <a href="index.html#leaderboard" class="grid-item">
+              <span class="circle-glyph">Ee</span>
+              <span>
+                <span class="grid-item-title">Ewe</span>
+                <span class="grid-item-desc">Handles ɖ, ƒ, ɣ, ŋ, and ʋ codepoints with phonemic tone preservation (2.77 tokens/word).</span>
+              </span>
+            </a>
+            <a href="index.html#leaderboard" class="grid-item">
+              <span class="circle-glyph">Ga</span>
+              <span>
+                <span class="grid-item-title">Ga</span>
+                <span class="grid-item-desc">2.38 tokens/word on mixed scripture and news corpus (beats multilingual NLLB-200 by 26%).</span>
+              </span>
+            </a>
+            <a href="index.html#leaderboard" class="grid-item">
+              <span class="circle-glyph">Fa</span>
+              <span>
+                <span class="grid-item-title">Fante</span>
+                <span class="grid-item-desc">2.16 tokens/word, sharing Akan orthographic normalization rules and zero unknown tokens.</span>
+              </span>
+            </a>
+          </div>
+        </section>
+
+        <section style="position: relative; padding-top: 80px;">
+          <h2 class="section-title">Explore by binding & ecosystem</h2>
+          <p class="section-subtitle">High-performance Rust core with zero-copy Python bindings and Hugging Face integration.</p>
+          <div class="link-grid">
+            <a href="https://github.com/acquayefrank/leke#python" target="_blank" rel="noopener noreferrer" class="grid-item">
+              <i class="ph-duotone ph-file-py"></i>
+              <span>
+                <span class="grid-item-title">Python API (PyO3)</span>
+                <span class="grid-item-desc">pip install leke. High-level wrapper with NumPy-friendly IDs, fast tokenization, and GIL release.</span>
+              </span>
+            </a>
+            <a href="https://github.com/acquayefrank/leke#rust" target="_blank" rel="noopener noreferrer" class="grid-item">
+              <i class="ph-duotone ph-gear-six"></i>
+              <span>
+                <span class="grid-item-title">Rust Core Crate</span>
+                <span class="grid-item-desc">leke crate with KwaNormalizer trait, Byte-Level BPE engine, and >356,000 tokens/sec throughput.</span>
+              </span>
+            </a>
+            <a href="index.html#docs" class="grid-item">
+              <i class="ph-duotone ph-cube"></i>
+              <span>
+                <span class="grid-item-title">Hugging Face Transformers</span>
+                <span class="grid-item-desc">Load directly via PreTrainedTokenizerFast.from_file() for PyTorch, JAX, or training loops.</span>
+              </span>
+            </a>
+            <a href="https://github.com/acquayefrank/leke#quickstart" target="_blank" rel="noopener noreferrer" class="grid-item">
+              <i class="ph-duotone ph-terminal-window"></i>
+              <span>
+                <span class="grid-item-title">CLI Training & Tools</span>
+                <span class="grid-item-desc">Train Byte-Level BPE or Unigram tokenizers on custom corpora with temperature upsampling in one command.</span>
+              </span>
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="backdrop" class="backdrop" hidden></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Mobile Drawer
+      var sidebar = document.getElementById('sidebar');
+      var menuBtn = document.getElementById('menu-btn');
+      var backdrop = document.getElementById('backdrop');
+
+      function toggleMenu() {
+        var open = sidebar.classList.toggle('open');
+        backdrop.hidden = !open;
+      }
+
+      if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
+      if (backdrop) backdrop.addEventListener('click', toggleMenu);
+
+      // Search Index
+      var searchInput = document.getElementById('search-input');
+      var searchDropdown = document.getElementById('search-dropdown');
+
+      var searchable = [
+        { title: 'Interactive Field Manual', desc: 'Explorable manual with simulations, benches and quizzes', href: 'manual.html' },
+        { title: 'Quickstart & Installation', desc: 'Python pip install and cargo build guide', href: 'index.html#docs' },
+        { title: 'Live Playground', desc: 'Live in-browser tokenization and lookalike normalizer', href: 'index.html#playground' },
+        { title: 'Benchmark Leaderboard', desc: 'Held-out test evaluations across 4 Kwa languages', href: 'index.html#leaderboard' },
+        { title: 'Akan / Twi Orthography', desc: 'Normalization rules for ɛ and ɔ variants', href: 'index.html#leaderboard' },
+        { title: 'Ewe Tone & Codepoints', desc: 'Handling ɖ, ƒ, ɣ, ŋ and tone preservation', href: 'index.html#leaderboard' },
+        { title: 'Ga Language Evaluation', desc: '2.38 fertility and zero unknown tokens', href: 'index.html#leaderboard' },
+        { title: 'Fante Language Support', desc: 'Akan dialectal normalization and benchmarks', href: 'index.html#leaderboard' },
+        { title: 'Python PyO3 Bindings', desc: 'LekeTokenizer, encode, decode, and batch APIs', href: 'https://github.com/acquayefrank/leke#python' },
+        { title: 'Rust Crate', desc: 'High-throughput core tokenizer engine', href: 'https://github.com/acquayefrank/leke#rust' },
+        { title: 'Hugging Face Integration', desc: 'PreTrainedTokenizerFast compatibility', href: 'index.html#docs' },
+        { title: 'Byte-Level BPE Decision', desc: 'Empirical comparison against Unigram', href: 'https://github.com/acquayefrank/leke/blob/main/specs/algorithm_decision.md' },
+        { title: 'Zero Unknown Rate Guarantee', desc: 'How byte fallback eliminates <unk>', href: 'https://github.com/acquayefrank/leke#why-leke' }
+      ];
+
+      function runSearch() {
+        var q = searchInput.value.trim().toLowerCase();
+        if (!q) {
+          searchDropdown.hidden = true;
+          searchDropdown.innerHTML = '';
+          return;
+        }
+
+        var matches = searchable.filter(function (it) {
+          return it.title.toLowerCase().indexOf(q) !== -1 || it.desc.toLowerCase().indexOf(q) !== -1;
+        });
+
+        if (matches.length === 0) {
+          searchDropdown.innerHTML = '<div style="padding: 10px; font-size: 13px; color: var(--muted);">No matching documentation found.</div>';
+          searchDropdown.hidden = false;
+          return;
+        }
+
+        var html = matches.map(function (m) {
+          return '<a href="' + m.href + '">' +
+            '<span style="display: block; font-size: 13.5px; font-weight: 600;">' + m.title + '</span>' +
+            '<span style="display: block; font-size: 12px; color: var(--muted);">' + m.desc + '</span>' +
+          '</a>';
+        }).join('');
+
+        searchDropdown.innerHTML = html;
+        searchDropdown.hidden = false;
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', runSearch);
+        window.addEventListener('keydown', function (e) {
+          if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            searchInput.focus();
+          }
+          if (e.key === 'Escape') {
+            searchDropdown.hidden = true;
+          }
+        });
+        document.addEventListener('click', function (e) {
+          if (!e.target.closest('.search-wrapper')) {
+            searchDropdown.hidden = true;
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+<style>
+html, body { margin: 0; background: #ffffff; color: #131316; font-family: "Geist", system-ui, sans-serif; -webkit-font-smoothing: antialiased; text-wrap: pretty; }
+a { color: #006786; text-decoration: none; }
+a:hover { color: #0088b0; }
+*:focus-visible { outline: 2px solid #0088b0; outline-offset: 2px; }
+</style>
+</helmet>
+
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; align-items: flex-start;">
+
+  <aside data-screen-label="Sidebar" style="flex: 1 1 260px; max-width: 280px; min-width: 240px; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-sizing: border-box; border-right: 1px solid #ececef; padding: 0 12px 32px; background: #ffffff;">
+    <div style="height: 60px; display: flex; align-items: center; gap: 10px; padding: 0 8px;">
+      <a href="Leke.dc.html" style="display: flex; align-items: center; gap: 8px; color: #131316; font-weight: 600; font-size: 20px; letter-spacing: -0.02em;">
+        <span style="width: 22px; height: 22px; border-radius: 6px; background: #131316; color: #ffffff; display: grid; place-items: center; font-size: 13px; font-weight: 600;">L</span>
+        <span>leke</span>
+      </a>
+      <span style="font-size: 11.5px; font-weight: 500; color: #5e5f6e; border: 1px solid #e3e3e7; border-radius: 5px; padding: 1px 6px;">Docs</span>
+    </div>
+
+    <nav style="display: flex; flex-direction: column; gap: 2px; margin-top: 10px;">
+      <sc-for list="{{ primary }}" as="item" hint-placeholder-count="5">
+        <a href="{{ item.href }}" onClick="{{ item.select }}" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; font-size: 14px; color: #131316; background: {{ item.bg }}; font-weight: {{ item.weight }};" style-hover="background: #f4f4f5; color: #131316;">
+          <i class="{{ item.icon }}" style="font-size: 18px; color: #5e5f6e;"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      </sc-for>
+    </nav>
+
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+      <div style="margin-top: 24px;">
+        <div style="font-size: 12.5px; color: #7a7b88; padding: 0 10px 8px;">{{ g.title }}</div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <sc-for list="{{ g.items }}" as="item" hint-placeholder-count="4">
+            <a href="{{ item.href }}" onClick="{{ item.select }}" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; font-size: 14px; color: #131316; background: {{ item.bg }}; font-weight: {{ item.weight }};" style-hover="background: #f4f4f5; color: #131316;">
+              <sc-if value="{{ item.glyph }}" hint-placeholder-val="{{ false }}">
+                <span style="width: 18px; height: 18px; border-radius: 5px; background: #eef9fe; color: #006786; display: grid; place-items: center; font-size: 10.5px; font-weight: 600;">{{ item.glyph }}</span>
+              </sc-if>
+              <span>{{ item.label }}</span>
+            </a>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </aside>
+
+  <div style="flex: 999 1 560px; min-width: 0;">
+    <header style="height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 clamp(16px, 3vw, 28px); border-bottom: 1px solid #ececef; position: sticky; top: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); z-index: 20;">
+      <div style="position: relative; flex: 0 1 280px; min-width: 160px;">
+        <label style="height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid #e3e3e7; border-radius: 8px; box-shadow: 0 1px 2px rgba(19,19,22,0.04); color: #7a7b88; background: #ffffff;">
+          <i class="ph-duotone ph-magnifying-glass" style="font-size: 16px;"></i>
+          <input ref="{{ searchRef }}" value="{{ searchQuery }}" onInput="{{ onSearchInput }}" placeholder="Search documentation" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 13.5px; color: #131316; background: transparent;">
+          <span style="font-size: 11.5px; color: #7a7b88; white-space: nowrap;">⌘K</span>
+        </label>
+        <sc-if value="{{ hasSearchResults }}" hint-placeholder-val="{{ false }}">
+          <div style="position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 50; background: #ffffff; border: 1px solid #e3e3e7; border-radius: 8px; box-shadow: 0 10px 25px rgba(19,19,22,0.08); max-height: 280px; overflow-y: auto; padding: 6px;">
+            <sc-for list="{{ searchResults }}" as="res" hint-placeholder-count="3">
+              <a href="{{ res.href }}" style="display: block; padding: 8px 10px; border-radius: 6px; text-decoration: none; color: #131316;" style-hover="background: #f4f4f5; color: #006786;">
+                <span style="display: block; font-size: 13.5px; font-weight: 600;">{{ res.title }}</span>
+                <span style="display: block; font-size: 12px; color: #5e5f6e;">{{ res.desc }}</span>
+              </a>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display: flex; align-items: center; gap: 18px;">
+        <a href="manual.html" style="font-size: 14px; color: #006786; font-weight: 500; display: flex; align-items: center; gap: 5px; white-space: nowrap;" style-hover="color: #0088b0;">
+          <i class="ph-duotone ph-compass" style="font-size: 17px;"></i>Field Manual
+        </a>
+        <a href="Leke.dc.html#playground" style="font-size: 14px; color: #5e5f6e; white-space: nowrap;" style-hover="color: #131316;">Playground</a>
+        <a href="https://github.com/acquayefrank/leke" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #131316; white-space: nowrap;" style-hover="color: #006786;">
+          <i class="ph-duotone ph-github-logo" style="font-size: 18px;"></i>GitHub
+        </a>
+      </div>
+    </header>
+
+    <main style="position: relative; overflow: hidden; padding: 0 clamp(20px, 5vw, 76px) 96px;">
+      <div aria-hidden="true" style="position: absolute; left: 52px; top: -40px; width: 280px; height: 280px; border: 1px solid #f0f0f2; border-radius: 40px; pointer-events: none;"></div>
+      <div aria-hidden="true" style="position: absolute; right: -60px; top: -30px; width: 300px; height: 210px; border: 1px solid #f0f0f2; border-radius: 40px; pointer-events: none;"></div>
+      <div aria-hidden="true" style="position: absolute; right: -120px; top: 200px; width: 220px; height: 160px; border: 1px solid #f0f0f2; border-radius: 40px; pointer-events: none;"></div>
+
+      <section data-screen-label="Intro" style="position: relative; max-width: 1040px; padding-top: 68px;">
+        <div style="font-size: 13px; color: #5e5f6e; margin-bottom: 14px;">Documentation & Guides</div>
+        <h1 style="margin: 0; font-size: clamp(28px, 3.2vw, 34px); font-weight: 600; letter-spacing: -0.025em; line-height: 1.2;">Leke documentation</h1>
+        <p style="margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: #5e5f6e; max-width: 60ch;">Subword tokenization engineered for Kwa languages. Train, encode, and benchmark Akan / Twi, Ewe, Ga, and Fante text with 0.0% unknown tokens.</p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 20px; margin-top: 44px;">
+          <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
+            <a href="{{ c.href }}" style="display: flex; flex-direction: column; padding: 24px 22px; border: 1px solid #e8e8ec; border-radius: 10px; background: #ffffff; box-shadow: 0 1px 2px rgba(19,19,22,0.04); color: #131316; transition: border-color .15s, box-shadow .15s; text-decoration: none;" style-hover="border-color: #d4d4da; box-shadow: 0 4px 14px rgba(19,19,22,0.07); color: #131316;">
+              <i class="{{ c.icon }}" style="font-size: 30px; color: #5e5f6e;"></i>
+              <div style="margin-top: 36px; font-size: 15px; font-weight: 600;">{{ c.title }}</div>
+              <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.6; color: #5e5f6e;">{{ c.body }}</p>
+            </a>
+          </sc-for>
+        </div>
+      </section>
+
+      <section data-screen-label="Languages" style="position: relative; max-width: 1040px; padding-top: 80px;">
+        <h2 style="margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.02em;">Explore by language</h2>
+        <p style="margin: 10px 0 0; font-size: 15px; color: #5e5f6e;">Normalization rules, phonemic tone policies, and benchmark results for each target language.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 34px 40px; margin-top: 36px;">
+          <sc-for list="{{ languages }}" as="l" hint-placeholder-count="4">
+            <a href="{{ l.href }}" style="display: flex; gap: 16px; align-items: flex-start; color: #131316; text-decoration: none;" style-hover="color: #006786;">
+              <span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #131316; color: #ffffff; display: grid; place-items: center; font-size: 13px; font-weight: 600;">{{ l.glyph }}</span>
+              <span>
+                <span style="display: block; font-size: 15px; font-weight: 600;">{{ l.name }}</span>
+                <span style="display: block; margin-top: 6px; font-size: 14px; line-height: 1.6; color: #5e5f6e;">{{ l.body }}</span>
+              </span>
+            </a>
+          </sc-for>
+        </div>
+      </section>
+
+      <section data-screen-label="Bindings" style="position: relative; max-width: 1040px; padding-top: 80px;">
+        <h2 style="margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.02em;">Explore by binding & ecosystem</h2>
+        <p style="margin: 10px 0 0; font-size: 15px; color: #5e5f6e;">High-performance Rust core with zero-copy Python bindings and Hugging Face integration.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 34px 40px; margin-top: 36px;">
+          <sc-for list="{{ bindings }}" as="b" hint-placeholder-count="4">
+            <a href="{{ b.href }}" style="display: flex; gap: 16px; align-items: flex-start; color: #131316; text-decoration: none;" style-hover="color: #006786;">
+              <i class="{{ b.icon }}" style="flex: none; font-size: 32px; color: #131316;"></i>
+              <span>
+                <span style="display: block; font-size: 15px; font-weight: 600;">{{ b.name }}</span>
+                <span style="display: block; margin-top: 6px; font-size: 14px; line-height: 1.6; color: #5e5f6e;">{{ b.body }}</span>
+              </span>
+            </a>
+          </sc-for>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { active: 'Home', searchQuery: '' };
+  searchRef = React.createRef();
+
+  componentDidMount() {
+    this.onKey = e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); this.searchRef.current?.focus(); }
+    };
+    window.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this.onKey); }
+
+  item(label, extra = {}) {
+    const on = this.state.active === label;
+    return {
+      label,
+      ...extra,
+      bg: on ? '#f4f4f5' : 'transparent',
+      weight: on ? 600 : 400,
+      select: e => {
+        if (!extra.href || extra.href.startsWith('#')) {
+          this.setState({ active: label });
+        }
+      }
+    };
+  }
+
+  onSearchInput = e => {
+    this.setState({ searchQuery: e.target.value });
+  };
+
+  renderVals() {
+    const primary = [
+      ['Home', 'ph-house', 'Leke Docs.dc.html'],
+      ['Field Manual', 'ph-compass', 'manual.html'],
+      ['Quickstart', 'ph-check-circle', 'Leke.dc.html#docs'],
+      ['Playground', 'ph-play-circle', 'Leke.dc.html#playground'],
+      ['API Reference', 'ph-code', 'https://github.com/acquayefrank/leke#quickstart'],
+    ].map(([l, i, href]) => this.item(l, { icon: 'ph-duotone ' + i, href }));
+
+    const groups = [
+      {
+        title: 'Core concepts',
+        items: [
+          ['Introduction', 'Leke.dc.html#architecture'],
+          ['Unicode normalization', 'https://github.com/acquayefrank/leke#why-leke'],
+          ['Lookalike mapping', 'Leke.dc.html#playground'],
+          ['Tone preservation', 'https://github.com/acquayefrank/leke#why-leke'],
+          ['Byte-level BPE', 'https://github.com/acquayefrank/leke/blob/main/specs/algorithm_decision.md'],
+          ['Training a vocabulary', 'Leke.dc.html#docs']
+        ].map(([l, href]) => this.item(l, { href }))
+      },
+      {
+        title: 'Languages',
+        items: [
+          ['Twi', 'Tw', 'Leke.dc.html#leaderboard'],
+          ['Ewe', 'Ee', 'Leke.dc.html#leaderboard'],
+          ['Ga', 'Ga', 'Leke.dc.html#leaderboard'],
+          ['Fante', 'Fa', 'Leke.dc.html#leaderboard']
+        ].map(([l, g, href]) => this.item(l, { glyph: g, href }))
+      },
+      {
+        title: 'Reference',
+        items: [
+          ['Python API', 'https://github.com/acquayefrank/leke#python'],
+          ['Rust API', 'https://github.com/acquayefrank/leke#rust'],
+          ['Pretrained models', 'https://github.com/acquayefrank/leke/tree/main/models'],
+          ['Evaluation leaderboard', 'https://github.com/acquayefrank/leke/blob/main/specs/eval_results.md']
+        ].map(([l, href]) => this.item(l, { href }))
+      },
+    ];
+
+    const cards = [
+      {
+        icon: 'ph-duotone ph-play-circle',
+        title: 'Quickstart',
+        body: 'Install Leke and tokenize your first sentence in Python, Rust, or the CLI.',
+        href: 'Leke.dc.html#docs'
+      },
+      {
+        icon: 'ph-duotone ph-compass',
+        title: 'Interactive Field Manual',
+        body: 'Hands-on tutorial with live benches: normalization, fertility, BPE vs Unigram, and byte fallback.',
+        href: 'manual.html'
+      },
+      {
+        icon: 'ph-duotone ph-chart-bar',
+        title: 'Benchmarks & Leaderboard',
+        body: 'Fertility and unknown-token rates on held-out test splits against NLLB-200 and Goldfish.',
+        href: 'Leke.dc.html#leaderboard'
+      },
+      {
+        icon: 'ph-duotone ph-brackets-angle',
+        title: 'API Reference',
+        body: 'Complete Python (PyO3) and Rust documentation with zero-copy buffer examples.',
+        href: 'https://github.com/acquayefrank/leke#quickstart'
+      },
+    ];
+
+    const languages = [
+      { glyph: 'Tw', name: 'Akan / Twi', body: 'Asante & Akuapem Twi. 2.23 fertility, ɛ and ɔ lookalike harmonization.', href: 'Leke.dc.html#leaderboard' },
+      { glyph: 'Ee', name: 'Ewe', body: 'Handles ɖ, ƒ, ɣ, ŋ, and ʋ codepoints with phonemic tone preservation.', href: 'Leke.dc.html#leaderboard' },
+      { glyph: 'Ga', name: 'Ga', body: '2.38 tokens/word on mixed scripture and news corpus (beats NLLB by 26%).', href: 'Leke.dc.html#leaderboard' },
+      { glyph: 'Fa', name: 'Fante', body: '2.16 tokens/word, sharing Akan orthographic normalization rules.', href: 'Leke.dc.html#leaderboard' },
+    ];
+
+    const bindings = [
+      { icon: 'ph-duotone ph-file-py', name: 'Python API', body: 'pip install leke. High-level PyO3 wrapper with NumPy-friendly IDs and tokens.', href: 'https://github.com/acquayefrank/leke#python' },
+      { icon: 'ph-duotone ph-gear-six', name: 'Rust Core', body: 'leke crate with KwaNormalizer trait and >356,000 tokens/sec throughput.', href: 'https://github.com/acquayefrank/leke#rust' },
+      { icon: 'ph-duotone ph-cube', name: 'Hugging Face', body: 'Load directly into transformers via PreTrainedTokenizerFast.from_file().', href: 'https://github.com/acquayefrank/leke#quickstart' },
+      { icon: 'ph-duotone ph-terminal-window', name: 'CLI Training', body: 'Train Byte-Level BPE or Unigram tokenizers on custom corpora in one command.', href: 'https://github.com/acquayefrank/leke#quick-build' },
+    ];
+
+    const allSearchable = [
+      { title: 'Interactive Field Manual', desc: 'Explorable manual with simulations, benches and quizzes', href: 'manual.html' },
+      { title: 'Quickstart & Installation', desc: 'Python pip install and cargo build guide', href: 'Leke.dc.html#docs' },
+      { title: 'Playground', desc: 'Live in-browser tokenization and lookalike normalizer', href: 'Leke.dc.html#playground' },
+      { title: 'Benchmark Leaderboard', desc: 'Held-out test evaluations across 4 Kwa languages', href: 'Leke.dc.html#leaderboard' },
+      { title: 'Akan / Twi Orthography', desc: 'Normalization rules for ɛ and ɔ variants', href: 'Leke.dc.html#leaderboard' },
+      { title: 'Ewe Tone & Codepoints', desc: 'Handling ɖ, ƒ, ɣ, ŋ and tone preservation', href: 'Leke.dc.html#leaderboard' },
+      { title: 'Ga Language Evaluation', desc: '2.38 fertility and zero unknown tokens', href: 'Leke.dc.html#leaderboard' },
+      { title: 'Fante Language Support', desc: 'Akan dialectal normalization and benchmarks', href: 'Leke.dc.html#leaderboard' },
+      { title: 'Python PyO3 Bindings', desc: 'LekeTokenizer, encode, decode, and batch APIs', href: 'https://github.com/acquayefrank/leke#python' },
+      { title: 'Rust Crate', desc: 'High-throughput core tokenizer engine', href: 'https://github.com/acquayefrank/leke#rust' },
+      { title: 'Hugging Face Integration', desc: 'PreTrainedTokenizerFast compatibility', href: 'https://github.com/acquayefrank/leke#quickstart' },
+      { title: 'Byte-Level BPE Decision', desc: 'Empirical comparison against Unigram', href: 'https://github.com/acquayefrank/leke/blob/main/specs/algorithm_decision.md' },
+      { title: 'Zero Unknown Rate Guarantee', desc: 'How byte fallback eliminates <unk>', href: 'https://github.com/acquayefrank/leke#why-leke' }
+    ];
+
+    const q = (this.state.searchQuery || '').trim().toLowerCase();
+    const searchResults = q.length > 0
+      ? allSearchable.filter(s => s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q))
+      : [];
+
+    return {
+      primary,
+      groups,
+      cards,
+      languages,
+      bindings,
+      searchRef: this.searchRef,
+      searchQuery: this.state.searchQuery,
+      searchResults,
+      hasSearchResults: searchResults.length > 0
+    };
+  }
+}
+</script>
+</body>
+</html>
