@@ -65,12 +65,24 @@ LANGUAGE_NAMES: Dict[str, str] = {
 # Baseline metrics measured on the held-out test splits by scripts/measure_baselines.py.
 DEFAULT_BASELINES_PATH = Path("data/baselines/measured_baselines.json")
 
+# FLORES+ devtest files fetched by scripts/fetch_flores.py (git-ignored).
+DEFAULT_FLORES_DIR = Path("data/eval/flores_plus/devtest")
+FLORES_NAMES: Dict[str, str] = {
+    "twi_asante": "Twi (Asante)",
+    "twi_akuapem": "Twi (Akuapem)",
+    "ewe": "Ewe",
+}
 
-def load_measured_baselines(path: Path = DEFAULT_BASELINES_PATH) -> List[Dict[str, Any]]:
+
+def load_measured_baselines(
+    path: Path = DEFAULT_BASELINES_PATH, eval_set: str = "test_split"
+) -> List[Dict[str, Any]]:
     """Loads baseline rows measured by `scripts/measure_baselines.py`.
 
     Args:
         path (Path, optional): Path to `measured_baselines.json`.
+        eval_set (str, optional): Evaluation set to return (`test_split` or
+            `flores_devtest`).
 
     Returns:
         List[Dict[str, Any]]: Baseline rows (Leke rows excluded), each with `model`,
@@ -80,7 +92,11 @@ def load_measured_baselines(path: Path = DEFAULT_BASELINES_PATH) -> List[Dict[st
     if not path.exists():
         return []
     rows = json.loads(path.read_text(encoding="utf-8"))
-    return [r for r in rows if not r["model"].startswith("Leke")]
+    return [
+        r
+        for r in rows
+        if not r["model"].startswith("Leke") and r.get("eval_set", "test_split") == eval_set
+    ]
 
 
 def calculate_metrics(tokenizer: Any, lines: List[str]) -> Dict[str, float]:
@@ -185,56 +201,30 @@ def calculate_metrics(tokenizer: Any, lines: List[str]) -> Dict[str, float]:
     }
 
 
-def evaluate_all(
-    model_path: Path = Path("models/bpe-8k/tokenizer.json"),
-    splits_dir: Path = Path("data/splits"),
-    output_report_path: Optional[Path] = Path("specs/eval_results.md"),
-    baselines_path: Path = DEFAULT_BASELINES_PATH,
-) -> str:
-    """Runs evaluation across all target languages on held-out test splits.
+def _comparison_section(
+    tokenizer: Any, eval_sets: List[Any], baselines: List[Dict[str, Any]]
+) -> Any:
+    """Builds a Markdown comparison table and summary for one evaluation set.
 
     Args:
-        model_path (Path, optional): Path to the tokenizer.json file.
-        splits_dir (Path, optional): Directory containing language split folders.
-        output_report_path (Optional[Path], optional): File to save markdown leaderboard.
-        baselines_path (Path, optional): Measured baseline metrics JSON.
+        tokenizer (Any): The Leke tokenizer under evaluation.
+        eval_sets (List[Any]): `(lang_key, display_name, path)` tuples.
+        baselines (List[Dict[str, Any]]): Measured baseline rows for this evaluation set.
 
     Returns:
-        str: Formatted Markdown leaderboard report.
-
-    Notes:
-        1. Loads the specified model bundle into `LekeTokenizer`.
-        2. Iterates across languages (`twi`, `ewe`, `gaa`, `fat`), loading `test.txt`.
-        3. Computes metrics and compares against baselines measured on the same
-           splits (NLLB-200, Goldfish, Wikilangs) from `baselines_path`.
-        4. Formats a GitHub-flavored Markdown table comparing fertility, split rate,
-           unknown token rate, and compression.
-        5. Saves the leaderboard report to `output_report_path` and returns markdown text.
+        Tuple[str, str]: The Markdown table and a bullet-list summary.
     """
-    # Step 1: Load tokenizer and measured baselines from disk.
-    tokenizer = LekeTokenizer.from_file(model_path)
-    baselines = load_measured_baselines(baselines_path)
-
-    # Accumulators for markdown table rows and per-language comparisons.
     table_data = []
-    summary = {}
+    summary_items = []
+    for lang, label, path in eval_sets:
+        metrics = calculate_metrics(tokenizer, path.read_text(encoding="utf-8").splitlines())
 
-    # Step 2: Iterate through each target Kwa language.
-    for lang in LANGUAGES:
-        test_file = splits_dir / lang / "test.txt"
-        if not test_file.exists():
-            continue
-
-        # Read held-out test lines.
-        lines = test_file.read_text(encoding="utf-8").splitlines()
-        metrics = calculate_metrics(tokenizer, lines)
-
-        # Step 2a: Record Leke performance row.
+        # Leke row first, then baselines measured on the same text, best first.
         table_data.append(
             [
                 "**Leke BPE (8k)**",
                 "8k",
-                LANGUAGE_NAMES.get(lang, lang),
+                label,
                 f"**{metrics['fertility']}**",
                 f"{metrics['split_rate_gt2']}%",
                 f"**{metrics['unk_rate']}%**",
@@ -242,8 +232,6 @@ def evaluate_all(
                 "—",
             ]
         )
-
-        # Step 2b: Append baseline rows measured on the same split, best first.
         lang_baselines = sorted(
             (b for b in baselines if b["lang"] == lang), key=lambda b: b["fertility"]
         )
@@ -254,7 +242,7 @@ def evaluate_all(
                 [
                     b_metrics["model"],
                     b_metrics["vocab"],
-                    LANGUAGE_NAMES[lang],
+                    label,
                     f"{b_metrics['fertility']}",
                     f"{b_metrics['split_rate_gt2']}%",
                     f"{b_metrics['unk_rate']}%",
@@ -262,9 +250,20 @@ def evaluate_all(
                     f"{status} ({delta:+.1f}%)",
                 ]
             )
-        summary[lang] = (metrics, lang_baselines)
 
-    # Step 3: Format the table headers and markdown string.
+        # Summarize where Leke wins and loses on fertility.
+        beaten = [b["model"] for b in lang_baselines if metrics["fertility"] < b["fertility"]]
+        ahead = [b["model"] for b in lang_baselines if b["fertility"] <= metrics["fertility"]]
+        line = (
+            f"- **{label}**: Leke fertility {metrics['fertility']}, "
+            f"`<unk>` rate {metrics['unk_rate']}%."
+        )
+        if beaten:
+            line += f" Lower fertility than: {', '.join(beaten)}."
+        if ahead:
+            line += f" Higher fertility than: {', '.join(ahead)}."
+        summary_items.append(line)
+
     headers = [
         "Model",
         "Vocab",
@@ -275,44 +274,89 @@ def evaluate_all(
         "Compression (bytes/tok)",
         "Leke fertility vs. baseline",
     ]
-    table_str = tabulate(table_data, headers=headers, tablefmt="github")
+    return tabulate(table_data, headers=headers, tablefmt="github"), "\n".join(summary_items)
 
-    # Step 4: Summarize where Leke wins and loses on fertility per language.
-    gate_items = []
-    for lang, (metrics, lang_baselines) in summary.items():
-        beaten = [b["model"] for b in lang_baselines if metrics["fertility"] < b["fertility"]]
-        ahead = [b["model"] for b in lang_baselines if b["fertility"] <= metrics["fertility"]]
-        line = (
-            f"- **{LANGUAGE_NAMES[lang]}**: Leke fertility {metrics['fertility']}, "
-            f"`<unk>` rate {metrics['unk_rate']}%."
-        )
-        if beaten:
-            line += f" Lower fertility than: {', '.join(beaten)}."
-        if ahead:
-            line += f" Higher fertility than: {', '.join(ahead)}."
-        gate_items.append(line)
-    gate_lines = "\n".join(gate_items)
 
-    # Step 5: Construct comprehensive leaderboard report.
+def evaluate_all(
+    model_path: Path = Path("models/bpe-8k/tokenizer.json"),
+    splits_dir: Path = Path("data/splits"),
+    output_report_path: Optional[Path] = Path("specs/eval_results.md"),
+    baselines_path: Path = DEFAULT_BASELINES_PATH,
+    flores_dir: Path = DEFAULT_FLORES_DIR,
+) -> str:
+    """Runs evaluation across all target languages on held-out test splits.
+
+    Args:
+        model_path (Path, optional): Path to the tokenizer.json file.
+        splits_dir (Path, optional): Directory containing language split folders.
+        output_report_path (Optional[Path], optional): File to save markdown leaderboard.
+        baselines_path (Path, optional): Measured baseline metrics JSON.
+        flores_dir (Path, optional): Directory of FLORES+ devtest files from
+            `scripts/fetch_flores.py`; the FLORES+ section is skipped if absent.
+
+    Returns:
+        str: Formatted Markdown leaderboard report.
+
+    Notes:
+        1. Loads the specified model bundle into `LekeTokenizer`.
+        2. Loads each `test.txt` split and any FLORES+ devtest files in `flores_dir`.
+        3. Computes metrics and compares against baselines measured on the same
+           splits (NLLB-200, Goldfish, Wikilangs) from `baselines_path`.
+        4. Formats a GitHub-flavored Markdown table comparing fertility, split rate,
+           unknown token rate, and compression.
+        5. Saves the leaderboard report to `output_report_path` and returns markdown text.
+    """
+    # Step 1: Load tokenizer and measured baselines from disk.
+    tokenizer = LekeTokenizer.from_file(model_path)
+
+    # Step 2: Collect in-domain test splits and, if downloaded, FLORES+ devtest files.
+    split_sets = []
+    for lang in LANGUAGES:
+        test_file = splits_dir / lang / "test.txt"
+        if test_file.exists():
+            split_sets.append((lang, LANGUAGE_NAMES[lang], test_file))
+    flores_sets = [
+        (name, label, flores_dir / f"{name}.txt")
+        for name, label in FLORES_NAMES.items()
+        if (flores_dir / f"{name}.txt").exists()
+    ]
+
+    # Step 3: Build a comparison table and summary for each evaluation set.
+    split_table, split_summary = _comparison_section(
+        tokenizer, split_sets, load_measured_baselines(baselines_path, "test_split")
+    )
     report = f"""# Leke Subword Tokenizer — Evaluation Leaderboard
 
-This report compiles the official evaluation benchmarks across held-out test splits for Kwa languages (`twi`, `ewe`, `gaa`, `fat`), comparing Leke against baseline tokenizers measured on the same splits by `scripts/measure_baselines.py`.
+This report compares Leke against baseline tokenizers (NLLB-200, Goldfish, Wikilangs) measured on the same text by `scripts/measure_baselines.py`.
 
-## Held-Out Test Evaluation
+## Held-Out Test Splits (in-domain)
 
-{table_str}
+Sentences held out from the same sources as the training data (`data/splits/<lang>/test.txt`). The Twi split is mostly Twi Wikipedia, which the Wikilangs and Goldfish tokenizers were likely trained on.
 
-## Comparison Summary
+{split_table}
 
-{gate_lines}
+{split_summary}
+"""
+    if flores_sets:
+        flores_table, flores_summary = _comparison_section(
+            tokenizer, flores_sets, load_measured_baselines(baselines_path, "flores_devtest")
+        )
+        report += f"""
+## FLORES+ devtest (out-of-domain)
+
+Professionally translated sentences (`openlanguagedata/flores_plus`, CC BY-SA 4.0) that none of the compared tokenizers were trained on. Covers Ewe and Twi (Asante, Akuapem); Ga and Fante are not included.
+
+{flores_table}
+
+{flores_summary}
 """
 
-    # Step 6: Save markdown leaderboard report to disk if path is provided.
+    # Step 4: Save markdown leaderboard report to disk if path is provided.
     if output_report_path:
         output_report_path.parent.mkdir(parents=True, exist_ok=True)
         output_report_path.write_text(report, encoding="utf-8")
 
-    # Step 7: Return the report string.
+    # Step 5: Return the report string.
     return report
 
 

@@ -156,7 +156,7 @@
     <!-- Leaderboard Section -->
     <section id="leaderboard" style="padding: 56px 0 72px; border-top: 1px solid var(--color-divider);">
       <span style="display: block; font-size: 13px; color: var(--color-muted); margin-bottom: 10px;">Leaderboard</span>
-      <h2 style="font-size: clamp(26px, 3vw, 34px); font-weight: 600; letter-spacing: -0.025em; margin: 0;">Fewer tokens than NLLB-200, in every language.</h2>
+      <h2 style="font-size: clamp(26px, 3vw, 34px); font-weight: 600; letter-spacing: -0.025em; margin: 0;">Fewer tokens than NLLB-200 on curriculum text.</h2>
       <p style="font-size: 15px; line-height: 1.65; max-width: 60ch; margin: 12px 0 0; color: var(--color-muted);">Fertility on held-out test splits, with every tokenizer measured on the same text. Lower is better. Monolingual column is the same-size (8k) Wikilangs tokenizer.</p>
       <div class="table-card" style="margin-top: 28px;">
         <table class="table" style="min-width: 620px;">
@@ -202,7 +202,8 @@
           </tbody>
         </table>
       </div>
-      <p style="font-size: 13.5px; margin: 16px 0 0; color: var(--color-muted);">Deep dive &amp; interactive benches: <a href="docs/#fertility-metrics">Evaluation results in Docs →</a></p>
+      <p style="font-size: 13.5px; margin: 16px 0 0; color: var(--color-muted);">On out-of-domain FLORES+ text (Twi, Ewe), Leke 8k currently has higher fertility than every baseline (1.60–1.66 vs. 1.47–1.59 for NLLB-200) while staying at 0.0% &lt;unk&gt;. A larger training corpus is in progress.</p>
+      <p style="font-size: 13.5px; margin: 8px 0 0; color: var(--color-muted);">Deep dive &amp; interactive benches: <a href="docs/#fertility-metrics">Evaluation results in Docs →</a></p>
     </section>
 
     <!-- Architecture Section -->

@@ -17,7 +17,7 @@
 Standard multilingual tokenizers (LLaMA, Mistral, GPT-4, NLLB) are built around high-resource languages and fragment West African words into more subword pieces than necessary. This inflates context window costs, increases inference latency, and causes hallucination loops in ASR/TTS and speech translation.
 
 Leke solves this with:
-1. **Low Fertility**: **1.34 – 1.48** tokens per word (mean **1.40**) from a single 8k vocabulary shared across Twi, Ewe, Ga, and Fante: **5–27% fewer tokens than NLLB-200** (256k), and fewer than same-size (8k) monolingual Wikilangs tokenizers on Ewe and Fante.
+1. **Low Fertility on curriculum text**: **1.34 – 1.48** tokens per word (mean **1.40**) on held-out curriculum text from a single 8k vocabulary shared across Twi, Ewe, Ga, and Fante: **5–27% fewer tokens than NLLB-200** (256k). On out-of-domain text (FLORES+) Leke currently trails all baselines; see [Benchmark Highlights](#benchmark-highlights).
 2. **Zero Unknown Tokens**: Byte-Level BPE ensures arbitrary byte sequences, names, or loanwords never produce `<unk>`.
 3. **Canonical Normalization**: Maps chaotic Unicode variations of `ɛ`, `ɔ`, `ŋ`, `ɖ`, `ƒ`, `ɣ` (including textbook lookalikes `ͻ`, `Ͻ`, `ↄ`, `ᴐ`, `⊃`, `φ`, `ε`, `γ`, `ð`) to standard NFC codepoints.
 4. **Tone Preservation**: Tone marks are preserved by default, protecting phonemic pitch distinctions for Kwa speech and language AI.
@@ -138,6 +138,8 @@ Fertility (tokens per word, lower is better). Every tokenizer is scored with the
 | **Unknown Rate** | **0.0% (guaranteed)** | 0.08% – 0.61% | 0.02% – 0.11% | 0.0% – 0.11% |
 
 Leke beats NLLB-200 on all four languages and same-size monolingual tokenizers on Ewe and Fante. Larger monolingual tokenizers (32k–50k, one language each) still achieve lower fertility, and Twi is Leke's weakest language. The test splits come from the same textbooks as the training data, so these are in-domain results.
+
+**Out-of-domain (FLORES+ devtest).** On professionally translated FLORES+ sentences that no compared tokenizer was trained on, Leke 8k currently has the **highest fertility** of all tokenizers: 1.66 (Asante Twi), 1.60 (Akuapem Twi) and 1.66 (Ewe), vs. 1.47–1.59 for NLLB-200 and 1.44–1.53 for 8k Wikilangs. Leke is trained on ~9k sentences, so its vocabulary fits curriculum text well but generalizes poorly; expanding the training corpus is the next step. Leke is the only tokenizer with **0.0% `<unk>`** on FLORES+ Ewe, where monolingual baselines emit 2.5–2.7% `<unk>` (largely lookalike characters such as Greek `ͻ` for `ɔ`, which Leke normalizes). FLORES+ has no Ga or Fante. Reproduce with `scripts/fetch_flores.py` (gated dataset) then `scripts/measure_baselines.py`.
 
 *See full evaluation report in [`specs/eval_results.md`](specs/eval_results.md) and algorithm decision in [`specs/algorithm_decision.md`](specs/algorithm_decision.md).*
 

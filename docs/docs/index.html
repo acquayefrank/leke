@@ -782,6 +782,7 @@
 
         <div class="pitfall"><span class="label">Reading the comparison honestly</span>
           <p>Leke uses <b>one 8k vocabulary for four languages</b>. It beats NLLB-200 on every language (by 4.5% on Twi up to 26.9% on Ga) and beats same-size 8k monolingual Wikilangs tokenizers on Ewe and Fante. Larger single-language tokenizers (Wikilangs 32k, Goldfish 50k) still reach lower fertility, and on Twi even the 8k Wikilangs tokenizer wins. Every baseline emits some <code>&lt;unk&gt;</code> tokens on at least one language (up to 0.61%); Leke stays at a <b>strict 0.0%</b>. The test splits come from the same textbooks as the training data, so these are in-domain results.</p>
+          <p><b>Out of domain, Leke trails.</b> On FLORES+ devtest (professionally translated sentences no compared tokenizer was trained on), Leke 8k has the highest fertility of all tokenizers: 1.66 on Asante Twi, 1.60 on Akuapem Twi and 1.66 on Ewe, vs. 1.47–1.59 for NLLB-200. Its ~9k-sentence training corpus fits curriculum text but generalizes poorly. Leke is still the only tokenizer at 0.0% <code>&lt;unk&gt;</code> on FLORES+ Ewe, where monolingual baselines emit 2.5–2.7% <code>&lt;unk&gt;</code>, largely on lookalike characters such as Greek <code>ͻ</code> for <code>ɔ</code>.</p>
         </div>
 
         <div class="quiz">
