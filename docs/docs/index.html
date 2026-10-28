@@ -1365,9 +1365,9 @@ print("Vocabulary size:", tok.vocab_size)
 
 # Single-sentence encode -> returns an Encoding object (.ids, .tokens, .offsets)
 enc = tok.encode("Akwaaba ba Ghana man mu.")
-print("Tokens: ", enc.tokens)   # ['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
-print("IDs:    ", enc.ids)      # [570, 514, 339, 364, 338, 18]
-print("Offsets:", enc.offsets)  # [(0, 7), (7, 10), (10, 16), (16, 20), (20, 23), (23, 24)]
+print("Tokens: ", enc.tokens)   # ['A', 'kwaa', 'ba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
+print("IDs:    ", enc.ids)      # [37, 5091, 349, 562, 450, 703, 300, 18]
+print("Offsets:", enc.offsets)  # [(0, 1), (1, 5), (5, 7), (7, 10), (10, 16), (16, 20), (20, 23), (23, 24)]
 
 # Lossless round-trip decode
 restored = tok.decode(enc.ids)

@@ -32,8 +32,8 @@ clean = leke.normalize(raw)        # 'Wɔfrɛ no pápá!'  (Greek ε → Latin �
 
 tok = leke.LekeTokenizer.from_file("models/bpe-16k/tokenizer.json")
 enc = tok.encode("Akwaaba ba Ghana man mu.")
-print(enc.tokens)  # ['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
-print(enc.ids)     # [570, 514, 339, 364, 338, 18]
+print(enc.tokens)  # ['A', 'kwaa', 'ba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
+print(enc.ids)     # [37, 5091, 349, 562, 450, 703, 300, 18]
 print(tok.decode(enc.ids))`,
 
     rust: `use _leke::normalizer::KwaNormalizer;
