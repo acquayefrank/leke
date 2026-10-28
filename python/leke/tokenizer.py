@@ -19,7 +19,7 @@ ergonomic facade providing:
 Examples:
     >>> from leke import LekeTokenizer
     >>> # 1. Instantiate from a saved tokenizer bundle
-    >>> tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+    >>> tok = LekeTokenizer.from_file("models/bpe-16k/tokenizer.json")
     >>> # 2. Encode text in Akan / Twi
     >>> enc = tok.encode("Akwaaba ba Ghana man mu.")
     >>> print(enc.tokens)
@@ -79,7 +79,7 @@ class LekeTokenizer:
             instantly into memory.
 
         Examples:
-            >>> tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+            >>> tok = LekeTokenizer.from_file("models/bpe-16k/tokenizer.json")
         """
         # Step 1: Normalize path to string format required by the PyO3 C-API bridge.
         path_str = str(path)

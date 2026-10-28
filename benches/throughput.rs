@@ -12,7 +12,7 @@ fn bench_normalizer(c: &mut Criterion) {
 }
 
 fn bench_tokenizer(c: &mut Criterion) {
-    let model_path = "models/bpe-8k/tokenizer.json";
+    let model_path = "models/bpe-16k/tokenizer.json";
     if !std::path::Path::new(model_path).exists() {
         return;
     }

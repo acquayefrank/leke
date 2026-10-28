@@ -7,5 +7,5 @@
   "bos_token": "<s>",
   "eos_token": "</s>",
   "pad_token": "<pad>",
-  "mask_token": "<mask"
+  "mask_token": "<mask>"
 }

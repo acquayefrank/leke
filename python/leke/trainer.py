@@ -22,8 +22,8 @@ Examples:
     >>> from leke.trainer import train_bpe
     >>> receipt = train_bpe(
     ...     corpus_paths="data/splits/pooled_train.txt",
-    ...     output_dir="models/bpe-8k",
-    ...     vocab_size=8192,
+    ...     output_dir="models/bpe-16k",
+    ...     vocab_size=16384,
     ...     seed=42,
     ... )
     >>> print(receipt["algorithm"])
@@ -43,7 +43,7 @@ from leke._leke import train_bpe_model, train_unigram_model
 def train_bpe(
     corpus_paths: Union[str, Path, List[Union[str, Path]]],
     output_dir: Union[str, Path],
-    vocab_size: int = 8192,
+    vocab_size: int = 16384,
     min_frequency: int = 1,
     special_tokens: Optional[List[str]] = None,
     seed: int = 42,
@@ -54,7 +54,7 @@ def train_bpe(
         corpus_paths (Union[str, Path, List[Union[str, Path]]]): One or more file paths
             pointing to plain-text UTF-8 training corpora.
         output_dir (Union[str, Path]): Destination directory to save the trained tokenizer.
-        vocab_size (int, optional): Target subword vocabulary size. Defaults to 8192.
+        vocab_size (int, optional): Target subword vocabulary size. Defaults to 16384.
         min_frequency (int, optional): Minimum occurrence count required for a merge. Defaults to 1.
         special_tokens (Optional[List[str]], optional): Custom special tokens to prepend to
             the vocabulary. If None, defaults to `["<pad>", "<s>", "</s>", "<unk>", "<mask>"]`.
@@ -76,7 +76,7 @@ def train_bpe(
         6. The provenance metadata dictionary is returned to Python.
 
     Examples:
-        >>> receipt = train_bpe("data/samples/twi.txt", "models/bpe-8k", vocab_size=8192)
+        >>> receipt = train_bpe("data/samples/twi.txt", "models/bpe-16k", vocab_size=16384)
     """
     # Step 1: Normalize input corpus path(s) into a list of absolute/relative string paths.
     if isinstance(corpus_paths, (str, Path)):
@@ -106,7 +106,7 @@ def train_bpe(
 def train_unigram(
     corpus_paths: Union[str, Path, List[Union[str, Path]]],
     output_dir: Union[str, Path],
-    vocab_size: int = 8192,
+    vocab_size: int = 16384,
     special_tokens: Optional[List[str]] = None,
     seed: int = 42,
 ) -> Dict[str, Any]:
@@ -116,7 +116,7 @@ def train_unigram(
         corpus_paths (Union[str, Path, List[Union[str, Path]]]): One or more file paths
             pointing to plain-text UTF-8 training corpora.
         output_dir (Union[str, Path]): Destination directory to save the trained tokenizer.
-        vocab_size (int, optional): Target subword vocabulary size. Defaults to 8192.
+        vocab_size (int, optional): Target subword vocabulary size. Defaults to 16384.
         special_tokens (Optional[List[str]], optional): Custom special tokens. If None,
             defaults to `["<pad>", "<s>", "</s>", "<unk>", "<mask>"]`.
         seed (int, optional): Random seed for deterministic EM convergence. Defaults to 42.
@@ -135,7 +135,7 @@ def train_unigram(
         This provides probabilistic subword segmentation capability (subword regularization).
 
     Examples:
-        >>> receipt = train_unigram("data/samples/ewe.txt", "models/unigram-8k", vocab_size=8192)
+        >>> receipt = train_unigram("data/samples/ewe.txt", "models/unigram-16k", vocab_size=16384)
     """
     # Step 1: Normalize input corpus paths into a list of string paths.
     if isinstance(corpus_paths, (str, Path)):
@@ -186,14 +186,14 @@ def main() -> None:
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="models/bpe-8k",
+        default="models/bpe-16k",
         help="Output directory for tokenizer bundle",
     )
     parser.add_argument(
         "--vocab-size",
         type=int,
-        default=8192,
-        help="Target vocabulary size (default: 8192)",
+        default=16384,
+        help="Target vocabulary size (default: 16384)",
     )
     parser.add_argument(
         "--min-frequency",

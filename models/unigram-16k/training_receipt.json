@@ -1,0 +1,15 @@
+{
+  "algorithm": "Unigram",
+  "vocab_size": 16384,
+  "actual_vocab_size": 16384,
+  "special_tokens": [
+    "<unk>",
+    "<s>",
+    "</s>",
+    "<pad>",
+    "<mask>"
+  ],
+  "seed": 42,
+  "corpus_path": "data/raw/pooled_train_madlad.txt",
+  "corpus_sha256": "2de1cb6f22375d4ebc492a096b53349ae3a8d23117ddabd7cd0cae9c575204d6"
+}

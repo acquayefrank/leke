@@ -19,7 +19,7 @@ Examples:
     >>> # Step 1: Normalize raw text with canonical orthographic mappings
     >>> clean = leke.normalize("Akwaaba ba Ghana")
     >>> # Step 2: Load a trained model
-    >>> tok = leke.LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+    >>> tok = leke.LekeTokenizer.from_file("models/bpe-16k/tokenizer.json")
     >>> enc = tok.encode("Akwaaba ba Ghana")
     >>> print(enc.tokens)
 """

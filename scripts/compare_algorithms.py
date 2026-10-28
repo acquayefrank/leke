@@ -26,6 +26,8 @@ def run_comparison(bpe_path: Path, unigram_path: Path, splits_dir: Path, output_
     uni_total_split = 0.0
     bpe_total_unk = 0.0
     uni_total_unk = 0.0
+    bpe_wins = 0
+    languages_compared = 0
 
     for lang in LANGUAGES:
         test_file = splits_dir / lang / "test.txt"
@@ -44,6 +46,8 @@ def run_comparison(bpe_path: Path, unigram_path: Path, splits_dir: Path, output_
         uni_total_unk += uni_m["unk_rate"]
 
         winner = "BPE" if bpe_m["fertility"] <= uni_m["fertility"] else "Unigram"
+        bpe_wins += winner == "BPE"
+        languages_compared += 1
 
         table_data.append(
             [
@@ -116,8 +120,8 @@ This document records the empirical head-to-head comparison between **Byte-Level
 ## Architectural Decision & Conclusion
 
 1. **Fertility & Fragmentation**:
-   - **Byte-Level BPE** achieves lower tokens-per-word fertility and higher byte compression across all four target Kwa languages (Akan/Twi, Ewe, Ga, and Fante), with a strict 0.0% unknown-token rate.
-   - Unigram reaches a comparable >2 split rate (see summary table) but produces longer sequences overall and can emit `<unk>` tokens on characters missing from its vocabulary.
+   - **Byte-Level BPE** has lower fertility on {bpe_wins} of {languages_compared} languages (mean {avg_bpe_f} vs. {avg_uni_f} tokens/word), with a strict 0.0% unknown-token rate from its byte-level fallback.
+   - Unigram has no byte fallback, so it can emit `<unk>` tokens on characters missing from its vocabulary (mean {avg_uni_u}%).
    - This occurs because BPE greedily merges high-frequency adjacent syllable affixes (CV, CVC), perfectly aligning with Niger-Congo agglutinative and compound word morphology.
 2. **Standard Ecosystem Interoperability**:
    - Byte-Level BPE is the standard subword architecture for state-of-the-art transformer LLMs (GPT-4, LLaMA-3, Mistral, Gemma).
@@ -132,8 +136,8 @@ This document records the empirical head-to-head comparison between **Byte-Level
 
 if __name__ == "__main__":
     run_comparison(
-        bpe_path=Path("models/bpe-8k/tokenizer.json"),
-        unigram_path=Path("models/unigram-8k/tokenizer.json"),
+        bpe_path=Path("models/bpe-16k/tokenizer.json"),
+        unigram_path=Path("models/unigram-16k/tokenizer.json"),
         splits_dir=Path("data/splits"),
         output_file=Path("specs/algorithm_decision.md"),
     )

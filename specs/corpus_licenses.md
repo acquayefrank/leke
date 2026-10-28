@@ -13,7 +13,8 @@ This document records the legal and licensing terms governing text corpora used 
 | **Peace Corps & FSI Twi Courses** | Twi (`twi`) | US Government Public Domain (17 U.S.C. § 105) | Yes | Public Domain (Peace Corps Ghana / Foreign Service Institute) |
 | **Basel Mission English–Tshi Dictionary (1909)** | Asante / Akuapem Twi, Fante | Public Domain (Published 1909) | Yes | Cite: Christaller & Mohr, *English-Tshi (Asante) Dictionary*, Basel (1909) |
 | **Glot500** | Akan (`aka`), Ewe (`ewe`), Ga (`gaa`), Fante (`fat`) | Mixed Open Licenses (CC BY-SA / Apache 2.0 / MIT) | Yes (per component terms) | Cite: Imani et al., "Glot500: A Base for 500+ Languages" |
-| **MADLAD-400** | Twi (`twi`), Ewe (`ewe`) | Open Data Commons Attribution License (ODC-By v1.0) | Yes | Cite: Kudugunta et al., "MADLAD-400: A Multilingual And Diverse Dataset for 400+ Languages" |
+| **MADLAD-400** (`clean` subset, training only; not redistributed) | Akan (`ak`, used for Twi), Ewe (`ee`) | Open Data Commons Attribution License (ODC-By v1.0) | Yes | Cite: Kudugunta et al., "MADLAD-400: A Multilingual And Diverse Dataset for 400+ Languages" |
+| **FLORES+** (evaluation only; not redistributed) | Twi (Asante, Akuapem), Ewe | Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0) | Yes | Cite: NLLB Team et al., "No Language Left Behind" and the OLDI FLORES+ dataset |
 | **MGhana-ST / Ghana Speech-Text** | Akan/Twi, Ewe, Ga | Creative Commons Attribution 4.0 (CC BY 4.0) | Yes | Masakhane / Ghana NLP attribution |
 
 ---

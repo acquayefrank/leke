@@ -69,8 +69,8 @@
         </div>
         <div class="feature-card" style="padding: 20px;">
           <div style="font-size: 13px; color: var(--color-muted);">Lower fertility vs. NLLB-200</div>
-          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">−5% to −27%</div>
-          <div style="font-size: 13px; color: var(--color-subtle); margin-top: 4px;">Fewer subwords per word</div>
+          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">0% to −28%</div>
+          <div style="font-size: 13px; color: var(--color-subtle); margin-top: 4px;">FLORES+ and curriculum test sets</div>
         </div>
         <div class="feature-card" style="padding: 20px;">
           <div style="font-size: 13px; color: var(--color-muted);">Hard &lt;unk&gt; rate, guaranteed</div>
@@ -79,7 +79,7 @@
         </div>
         <div class="feature-card" style="padding: 20px;">
           <div style="font-size: 13px; color: var(--color-muted);">Single-thread encode</div>
-          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">450k tok/s</div>
+          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">240k+ tok/s</div>
           <div style="font-size: 13px; color: var(--color-subtle); margin-top: 4px;">On par with HF tokenizers</div>
         </div>
       </div>
@@ -156,53 +156,66 @@
     <!-- Leaderboard Section -->
     <section id="leaderboard" style="padding: 56px 0 72px; border-top: 1px solid var(--color-divider);">
       <span style="display: block; font-size: 13px; color: var(--color-muted); margin-bottom: 10px;">Leaderboard</span>
-      <h2 style="font-size: clamp(26px, 3vw, 34px); font-weight: 600; letter-spacing: -0.025em; margin: 0;">Fewer tokens than NLLB-200 on curriculum text.</h2>
-      <p style="font-size: 15px; line-height: 1.65; max-width: 60ch; margin: 12px 0 0; color: var(--color-muted);">Fertility on held-out test splits, with every tokenizer measured on the same text. Lower is better. Monolingual column is the same-size (8k) Wikilangs tokenizer.</p>
+      <h2 style="font-size: clamp(26px, 3vw, 34px); font-weight: 600; letter-spacing: -0.025em; margin: 0;">One vocabulary, four languages, no lost characters.</h2>
+      <p style="font-size: 15px; line-height: 1.65; max-width: 60ch; margin: 12px 0 0; color: var(--color-muted);">Fertility (tokens per word, lower is better), with every tokenizer measured on the same text. FLORES+ is out-of-domain text no tokenizer here was trained on; it has no Ga or Fante, so those use held-out curriculum text. Monolingual column is the same-size (16k) Wikilangs tokenizer for that language.</p>
       <div class="table-card" style="margin-top: 28px;">
-        <table class="table" style="min-width: 620px;">
+        <table class="table" style="min-width: 680px;">
           <thead>
-            <tr><th>Language</th><th>Leke BPE 8k</th><th>NLLB-200</th><th>Monolingual</th><th>vs. NLLB-200</th></tr>
+            <tr><th>Language</th><th>Test set</th><th>Leke BPE 16k</th><th>NLLB-200</th><th>Monolingual 16k</th><th>vs. NLLB-200</th></tr>
           </thead>
           <tbody>
             <tr>
-              <td style="color: var(--color-text); font-weight: 500;">Akan / Twi</td>
-              <td style="color: var(--color-text); font-weight: 600;">1.48</td>
-              <td>1.55</td>
-              <td>1.34</td>
-              <td><span class="tag tag-accent">−5%</span></td>
+              <td style="color: var(--color-text); font-weight: 500;">Twi (Asante)</td>
+              <td>FLORES+</td>
+              <td style="color: var(--color-text); font-weight: 600;">1.52</td>
+              <td>1.59</td>
+              <td>1.45</td>
+              <td><span class="tag tag-accent">−4%</span></td>
+            </tr>
+            <tr>
+              <td style="color: var(--color-text); font-weight: 500;">Twi (Akuapem)</td>
+              <td>FLORES+</td>
+              <td style="color: var(--color-text); font-weight: 600;">1.47</td>
+              <td>1.47</td>
+              <td>1.37</td>
+              <td><span class="tag tag-accent">0%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Ewe</td>
-              <td style="color: var(--color-text); font-weight: 600;">1.37</td>
-              <td>1.65</td>
+              <td>FLORES+</td>
+              <td style="color: var(--color-text); font-weight: 600;">1.41</td>
+              <td>1.54</td>
               <td>1.44</td>
-              <td><span class="tag tag-accent">−17%</span></td>
+              <td><span class="tag tag-accent">−8%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Ga</td>
-              <td style="color: var(--color-text); font-weight: 600;">1.41</td>
+              <td>Curriculum</td>
+              <td style="color: var(--color-text); font-weight: 600;">1.40</td>
               <td>1.93</td>
               <td>—</td>
-              <td><span class="tag tag-accent">−27%</span></td>
+              <td><span class="tag tag-accent">−28%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Fante</td>
-              <td style="color: var(--color-text); font-weight: 600;">1.34</td>
+              <td>Curriculum</td>
+              <td style="color: var(--color-text); font-weight: 600;">1.30</td>
               <td>1.70</td>
-              <td>1.38</td>
-              <td><span class="tag tag-accent">−21%</span></td>
+              <td>1.30</td>
+              <td><span class="tag tag-accent">−24%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Unknown rate</td>
+              <td>All</td>
               <td style="color: var(--color-text); font-weight: 600;">0.0%</td>
-              <td>0.08–0.61%</td>
-              <td>0.02–0.11%</td>
+              <td>0.02–1.52%</td>
+              <td>0.02–2.57%</td>
               <td><span class="tag tag-accent">Guaranteed</span></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p style="font-size: 13.5px; margin: 16px 0 0; color: var(--color-muted);">On out-of-domain FLORES+ text (Twi, Ewe), Leke 8k currently has higher fertility than every baseline (1.60–1.66 vs. 1.47–1.59 for NLLB-200) while staying at 0.0% &lt;unk&gt;. A larger training corpus is in progress.</p>
+      <p style="font-size: 13.5px; margin: 16px 0 0; color: var(--color-muted);">Leke matches or beats NLLB-200 everywhere and beats the 16k Ewe-only tokenizer on Ewe, while dedicated Twi tokenizers remain 5–7% more compact on Twi. Ewe monolingual tokenizers lose 2.5% of tokens to &lt;unk&gt; on FLORES+, mostly the lookalike ͻ that Leke normalizes to ɔ.</p>
       <p style="font-size: 13.5px; margin: 8px 0 0; color: var(--color-muted);">Deep dive &amp; interactive benches: <a href="docs/#fertility-metrics">Evaluation results in Docs →</a></p>
     </section>
 
@@ -224,7 +237,7 @@
         <div class="feature-card">
           <i class="ph-duotone ph-lightning" style="font-size: 28px; color: var(--color-accent-700);"></i>
           <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 8px;">A high-throughput bridge</h3>
-          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">The Rust core encodes about 450,000 tokens a second on one thread and 1.6 million across eight, on par with Hugging Face's own tokenizers library. Batch calls cross the Python–Rust boundary once per batch.</p>
+          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">The Rust core encodes over 240,000 tokens a second on one thread and close to a million across eight, on par with Hugging Face's own tokenizers library. Batch calls cross the Python–Rust boundary once per batch.</p>
         </div>
         <div class="feature-card">
           <i class="ph-duotone ph-waveform" style="font-size: 28px; color: var(--color-accent-700);"></i>

@@ -6,24 +6,24 @@ This document records the empirical head-to-head comparison between **Byte-Level
 
 | Language   |   BPE Fertility |   Uni Fertility | BPE Split >2   | Uni Split >2   | BPE Unk (%)   | Uni Unk (%)   |   BPE Comp. |   Uni Comp. | Advantage   |
 |------------|-----------------|-----------------|----------------|----------------|---------------|---------------|-------------|-------------|-------------|
-| Akan / Twi |            1.48 |            1.52 | 11.5%          | 11.6%          | 0.0%          | 0.05%         |        3.75 |        3.63 | **BPE**     |
-| Ewe        |            1.37 |            1.39 | 8.3%           | 6.5%           | 0.0%          | 0.06%         |        4.27 |        4.21 | **BPE**     |
-| Ga         |            1.41 |            1.48 | 8.3%           | 9.9%           | 0.0%          | 0.0%          |        4.33 |        4.11 | **BPE**     |
-| Fante      |            1.34 |            1.38 | 7.1%           | 7.0%           | 0.0%          | 0.0%          |        4.11 |        3.99 | **BPE**     |
+| Akan / Twi |            1.48 |            1.59 | 10.9%          | 12.2%          | 0.0%          | 0.01%         |        3.73 |        3.47 | **BPE**     |
+| Ewe        |            1.41 |            1.38 | 9.4%           | 8.7%           | 0.0%          | 0.04%         |        4.14 |        4.24 | **Unigram** |
+| Ga         |            1.4  |            1.52 | 8.2%           | 11.6%          | 0.0%          | 0.0%          |        4.38 |        4.01 | **BPE**     |
+| Fante      |            1.3  |            1.34 | 5.6%           | 5.9%           | 0.0%          | 0.0%          |        4.24 |        4.09 | **BPE**     |
 
 ## Summary Averages Across All Languages
 
 | Metric | Byte-Level BPE | Unigram | Winner |
 | :--- | :--- | :--- | :--- |
-| **Mean Fertility (tokens/word)** | **1.4** | 1.44 | **Byte-Level BPE** |
-| **Mean Excessive Split Rate (>2)** | **8.8%** | **8.8%** | **Tie** |
-| **Mean Unknown Token Rate** | **0.0%** | 0.03% | **Byte-Level BPE** |
+| **Mean Fertility (tokens/word)** | **1.4** | 1.46 | **Byte-Level BPE** |
+| **Mean Excessive Split Rate (>2)** | **8.5%** | 9.6% | **Byte-Level BPE** |
+| **Mean Unknown Token Rate** | **0.0%** | 0.01% | **Byte-Level BPE** |
 
 ## Architectural Decision & Conclusion
 
 1. **Fertility & Fragmentation**:
-   - **Byte-Level BPE** achieves lower tokens-per-word fertility and higher byte compression across all four target Kwa languages (Akan/Twi, Ewe, Ga, and Fante), with a strict 0.0% unknown-token rate.
-   - Unigram reaches a comparable >2 split rate (see summary table) but produces longer sequences overall and can emit `<unk>` tokens on characters missing from its vocabulary.
+   - **Byte-Level BPE** has lower fertility on 3 of 4 languages (mean 1.4 vs. 1.46 tokens/word), with a strict 0.0% unknown-token rate from its byte-level fallback.
+   - Unigram has no byte fallback, so it can emit `<unk>` tokens on characters missing from its vocabulary (mean 0.01%).
    - This occurs because BPE greedily merges high-frequency adjacent syllable affixes (CV, CVC), perfectly aligning with Niger-Congo agglutinative and compound word morphology.
 2. **Standard Ecosystem Interoperability**:
    - Byte-Level BPE is the standard subword architecture for state-of-the-art transformer LLMs (GPT-4, LLaMA-3, Mistral, Gemma).

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from leke import LekeTokenizer, calculate_metrics, normalize
-from leke.evaluate import load_measured_baselines
+from leke.evaluate import LEKE_MODEL_NAME, LEKE_VOCAB, load_measured_baselines
 from tokenizers.pre_tokenizers import ByteLevel
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -12,7 +12,7 @@ with open(ROOT / "data" / "char_mappings.json", "r", encoding="utf-8") as f:
     char_mappings_raw = json.load(f)
 
 # 2. Load BPE 8k tokenizer.json
-with open(ROOT / "models" / "bpe-8k" / "tokenizer.json", "r", encoding="utf-8") as f:
+with open(ROOT / "models" / "bpe-16k" / "tokenizer.json", "r", encoding="utf-8") as f:
     tok_json = json.load(f)
 
 vocab = tok_json["model"]["vocab"]
@@ -20,7 +20,7 @@ merges = tok_json["model"]["merges"]
 byte_alphabet = ByteLevel.alphabet()
 
 # 3. Test sentences with real tokenization
-tok = LekeTokenizer.from_file(str(ROOT / "models" / "bpe-8k" / "tokenizer.json"))
+tok = LekeTokenizer.from_file(str(ROOT / "models" / "bpe-16k" / "tokenizer.json"))
 
 test_sentences = [
     {"lang": "twi", "name": "Akan / Twi", "text": "Akwaaba ba Ghana man mu."},
@@ -102,7 +102,7 @@ for lang_code, lang_name, description in LANGUAGE_INFO:
     test_lines = test_path.read_text(encoding="utf-8").splitlines()
     leke_metrics = calculate_metrics(tok, test_lines)
 
-    models = [leaderboard_row("Leke BPE (8k)", "8k", leke_metrics, True, "Leke")]
+    models = [leaderboard_row(LEKE_MODEL_NAME, LEKE_VOCAB, leke_metrics, True, "Leke")]
     lang_baselines = sorted(
         (b for b in baselines if b["lang"] == lang_code), key=lambda b: b["fertility"]
     )
