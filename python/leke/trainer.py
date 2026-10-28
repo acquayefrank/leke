@@ -62,11 +62,26 @@ def train_unigram(
 
 def main():
     parser = argparse.ArgumentParser(description="Train tokenizer for Kwa languages.")
-    parser.add_argument("--algorithm", type=str, choices=["bpe", "unigram"], default="bpe", help="Algorithm to train")
-    parser.add_argument("--corpus", type=str, default="data/splits/pooled_train.txt", help="Path to training corpus")
-    parser.add_argument("--output-dir", type=str, default="models/bpe-8k", help="Output directory for tokenizer bundle")
+    parser.add_argument(
+        "--algorithm",
+        type=str,
+        choices=["bpe", "unigram"],
+        default="bpe",
+        help="Algorithm to train",
+    )
+    parser.add_argument(
+        "--corpus", type=str, default="data/splits/pooled_train.txt", help="Path to training corpus"
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="models/bpe-8k",
+        help="Output directory for tokenizer bundle",
+    )
     parser.add_argument("--vocab-size", type=int, default=8192, help="Target vocabulary size")
-    parser.add_argument("--min-frequency", type=int, default=1, help="Minimum token frequency (BPE)")
+    parser.add_argument(
+        "--min-frequency", type=int, default=1, help="Minimum token frequency (BPE)"
+    )
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
 
     args = parser.parse_args()

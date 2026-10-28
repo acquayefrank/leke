@@ -2,9 +2,10 @@
 
 import time
 from pathlib import Path
+
+from leke import LekeTokenizer
 from tabulate import tabulate
 from tokenizers import Tokenizer as HFTokenizer
-from leke import LekeTokenizer
 
 TEST_TEXTS = [
     "Wɔfrɛ me Kofi na mefiri Kumasi wɔ Ghana man mu.",
@@ -69,9 +70,24 @@ def benchmark():
     hf_dec_sent_sec = int(total_sentences / t_hf_dec)
 
     table = [
-        ["Encode Throughput (tokens/sec)", f"**{leke_enc_tok_sec:,}**", f"{hf_enc_tok_sec:,}", "✅ Parity / High Speed"],
-        ["Encode Throughput (MB/sec)", f"**{leke_enc_mb_sec} MB/s**", f"{hf_enc_mb_sec} MB/s", "✅ Zero Overhead"],
-        ["Decode Throughput (sentences/sec)", f"**{leke_dec_sent_sec:,}**", f"{hf_dec_sent_sec:,}", "✅ Sub-millisecond"],
+        [
+            "Encode Throughput (tokens/sec)",
+            f"**{leke_enc_tok_sec:,}**",
+            f"{hf_enc_tok_sec:,}",
+            "✅ Parity / High Speed",
+        ],
+        [
+            "Encode Throughput (MB/sec)",
+            f"**{leke_enc_mb_sec} MB/s**",
+            f"{hf_enc_mb_sec} MB/s",
+            "✅ Zero Overhead",
+        ],
+        [
+            "Decode Throughput (sentences/sec)",
+            f"**{leke_dec_sent_sec:,}**",
+            f"{hf_dec_sent_sec:,}",
+            "✅ Sub-millisecond",
+        ],
     ]
 
     headers = ["Metric", "Leke (Rust + PyO3)", "Hugging Face Python", "Status"]

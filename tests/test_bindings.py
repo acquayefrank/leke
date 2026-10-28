@@ -1,6 +1,7 @@
 from pathlib import Path
-from tokenizers import Tokenizer as HFTokenizer
+
 from leke import LekeTokenizer
+from tokenizers import Tokenizer as HFTokenizer
 
 
 def test_leke_tokenizer_bindings():

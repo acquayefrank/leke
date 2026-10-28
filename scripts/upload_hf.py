@@ -2,6 +2,7 @@
 
 import argparse
 from pathlib import Path
+
 from huggingface_hub import HfApi
 
 
@@ -24,8 +25,18 @@ def upload_to_hub(model_dir: Path, repo_id: str, private: bool = False):
 
 def main():
     parser = argparse.ArgumentParser(description="Upload Leke tokenizer to Hugging Face Hub.")
-    parser.add_argument("--model-dir", type=str, default="models/bpe-8k", help="Local directory containing model files")
-    parser.add_argument("--repo-id", type=str, default="acquayefrank/leke-bpe-8k", help="Target Hugging Face repo ID")
+    parser.add_argument(
+        "--model-dir",
+        type=str,
+        default="models/bpe-8k",
+        help="Local directory containing model files",
+    )
+    parser.add_argument(
+        "--repo-id",
+        type=str,
+        default="acquayefrank/leke-bpe-8k",
+        help="Target Hugging Face repo ID",
+    )
     parser.add_argument("--private", action="store_true", help="Make repository private")
 
     args = parser.parse_args()

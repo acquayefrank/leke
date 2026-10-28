@@ -1,7 +1,5 @@
-import json
-from pathlib import Path
-from tokenizers import Tokenizer
 from leke.trainer import train_bpe
+from tokenizers import Tokenizer
 
 
 def test_train_bpe_python(tmp_path):
@@ -50,6 +48,7 @@ def test_train_bpe_python(tmp_path):
 
     # Test Hugging Face transformers AutoTokenizer compatibility
     from transformers import PreTrainedTokenizerFast
+
     hf_tok = PreTrainedTokenizerFast(tokenizer_file=str(out_dir / "tokenizer.json"))
     tokens = hf_tok.tokenize("Wɔfrɛ me Kofi pápá")
     assert len(tokens) > 0

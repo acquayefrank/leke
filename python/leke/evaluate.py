@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from tabulate import tabulate
-from leke import LekeTokenizer
+
+from leke.tokenizer import LekeTokenizer
 
 LANGUAGES = ["twi", "ewe", "gaa", "fat"]
 LANGUAGE_NAMES = {
@@ -20,16 +21,46 @@ LANGUAGE_NAMES = {
 # Established reference baselines for Kwa languages
 PUBLISHED_BASELINES = {
     "NLLB-200 (SentencePiece)": {
-        "twi": {"fertility": 2.92, "split_rate_gt2": 38.4, "unk_rate": 0.0, "compression_ratio": 2.45},
-        "ewe": {"fertility": 3.15, "split_rate_gt2": 44.1, "unk_rate": 0.0, "compression_ratio": 2.28},
-        "gaa": {"fertility": 3.20, "split_rate_gt2": 46.2, "unk_rate": 0.0, "compression_ratio": 2.20},
-        "fat": {"fertility": 2.98, "split_rate_gt2": 39.5, "unk_rate": 0.0, "compression_ratio": 2.40},
+        "twi": {
+            "fertility": 2.92,
+            "split_rate_gt2": 38.4,
+            "unk_rate": 0.0,
+            "compression_ratio": 2.45,
+        },
+        "ewe": {
+            "fertility": 3.15,
+            "split_rate_gt2": 44.1,
+            "unk_rate": 0.0,
+            "compression_ratio": 2.28,
+        },
+        "gaa": {
+            "fertility": 3.20,
+            "split_rate_gt2": 46.2,
+            "unk_rate": 0.0,
+            "compression_ratio": 2.20,
+        },
+        "fat": {
+            "fertility": 2.98,
+            "split_rate_gt2": 39.5,
+            "unk_rate": 0.0,
+            "compression_ratio": 2.40,
+        },
     },
     "Goldfish Twi (twi_latn)": {
-        "twi": {"fertility": 1.62, "split_rate_gt2": 16.8, "unk_rate": 0.4, "compression_ratio": 4.12},
+        "twi": {
+            "fertility": 1.62,
+            "split_rate_gt2": 16.8,
+            "unk_rate": 0.4,
+            "compression_ratio": 4.12,
+        },
     },
     "Wikilangs Ewe (ee)": {
-        "ewe": {"fertility": 1.71, "split_rate_gt2": 19.3, "unk_rate": 0.6, "compression_ratio": 3.95},
+        "ewe": {
+            "fertility": 1.71,
+            "split_rate_gt2": 19.3,
+            "unk_rate": 0.6,
+            "compression_ratio": 3.95,
+        },
     },
 }
 
@@ -116,57 +147,77 @@ def evaluate_all(
         metrics = calculate_metrics(tokenizer, lines)
 
         # 1. Add Leke row
-        table_data.append([
-            "**Leke BPE (8k)**",
-            LANGUAGE_NAMES.get(lang, lang),
-            f"**{metrics['fertility']}**",
-            f"{metrics['split_rate_gt2']}%",
-            f"**{metrics['unk_rate']}%**",
-            f"{metrics['compression_ratio']}",
-            "✅ Target Evaluated",
-        ])
+        table_data.append(
+            [
+                "**Leke BPE (8k)**",
+                LANGUAGE_NAMES.get(lang, lang),
+                f"**{metrics['fertility']}**",
+                f"{metrics['split_rate_gt2']}%",
+                f"**{metrics['unk_rate']}%**",
+                f"{metrics['compression_ratio']}",
+                "✅ Target Evaluated",
+            ]
+        )
 
         # 2. Add Baseline rows
         # Monolingual baseline
         if lang == "twi" and "Goldfish Twi (twi_latn)" in PUBLISHED_BASELINES:
             b_metrics = PUBLISHED_BASELINES["Goldfish Twi (twi_latn)"]["twi"]
-            gate = "✅ Matched/Beat" if metrics["fertility"] <= b_metrics["fertility"] else "⚠️ Close"
-            table_data.append([
-                "Goldfish Twi (monolingual)",
-                LANGUAGE_NAMES[lang],
-                f"{b_metrics['fertility']}",
-                f"{b_metrics['split_rate_gt2']}%",
-                f"{b_metrics['unk_rate']}%",
-                f"{b_metrics['compression_ratio']}",
-                f"{gate} (Baseline)",
-            ])
+            gate = (
+                "✅ Matched/Beat" if metrics["fertility"] <= b_metrics["fertility"] else "⚠️ Close"
+            )
+            table_data.append(
+                [
+                    "Goldfish Twi (monolingual)",
+                    LANGUAGE_NAMES[lang],
+                    f"{b_metrics['fertility']}",
+                    f"{b_metrics['split_rate_gt2']}%",
+                    f"{b_metrics['unk_rate']}%",
+                    f"{b_metrics['compression_ratio']}",
+                    f"{gate} (Baseline)",
+                ]
+            )
         elif lang == "ewe" and "Wikilangs Ewe (ee)" in PUBLISHED_BASELINES:
             b_metrics = PUBLISHED_BASELINES["Wikilangs Ewe (ee)"]["ewe"]
-            gate = "✅ Matched/Beat" if metrics["fertility"] <= b_metrics["fertility"] else "⚠️ Close"
-            table_data.append([
-                "Wikilangs Ewe (monolingual)",
-                LANGUAGE_NAMES[lang],
-                f"{b_metrics['fertility']}",
-                f"{b_metrics['split_rate_gt2']}%",
-                f"{b_metrics['unk_rate']}%",
-                f"{b_metrics['compression_ratio']}",
-                f"{gate} (Baseline)",
-            ])
+            gate = (
+                "✅ Matched/Beat" if metrics["fertility"] <= b_metrics["fertility"] else "⚠️ Close"
+            )
+            table_data.append(
+                [
+                    "Wikilangs Ewe (monolingual)",
+                    LANGUAGE_NAMES[lang],
+                    f"{b_metrics['fertility']}",
+                    f"{b_metrics['split_rate_gt2']}%",
+                    f"{b_metrics['unk_rate']}%",
+                    f"{b_metrics['compression_ratio']}",
+                    f"{gate} (Baseline)",
+                ]
+            )
 
         # Multilingual baseline
         if "NLLB-200 (SentencePiece)" in PUBLISHED_BASELINES:
             n_metrics = PUBLISHED_BASELINES["NLLB-200 (SentencePiece)"][lang]
-            table_data.append([
-                "NLLB-200 (multilingual)",
-                LANGUAGE_NAMES[lang],
-                f"{n_metrics['fertility']}",
-                f"{n_metrics['split_rate_gt2']}%",
-                f"{n_metrics['unk_rate']}%",
-                f"{n_metrics['compression_ratio']}",
-                "✅ Leke Superior",
-            ])
+            table_data.append(
+                [
+                    "NLLB-200 (multilingual)",
+                    LANGUAGE_NAMES[lang],
+                    f"{n_metrics['fertility']}",
+                    f"{n_metrics['split_rate_gt2']}%",
+                    f"{n_metrics['unk_rate']}%",
+                    f"{n_metrics['compression_ratio']}",
+                    "✅ Leke Superior",
+                ]
+            )
 
-    headers = ["Model", "Language", "Fertility (tok/word)", "Split >2 (%)", "Unknown (%)", "Compression (bytes/tok)", "Status"]
+    headers = [
+        "Model",
+        "Language",
+        "Fertility (tok/word)",
+        "Split >2 (%)",
+        "Unknown (%)",
+        "Compression (bytes/tok)",
+        "Status",
+    ]
     table_str = tabulate(table_data, headers=headers, tablefmt="github")
 
     report = f"""# Leke Subword Tokenizer — Evaluation Leaderboard
@@ -198,9 +249,18 @@ This report compiles the official evaluation benchmarks across held-out test spl
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate Leke tokenizer against baselines.")
-    parser.add_argument("--model", type=str, default="models/bpe-8k/tokenizer.json", help="Path to tokenizer.json")
-    parser.add_argument("--splits-dir", type=str, default="data/splits", help="Directory containing language splits")
-    parser.add_argument("--report-out", type=str, default="specs/eval_results.md", help="Path to write markdown leaderboard")
+    parser.add_argument(
+        "--model", type=str, default="models/bpe-8k/tokenizer.json", help="Path to tokenizer.json"
+    )
+    parser.add_argument(
+        "--splits-dir", type=str, default="data/splits", help="Directory containing language splits"
+    )
+    parser.add_argument(
+        "--report-out",
+        type=str,
+        default="specs/eval_results.md",
+        help="Path to write markdown leaderboard",
+    )
 
     args = parser.parse_args()
     report = evaluate_all(
