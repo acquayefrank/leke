@@ -9,10 +9,11 @@
       "train_sentences": 2227,
       "dev_sentences": 278,
       "test_sentences": 279,
+      "extra_train_sentences": 0,
       "hashes": {
-        "train_sha256": "83b002d7143a4dfa21cd5595c2120d07bf505fb24bbeac26e86e59a5f909b387",
-        "dev_sha256": "b84a652d5c368f7eec1047df84dd2fa3dc3277a3fee9c24316acc8d6bd342393",
-        "test_sha256": "8c971aa8e1bf6eb080c32026a70d069479a1f7faece583e70e910e8a4e55e8cc"
+        "train_sha256": "25ee6c5163370b2d361af2cd72fda8679fb7c24f5a4711734253b42b9b16718a",
+        "dev_sha256": "2b20f6de92e0b14e86349767d886b048ec7754dfa7dbf91a913a6b3376ebf75c",
+        "test_sha256": "a6cc78a8be5dcd2c1e32ad374c34915fbeb9a1e0f4627281613e4f3583f36f60"
       }
     },
     "ewe": {
@@ -21,6 +22,7 @@
       "train_sentences": 2558,
       "dev_sentences": 319,
       "test_sentences": 321,
+      "extra_train_sentences": 0,
       "hashes": {
         "train_sha256": "f4e941becdb19e433d3e14da15a4dba2c93ccbbb3b8b65fc7a3314a14bcbacd6",
         "dev_sha256": "34a884588846ab37231aeeaef3d3a635261805abd15df277395cc20a4478349f",
@@ -33,6 +35,7 @@
       "train_sentences": 2110,
       "dev_sentences": 263,
       "test_sentences": 265,
+      "extra_train_sentences": 0,
       "hashes": {
         "train_sha256": "828041da91d0fd115b2aee30e82b3cf8a151743082dc7f5ef57ae951141cf6cd",
         "dev_sha256": "b1aa8b3fb304a3a14710d349ce1a4408bc037b7e67cd5b55cbf909a1163ad86c",
@@ -45,8 +48,9 @@
       "train_sentences": 2278,
       "dev_sentences": 284,
       "test_sentences": 286,
+      "extra_train_sentences": 0,
       "hashes": {
-        "train_sha256": "94ee45ee24341a3c3cbedfc6d7d75d715011279563f91f65fc7210779300245b",
+        "train_sha256": "a06bf1b7dfe50b4b16cd951b28ca9829b945fb12d54a9ce73d6b9902f493ee13",
         "dev_sha256": "11d2243da486ce3ae1066bd38dd23ec4d55460e7bc14c22cc8456d2b53576275",
         "test_sha256": "f5b7d462d255f8e272f6d62e3444411842f16fc64f4c15b112bb30fcdc08f21a"
       }
@@ -54,6 +58,6 @@
   },
   "pooled": {
     "sentences": 9173,
-    "sha256": "e3016428f194f85c0a7a906a1b3a12e2d00d3922c39772401cfbb6a84aa6c9cb"
+    "sha256": "2d4f1b9d3278a74e3a7431bf29fc79a0f3f8303c05801e84fe7e5293a5640444"
   }
 }

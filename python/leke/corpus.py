@@ -327,6 +327,9 @@ def run_pipeline(
     manifest_path: Path = Path("data/data_manifest.json"),
     alpha: float = 0.5,
     seed: int = 42,
+    extra_train_dir: Optional[Path] = None,
+    pooled_path: Optional[Path] = None,
+    total_samples: Optional[int] = None,
 ) -> Dict[str, Any]:
     """Executes the complete corpus ingestion, splitting, upsampling, and manifest generation.
 
@@ -336,6 +339,13 @@ def run_pipeline(
         manifest_path (Path, optional): Path to write the JSON manifest. Defaults to Path("data/data_manifest.json").
         alpha (float, optional): Temperature sampling factor. Defaults to 0.5.
         seed (int, optional): Fixed random seed. Defaults to 42.
+        extra_train_dir (Optional[Path], optional): Directory of `<lang>.txt` files whose
+            lines are added to that language's training lines only (never to dev/test),
+            e.g. MADLAD-400 text from `scripts/fetch_madlad.py`. Defaults to None.
+        pooled_path (Optional[Path], optional): Where to write the pooled training file.
+            Defaults to `output_dir / "pooled_train.txt"`.
+        total_samples (Optional[int], optional): Lines to draw for the pooled file.
+            Defaults to the total number of training lines.
 
     Returns:
         Dict[str, Any]: Complete provenance manifest dictionary.
@@ -383,8 +393,17 @@ def run_pipeline(
         # Split into 80/10/10 partitions.
         train, dev, test = split_dataset(cleaned_lines, seed=seed)
 
-        # Store training lines for pooled upsampling.
-        train_lines_by_lang[lang] = train
+        # Store training lines for pooled upsampling, plus any extra training-only text.
+        pool_lines = train
+        extra_file = extra_train_dir / f"{lang}.txt" if extra_train_dir else None
+        if extra_file and extra_file.exists():
+            held_out = set(dev) | set(test)
+            with open(extra_file, "r", encoding="utf-8") as f:
+                extra = processor.process_lines(f.readlines())
+            seen = set(train)
+            extra = [line for line in extra if line not in seen and line not in held_out]
+            pool_lines = train + extra
+        train_lines_by_lang[lang] = pool_lines
 
         # Create language-specific output directory.
         lang_dir = output_dir / lang
@@ -406,6 +425,7 @@ def run_pipeline(
             "train_sentences": len(train),
             "dev_sentences": len(dev),
             "test_sentences": len(test),
+            "extra_train_sentences": len(pool_lines) - len(train),
             "hashes": {
                 "train_sha256": sha256_of_file(train_path),
                 "dev_sha256": sha256_of_file(dev_path),
@@ -414,8 +434,10 @@ def run_pipeline(
         }
 
     # Step 4: Generate balanced pooled training dataset across languages.
-    pooled_train = temperature_upsample(train_lines_by_lang, alpha=alpha, seed=seed)
-    pooled_path = output_dir / "pooled_train.txt"
+    pooled_train = temperature_upsample(
+        train_lines_by_lang, alpha=alpha, total_samples=total_samples, seed=seed
+    )
+    pooled_path = pooled_path or output_dir / "pooled_train.txt"
     pooled_path.write_text("\n".join(pooled_train) + "\n", encoding="utf-8")
 
     # Step 5: Record pooled corpus statistics and cryptographic hash.
@@ -435,6 +457,28 @@ def run_pipeline(
 
 # Execute pipeline directly if run as a script.
 if __name__ == "__main__":
-    m = run_pipeline()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Build splits and the pooled training file.")
+    parser.add_argument("--alpha", type=float, default=0.5, help="Temperature exponent")
+    parser.add_argument(
+        "--extra-train-dir",
+        type=Path,
+        default=None,
+        help="Directory of <lang>.txt training-only text (e.g. data/raw/madlad)",
+    )
+    parser.add_argument("--pooled-out", type=Path, default=None, help="Pooled output path")
+    parser.add_argument("--manifest-out", type=Path, default=Path("data/data_manifest.json"))
+    parser.add_argument(
+        "--total-samples", type=int, default=None, help="Lines to draw for the pooled file"
+    )
+    args = parser.parse_args()
+    m = run_pipeline(
+        manifest_path=args.manifest_out,
+        alpha=args.alpha,
+        extra_train_dir=args.extra_train_dir,
+        pooled_path=args.pooled_out,
+        total_samples=args.total_samples,
+    )
     print("Corpus pipeline finished successfully. Manifest:")
     print(json.dumps(m, indent=2))

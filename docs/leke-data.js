@@ -18,6 +18,9 @@ window.LEKE_DATA = {
     "ɲ": "ŋ",
     "ð": "ɖ",
     "Ð": "Ɖ",
+    "Đ": "Ɖ",
+    "đ": "ɖ",
+    "ט": "ʋ",
     "γ": "ɣ",
     "ɤ": "ɣ",
     "Γ": "Ɣ",
@@ -35,7 +38,9 @@ window.LEKE_DATA = {
     " ": " ",
     " ": " ",
     " ": " ",
-    "　": " "
+    "　": " ",
+    "​": "",
+    "﻿": ""
   },
   "byteAlphabet": [
     "|",
@@ -842,6 +847,16 @@ window.LEKE_DATA = {
           "status": "Leke +15.6% fertility"
         },
         {
+          "name": "Wikilangs Twi (tw, 16k)",
+          "vocab": "16k",
+          "fertility": 1.28,
+          "splitRate": 5.6,
+          "unkRate": 0.1,
+          "compression": 4.33,
+          "isLeke": false,
+          "status": "Leke +15.6% fertility"
+        },
+        {
           "name": "Wikilangs Twi (tw, 8k)",
           "vocab": "8k",
           "fertility": 1.34,
@@ -897,6 +912,16 @@ window.LEKE_DATA = {
           "compression": 4.32,
           "isLeke": false,
           "status": "Leke +1.5% fertility"
+        },
+        {
+          "name": "Wikilangs Ewe (ee, 16k)",
+          "vocab": "16k",
+          "fertility": 1.38,
+          "splitRate": 9.0,
+          "unkRate": 0.11,
+          "compression": 4.22,
+          "isLeke": false,
+          "status": "Leke -0.7% fertility"
         },
         {
           "name": "Wikilangs Ewe (ee, 8k)",
@@ -973,6 +998,16 @@ window.LEKE_DATA = {
           "status": "Leke +6.3% fertility"
         },
         {
+          "name": "Wikilangs Fante (fat, 16k)",
+          "vocab": "16k",
+          "fertility": 1.3,
+          "splitRate": 6.2,
+          "unkRate": 0.02,
+          "compression": 4.23,
+          "isLeke": false,
+          "status": "Leke +3.1% fertility"
+        },
+        {
           "name": "Wikilangs Fante (fat, 8k)",
           "vocab": "8k",
           "fertility": 1.38,
@@ -1001,6 +1036,16 @@ window.LEKE_DATA = {
           "compression": 3.64,
           "isLeke": false,
           "status": "Leke -11.3% fertility"
+        },
+        {
+          "name": "Wikilangs Twi (tw, 16k)",
+          "vocab": "16k",
+          "fertility": 1.6,
+          "splitRate": 13.9,
+          "unkRate": 0.04,
+          "compression": 3.43,
+          "isLeke": false,
+          "status": "Leke -16.2% fertility"
         },
         {
           "name": "NLLB-200 (multilingual)",

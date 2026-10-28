@@ -13,6 +13,11 @@ def test_standalone_normalize():
     assert normalize("Ͻsᴐ") == "Ɔsɔ"
     assert normalize("⊃no") == "ɔno"
     assert normalize("Kofi φo nɔvia") == "Kofi ƒo nɔvia"
+    # Lookalikes found in FLORES+ Ewe: Hebrew tet, Croatian D with stroke
+    assert normalize("Đeטeטe") == "Ɖeʋeʋe"
+    # Zero-width space and BOM are removed
+    assert normalize("\u200b\u200bne") == "ne"
+    assert normalize("\ufeffAkwaaba") == "Akwaaba"
 
 
 def test_normalizer_tone_preservation_by_default():

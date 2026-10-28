@@ -77,3 +77,34 @@ def test_run_pipeline_end_to_end(tmp_path):
         loaded = json.load(f)
     assert loaded["version"] == "1.0.0"
     assert loaded["pooled"]["sentences"] > 0
+
+
+def test_run_pipeline_extra_train_only_reaches_pool(tmp_path):
+    raw_dir = tmp_path / "raw"
+    raw_dir.mkdir()
+    extra_dir = tmp_path / "extra"
+    extra_dir.mkdir()
+
+    twi_lines = [f"Wɔfrɛ me Kofi {i} na mefiri Kumasi." for i in range(20)]
+    (raw_dir / "twi.txt").write_text("\n".join(twi_lines), encoding="utf-8")
+    extra_lines = [f"Nhoma {i} kyerɛ sɛ ɔdɔ yɛ adepa." for i in range(30)]
+    (extra_dir / "twi.txt").write_text("\n".join(extra_lines), encoding="utf-8")
+
+    out_dir = tmp_path / "splits"
+    pooled_path = tmp_path / "pooled.txt"
+    manifest = run_pipeline(
+        raw_dir=raw_dir,
+        output_dir=out_dir,
+        manifest_path=tmp_path / "manifest.json",
+        extra_train_dir=extra_dir,
+        pooled_path=pooled_path,
+        total_samples=500,
+    )
+
+    assert manifest["languages"]["twi"]["extra_train_sentences"] == 30
+    pooled = set(pooled_path.read_text(encoding="utf-8").splitlines())
+    held_out = set((out_dir / "twi" / "dev.txt").read_text(encoding="utf-8").splitlines())
+    held_out |= set((out_dir / "twi" / "test.txt").read_text(encoding="utf-8").splitlines())
+    assert pooled & set(extra_lines)
+    assert not (pooled & held_out - {""})
+    assert not ((set(extra_lines)) & held_out)
