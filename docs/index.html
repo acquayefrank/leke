@@ -78,9 +78,9 @@
           <div style="font-size: 13px; color: var(--color-subtle); margin-top: 4px;">256-byte base fallback</div>
         </div>
         <div class="feature-card" style="padding: 20px;">
-          <div style="font-size: 13px; color: var(--color-muted);">Single-core throughput</div>
-          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">174k tok/s</div>
-          <div style="font-size: 13px; color: var(--color-subtle); margin-top: 4px;">Native Rust + PyO3 GIL release</div>
+          <div style="font-size: 13px; color: var(--color-muted);">Single-thread encode</div>
+          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">450k tok/s</div>
+          <div style="font-size: 13px; color: var(--color-subtle); margin-top: 4px;">On par with HF tokenizers</div>
         </div>
       </div>
     </section>
@@ -223,7 +223,7 @@
         <div class="feature-card">
           <i class="ph-duotone ph-lightning" style="font-size: 28px; color: var(--color-accent-700);"></i>
           <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 8px;">A high-throughput bridge</h3>
-          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">A multi-threaded Rust core encodes over 170,000 tokens a second on ordinary CPUs. Zero-copy transfers release the Python GIL for parallel data loading.</p>
+          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">The Rust core encodes about 450,000 tokens a second on one thread and 1.6 million across eight, on par with Hugging Face's own tokenizers library. Batch calls cross the Python–Rust boundary once per batch.</p>
         </div>
         <div class="feature-card">
           <i class="ph-duotone ph-waveform" style="font-size: 28px; color: var(--color-accent-700);"></i>

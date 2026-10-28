@@ -567,7 +567,7 @@
 
       <div class="part" style="color: var(--eng)">Part IV · Systems &amp; Library Guide</div>
       <ol>
-        <li><a href="#rust-pyo3"><span class="n">10</span><span>Rust core, PyO3 zero-copy &amp; provenance</span><span class="tick">✓</span></a></li>
+        <li><a href="#rust-pyo3"><span class="n">10</span><span>Rust core, PyO3 bindings &amp; provenance</span><span class="tick">✓</span></a></li>
         <li><a href="#library-guide"><span class="n">11</span><span>Using Leke: Python, Rust, HF &amp; CLI</span><span class="tick">✓</span></a></li>
       </ol>
 
@@ -588,7 +588,7 @@
           <a href="#fertility-metrics" style="--c: var(--info)"><b>Information Theory</b><span>Fertility, byte compression, attention cost, temperature upsampling</span></a>
           <a href="#unicode-nfc" style="--c: var(--ling)"><b>Kwa Linguistics</b><span>Unicode NFC, Greek/Cyrillic lookalikes, phonemic tone, 4 languages</span></a>
           <a href="#bpe-mechanics" style="--c: var(--algo)"><b>Subword Algorithms</b><span>BPE merge mechanics, BPE vs. Unigram, 256-byte fallback</span></a>
-          <a href="#rust-pyo3" style="--c: var(--eng)"><b>Library Guide</b><span>Rust core, PyO3 GIL release, Python/Rust/HF/CLI recipes</span></a>
+          <a href="#rust-pyo3" style="--c: var(--eng)"><b>Library Guide</b><span>Rust core, PyO3 batch API, Python/Rust/HF/CLI recipes</span></a>
           <a href="#lessons" style="--c: var(--case)"><b>Case Studies</b><span>Ten real engineering failures and the principles they teach</span></a>
         </div>
       </div>
@@ -1216,28 +1216,28 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
 
         <div class="chapter-foot">
           <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
-          <a href="#rust-pyo3">Next: Rust core, PyO3 zero-copy &amp; provenance →</a>
+          <a href="#rust-pyo3">Next: Rust core, PyO3 bindings &amp; provenance →</a>
         </div>
       </section>
 
       <!-- ================================================================
-           CHAPTER 10: RUST CORE, PYO3 ZERO-COPY & PROVENANCE
+           CHAPTER 10: RUST CORE, PYO3 BINDINGS & PROVENANCE
            ================================================================ -->
-      <section class="chapter" id="rust-pyo3" data-track="1" data-title="Rust core, PyO3 zero-copy and provenance" style="--c: var(--eng)">
+      <section class="chapter" id="rust-pyo3" data-track="1" data-title="Rust core, PyO3 bindings and provenance" style="--c: var(--eng)">
         <div class="eyebrow"><span class="num">10</span> Part IV · Systems &amp; Library Guide</div>
-        <h2>Rust core, PyO3 zero-copy &amp; cryptographic provenance</h2>
+        <h2>Rust core, PyO3 bindings &amp; cryptographic provenance</h2>
         <p class="intro">A tokenizer sits on the hot path of every LLM training loop and inference server. If normalization or BPE lookup runs in pure Python, CPU data loaders become the bottleneck while GPUs sit idle. Leke is written in Rust (`src/`) and exposed to Python via a compiled <span class="g" data-g="pyo3" tabindex="0">PyO3</span> C-extension (`leke._leke`).</p>
 
         <h3>Measured throughput (`specs/benchmarks.md`)</h3>
         <div class="tbl">
           <table>
             <thead>
-              <tr><th>Operation (500 iterations × 120 Kwa sentences)</th><th class="n">Leke (Rust + PyO3)</th><th>Architecture Notes</th></tr>
+              <tr><th>Operation (1,151 test sentences, median of 7 runs)</th><th class="n">1 thread</th><th class="n">8 threads</th><th>Leke vs. HF <code>tokenizers</code></th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Encode throughput (tokens / sec)</b></td><td class="n"><b>173,866 tok/s</b></td><td>Includes full <code>KwaNormalizer</code> pass + Byte-Level BPE merges</td></tr>
-              <tr><td><b>Encode bandwidth (MB / sec)</b></td><td class="n"><b>0.63 MB/s</b></td><td>Zero intermediate heap allocations per token</td></tr>
-              <tr><td><b>Decode throughput (sentences / sec)</b></td><td class="n"><b>51,044 sent/s</b></td><td>Sub-millisecond contiguous UTF-8 buffer reconstruction</td></tr>
+              <tr><td><b>Encode throughput (tokens / sec)</b></td><td class="n"><b>~450k</b></td><td class="n"><b>~1.6M</b></td><td>On par (same normalizer + BPE pipeline)</td></tr>
+              <tr><td><b>Encode bandwidth (MB / sec)</b></td><td class="n"><b>~1.7</b></td><td class="n"><b>~6.4</b></td><td>On par</td></tr>
+              <tr><td><b>Decode throughput (sentences / sec)</b></td><td class="n"><b>~100k–135k</b></td><td class="n"><b>~300k</b></td><td>On par</td></tr>
             </tbody>
           </table>
         </div>
@@ -1494,7 +1494,7 @@ uv run python -m leke.evaluate \
           <span class="label">8. Per-sentence Python loops bottlenecking throughput · Systems</span>
           <p><b>What happened.</b> Calling Rust `encode()` inside a Python `for` loop spent more time crossing the Python/C-API boundary than running BPE merges.</p>
           <p><b>The principle.</b> Expose batch APIs (`encode_batch`, `decode_batch`) that cross the FFI boundary once and process the entire batch in native Rust.</p>
-          <p><a href="#rust-pyo3">Related chapter: 10 · Rust core &amp; PyO3 zero-copy</a></p>
+          <p><a href="#rust-pyo3">Related chapter: 10 · Rust core &amp; PyO3 bindings</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
