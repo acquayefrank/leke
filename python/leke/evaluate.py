@@ -35,7 +35,7 @@ Baselines:
 Examples:
     >>> from leke.evaluate import calculate_metrics
     >>> from leke.tokenizer import LekeTokenizer
-    >>> tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+    >>> tok = LekeTokenizer.from_file("models/bpe-16k/tokenizer.json")
     >>> metrics = calculate_metrics(tok, ["Akwaaba ba Ghana man mu."])
     >>> print("Fertility:", metrics["fertility"])
 """
@@ -61,6 +61,10 @@ LANGUAGE_NAMES: Dict[str, str] = {
     "gaa": "Ga",
     "fat": "Fante",
 }
+
+# Display name and vocabulary size of the default Leke model in leaderboards.
+LEKE_MODEL_NAME = "Leke BPE (16k)"
+LEKE_VOCAB = "16k"
 
 # Baseline metrics measured on the held-out test splits by scripts/measure_baselines.py.
 DEFAULT_BASELINES_PATH = Path("data/baselines/measured_baselines.json")
@@ -222,8 +226,8 @@ def _comparison_section(
         # Leke row first, then baselines measured on the same text, best first.
         table_data.append(
             [
-                "**Leke BPE (8k)**",
-                "8k",
+                f"**{LEKE_MODEL_NAME}**",
+                LEKE_VOCAB,
                 label,
                 f"**{metrics['fertility']}**",
                 f"{metrics['split_rate_gt2']}%",
@@ -278,7 +282,7 @@ def _comparison_section(
 
 
 def evaluate_all(
-    model_path: Path = Path("models/bpe-8k/tokenizer.json"),
+    model_path: Path = Path("models/bpe-16k/tokenizer.json"),
     splits_dir: Path = Path("data/splits"),
     output_report_path: Optional[Path] = Path("specs/eval_results.md"),
     baselines_path: Path = DEFAULT_BASELINES_PATH,
@@ -367,7 +371,7 @@ def main() -> None:
     parser.add_argument(
         "--model",
         type=str,
-        default="models/bpe-8k/tokenizer.json",
+        default="models/bpe-16k/tokenizer.json",
         help="Path to tokenizer.json",
     )
     parser.add_argument(

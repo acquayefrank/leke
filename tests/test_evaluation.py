@@ -32,7 +32,7 @@ def test_calculate_metrics_formulas():
 
 
 def test_evaluate_all_generates_report(tmp_path):
-    model_path = Path("models/bpe-8k/tokenizer.json")
+    model_path = Path("models/bpe-16k/tokenizer.json")
     if not model_path.exists():
         return
 

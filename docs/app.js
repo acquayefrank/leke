@@ -30,10 +30,10 @@
 raw = "Wɔfrε no pápá!"
 clean = leke.normalize(raw)        # 'Wɔfrɛ no pápá!'  (Greek ε → Latin ɛ)
 
-tok = leke.LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+tok = leke.LekeTokenizer.from_file("models/bpe-16k/tokenizer.json")
 enc = tok.encode("Akwaaba ba Ghana man mu.")
-print(enc.tokens)  # ['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
-print(enc.ids)     # [570, 514, 339, 364, 338, 18]
+print(enc.tokens)  # ['A', 'kwaa', 'ba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
+print(enc.ids)     # [37, 5091, 349, 562, 450, 703, 300, 18]
 print(tok.decode(enc.ids))`,
 
     rust: `use _leke::normalizer::KwaNormalizer;
@@ -47,26 +47,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = BpeTrainingConfig::default();
     let files = vec![PathBuf::from("data/splits/twi/train.txt")];
     let (tokenizer, receipt) = train_bpe(&files, &config)?;
-    save_tokenizer_bundle(&tokenizer, &receipt, Path::new("models/bpe-8k"))?;
+    save_tokenizer_bundle(&tokenizer, &receipt, Path::new("models/bpe-16k"))?;
     Ok(())
 }`,
 
     hf: `from transformers import PreTrainedTokenizerFast
 
-tokenizer = PreTrainedTokenizerFast.from_pretrained("models/bpe-8k")
+tokenizer = PreTrainedTokenizerFast.from_pretrained("models/bpe-16k")
 inputs = tokenizer("Akwaaba ba Ghana man mu.", return_tensors="pt")
-print(inputs.input_ids)  # tensor([[570, 514, 339, 364, 338, 18]])`,
+print(inputs.input_ids)  # tensor([[37, 5091, 349, 562, 450, 703, 300, 18]])`,
 
     cli: `python -m leke.trainer \\
-  --corpus data/splits/twi/train.txt data/splits/ewe/train.txt \\
-  --output-dir models/bpe-8k \\
-  --vocab-size 8192 \\
+  --corpus data/raw/pooled_train_extended.txt \\
+  --output-dir models/bpe-16k \\
+  --vocab-size 16384 \\
   --algorithm bpe
 
 python -m leke.evaluate \\
-  --model-path models/bpe-8k/tokenizer.json \\
+  --model models/bpe-16k/tokenizer.json \\
   --splits-dir data/splits \\
-  --output-report specs/eval_results.md`
+  --report-out specs/eval_results.md`
   };
 
   const vocab = (window.LEKE_DATA && window.LEKE_DATA.vocab) ? window.LEKE_DATA.vocab : {};

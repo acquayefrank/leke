@@ -5,7 +5,7 @@ from tokenizers import Tokenizer as HFTokenizer
 
 
 def test_leke_tokenizer_bindings():
-    model_path = "models/bpe-8k/tokenizer.json"
+    model_path = "models/bpe-16k/tokenizer.json"
     if not Path(model_path).exists():
         # Fallback if run in isolation
         return
@@ -45,7 +45,7 @@ def test_leke_tokenizer_bindings():
 
 
 def test_batch_encoding_and_decoding():
-    model_path = "models/bpe-8k/tokenizer.json"
+    model_path = "models/bpe-16k/tokenizer.json"
     if not Path(model_path).exists():
         return
 
@@ -64,7 +64,7 @@ def test_batch_encoding_and_decoding():
 
 
 def test_transformers_interop():
-    model_path = "models/bpe-8k/tokenizer.json"
+    model_path = "models/bpe-16k/tokenizer.json"
     if not Path(model_path).exists():
         return
 

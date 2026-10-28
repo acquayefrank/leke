@@ -96,7 +96,7 @@ def test_run_pipeline_extra_train_only_reaches_pool(tmp_path):
         raw_dir=raw_dir,
         output_dir=out_dir,
         manifest_path=tmp_path / "manifest.json",
-        extra_train_dir=extra_dir,
+        extra_train_dirs=[extra_dir],
         pooled_path=pooled_path,
         total_samples=500,
     )

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "seed": 42,
-  "temperature_alpha": 0.5,
+  "temperature_alpha": 0.2,
   "languages": {
     "twi": {
       "tier": "primary",
@@ -9,7 +9,7 @@
       "train_sentences": 2227,
       "dev_sentences": 278,
       "test_sentences": 279,
-      "extra_train_sentences": 0,
+      "extra_train_sentences": 114840,
       "hashes": {
         "train_sha256": "25ee6c5163370b2d361af2cd72fda8679fb7c24f5a4711734253b42b9b16718a",
         "dev_sha256": "2b20f6de92e0b14e86349767d886b048ec7754dfa7dbf91a913a6b3376ebf75c",
@@ -22,7 +22,7 @@
       "train_sentences": 2558,
       "dev_sentences": 319,
       "test_sentences": 321,
-      "extra_train_sentences": 0,
+      "extra_train_sentences": 128846,
       "hashes": {
         "train_sha256": "f4e941becdb19e433d3e14da15a4dba2c93ccbbb3b8b65fc7a3314a14bcbacd6",
         "dev_sha256": "34a884588846ab37231aeeaef3d3a635261805abd15df277395cc20a4478349f",
@@ -48,7 +48,7 @@
       "train_sentences": 2278,
       "dev_sentences": 284,
       "test_sentences": 286,
-      "extra_train_sentences": 0,
+      "extra_train_sentences": 5583,
       "hashes": {
         "train_sha256": "a06bf1b7dfe50b4b16cd951b28ca9829b945fb12d54a9ce73d6b9902f493ee13",
         "dev_sha256": "11d2243da486ce3ae1066bd38dd23ec4d55460e7bc14c22cc8456d2b53576275",
@@ -57,7 +57,7 @@
     }
   },
   "pooled": {
-    "sentences": 9173,
-    "sha256": "2d4f1b9d3278a74e3a7431bf29fc79a0f3f8303c05801e84fe7e5293a5640444"
+    "sentences": 500000,
+    "sha256": "465b8bbfd5babc3bcca76ab40f072fe6011b5c3e6e58c2aa18500a6ebe3c6261"
   }
 }

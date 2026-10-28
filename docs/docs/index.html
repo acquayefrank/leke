@@ -680,20 +680,20 @@
         <!-- Interactive Bench: Granularity & Attention Cost -->
         <div class="bench" id="bench-granularity">
           <header><span class="label">Bench</span><h4>Simulate the vocabulary vs. sequence-length trade-off</h4></header>
-          <p class="note">Adjust the document length and compare how Word-level, Character/Byte-level, NLLB-200, and Leke BPE-8k scale on a 500-word Akan/Twi passage.</p>
+          <p class="note">Adjust the document length and compare how Word-level, Character/Byte-level, NLLB-200, and Leke BPE-16k scale on a 500-word Akan/Twi passage.</p>
           <div class="controls">
             <label for="gran-words">Document length (words) <output id="gran-words-out">400</output>
               <input id="gran-words" type="range" min="50" max="2000" step="50" value="400">
             </label>
-            <label for="gran-fert">Custom tokenizer fertility (tok/word) <output id="gran-fert-out">1.48</output>
-              <input id="gran-fert" type="range" min="1.20" max="6.00" step="0.01" value="1.48">
+            <label for="gran-fert">Custom tokenizer fertility (tok/word) <output id="gran-fert-out">1.38</output>
+              <input id="gran-fert" type="range" min="1.20" max="6.00" step="0.01" value="1.38">
             </label>
           </div>
           <div class="readouts">
-            <div class="readout"><span>Leke (F = 1.48) tokens</span><b id="gran-leke-tok">592</b></div>
+            <div class="readout"><span>Leke (F = 1.38) tokens</span><b id="gran-leke-tok">552</b></div>
             <div class="readout"><span>NLLB-200 (F = 1.55) tokens</span><b id="gran-nllb-tok">620</b></div>
             <div class="readout"><span>Raw UTF-8 bytes (F ≈ 5.8)</span><b id="gran-byte-tok">2,320</b></div>
-            <div class="readout"><span>Attention FLOPs saved vs. NLLB</span><b id="gran-flops" style="color: var(--good);">−8.8%</b></div>
+            <div class="readout"><span>Attention FLOPs saved vs. NLLB</span><b id="gran-flops" style="color: var(--good);">−20.7%</b></div>
           </div>
           <div class="canvas-wrap"><canvas id="gran-canvas" width="900" height="220" aria-label="Comparison of relative quadratic attention cost across tokenization schemes"></canvas></div>
         </div>
@@ -743,56 +743,95 @@
           </div>
         </div>
 
-        <div class="example"><span class="label">Worked example: Tokenizing a Twi sentence</span>
-          <p>Take the 6-word Akan/Twi sentence <code>"Akwaaba ba Ghana man mu."</code> (24 UTF-8 bytes, 5 words + punctuation):</p>
+        <div class="example"><span class="label">Worked example: Tokenizing two Twi sentences</span>
+          <p>Fertility only means something over thousands of sentences, but two short examples show what the numbers count. Tokens below are produced by <code>models/bpe-16k</code> and by NLLB-200's tokenizer; the <code>Ġ</code> and <code>▁</code> prefixes mark a preceding space.</p>
           <ul>
-            <li><b>Leke BPE-8k</b> produces 6 tokens: <code>['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']</code>. Fertility on the 5 words is $5 / 5 = \mathbf{1.00}$. Zero words are split into $>2$ pieces.</li>
-            <li><b>An English-centric LLM tokenizer</b> splits unfamiliar Akan stems into fragments: <code>['Ak', 'wa', 'aba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']</code> (8 tokens, fertility $1.40$ even on this simple greeting, and $3.0+$ on inflected verbs like <code>mɛkɔsrɛ</code>).</li>
+            <li><code>"Akwaaba ba Ghana man mu."</code> (5 words): <b>Leke BPE-16k</b> gives <code>['A', 'kwaa', 'ba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']</code> and <b>NLLB-200</b> gives <code>['▁Ak', 'wa', 'aba', '▁ba', '▁Ghana', '▁man', '▁mu', '.']</code>: 8 tokens each, fertility $8 / 5 = 1.60$.</li>
+            <li><code>"Mɛkɔsrɛ no aduane."</code> (3 words): Leke gives <code>['Mɛ', 'kɔ', 'srɛ', 'Ġno', 'Ġaduane', '.']</code> (6 tokens) while NLLB-200 gives <code>['▁Mɛ', 'kɔ', 's', 'rɛ', '▁no', '▁aduane', '.']</code> (7 tokens), splitting the verb into one more piece.</li>
           </ul>
         </div>
 
-        <h3>Held-out benchmark leaderboard (<code>specs/eval_results.md</code>)</h3>
-        <p>Below are Leke's results on held-out test splits against Meta's 200-language <b>NLLB-200</b> (`256k` SentencePiece vocabulary) and monolingual tokenizers from <b>Goldfish</b> (`50k`) and <b>Wikilangs</b> (`8k` and `32k`). Every tokenizer is scored with the same metric code on the same text (`scripts/measure_baselines.py`), with special tokens disabled:</p>
+        <h3>Out-of-domain benchmark: FLORES+ devtest (<code>specs/eval_results.md</code>)</h3>
+        <p>Leke's main results compare it with Meta's 200-language <b>NLLB-200</b> (`256k` SentencePiece vocabulary) and single-language tokenizers from <b>Goldfish</b> (`50k`) and <b>Wikilangs</b> (`8k`, `16k`, `32k`). Every tokenizer is scored with the same metric code on the same text (`scripts/measure_baselines.py`), with special tokens disabled. FLORES+ devtest consists of professionally translated sentences that none of these tokenizers were trained on; it covers Twi and Ewe but not Ga or Fante.</p>
         <div class="tbl">
           <table>
             <thead>
               <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>Leke fertility vs. this model</th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Leke BPE (8k)</b></td><td>Akan / Twi</td><td class="n"><b>1.48</b></td><td class="n">11.5%</td><td class="n"><b>0.0%</b></td><td class="n">3.75</td><td>—</td></tr>
-              <tr><td>Wikilangs Twi (32k)</td><td>Akan / Twi</td><td class="n">1.24</td><td class="n">4.5%</td><td class="n">0.11%</td><td class="n">4.46</td><td>+19.4%</td></tr>
-              <tr><td>Goldfish Twi (50k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.4%</td><td class="n">0.0%</td><td class="n">4.31</td><td>+15.6%</td></tr>
-              <tr><td>Wikilangs Twi (8k)</td><td>Akan / Twi</td><td class="n">1.34</td><td class="n">7.4%</td><td class="n">0.1%</td><td class="n">4.12</td><td>+10.4%</td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Akan / Twi</td><td class="n">1.55</td><td class="n">12.6%</td><td class="n">0.26%</td><td class="n">3.57</td><td><b>−4.5%</b></td></tr>
-              <tr><td><b>Leke BPE (8k)</b></td><td>Ewe</td><td class="n"><b>1.37</b></td><td class="n">8.3%</td><td class="n"><b>0.0%</b></td><td class="n">4.27</td><td>—</td></tr>
-              <tr><td>Wikilangs Ewe (32k)</td><td>Ewe</td><td class="n">1.34</td><td class="n">7.7%</td><td class="n">0.11%</td><td class="n">4.34</td><td>+2.2%</td></tr>
-              <tr><td>Goldfish Ewe (50k)</td><td>Ewe</td><td class="n">1.35</td><td class="n">8.3%</td><td class="n">0.03%</td><td class="n">4.32</td><td>+1.5%</td></tr>
-              <tr><td>Wikilangs Ewe (8k)</td><td>Ewe</td><td class="n">1.44</td><td class="n">10.3%</td><td class="n">0.11%</td><td class="n">4.07</td><td><b>−4.9%</b></td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Ewe</td><td class="n">1.65</td><td class="n">15.9%</td><td class="n">0.30%</td><td class="n">3.53</td><td><b>−17.0%</b></td></tr>
-              <tr><td><b>Leke BPE (8k)</b></td><td>Ga</td><td class="n"><b>1.41</b></td><td class="n">8.3%</td><td class="n"><b>0.0%</b></td><td class="n">4.33</td><td>—</td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Ga</td><td class="n">1.93</td><td class="n">25.1%</td><td class="n">0.08%</td><td class="n">3.16</td><td><b>−26.9%</b></td></tr>
-              <tr><td><b>Leke BPE (8k)</b></td><td>Fante</td><td class="n"><b>1.34</b></td><td class="n">7.1%</td><td class="n"><b>0.0%</b></td><td class="n">4.11</td><td>—</td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Twi (Asante)</td><td class="n"><b>1.49</b></td><td class="n">10.6%</td><td class="n"><b>0.0%</b></td><td class="n">3.67</td><td>—</td></tr>
+              <tr><td>Wikilangs Twi (32k)</td><td>Twi (Asante)</td><td class="n">1.40</td><td class="n">8.5%</td><td class="n">0.05%</td><td class="n">3.90</td><td>+6.4%</td></tr>
+              <tr><td>Goldfish Akan (50k)</td><td>Twi (Asante)</td><td class="n">1.42</td><td class="n">9.1%</td><td class="n">0.0%</td><td class="n">3.84</td><td>+4.9%</td></tr>
+              <tr><td>Goldfish Twi (50k)</td><td>Twi (Asante)</td><td class="n">1.43</td><td class="n">9.6%</td><td class="n">0.0%</td><td class="n">3.81</td><td>+4.2%</td></tr>
+              <tr><td>Wikilangs Twi (16k)</td><td>Twi (Asante)</td><td class="n">1.45</td><td class="n">10.0%</td><td class="n">0.05%</td><td class="n">3.76</td><td>+2.8%</td></tr>
+              <tr><td>Wikilangs Twi (8k)</td><td>Twi (Asante)</td><td class="n">1.53</td><td class="n">12.3%</td><td class="n">0.05%</td><td class="n">3.57</td><td><b>−2.6%</b></td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Twi (Asante)</td><td class="n">1.59</td><td class="n">13.9%</td><td class="n">1.52%</td><td class="n">3.42</td><td><b>−6.3%</b></td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Twi (Akuapem)</td><td class="n"><b>1.44</b></td><td class="n">9.6%</td><td class="n"><b>0.0%</b></td><td class="n">3.70</td><td>—</td></tr>
+              <tr><td>Wikilangs Twi (32k)</td><td>Twi (Akuapem)</td><td class="n">1.31</td><td class="n">6.4%</td><td class="n">0.07%</td><td class="n">4.07</td><td>+9.9%</td></tr>
+              <tr><td>Goldfish Akan (50k)</td><td>Twi (Akuapem)</td><td class="n">1.32</td><td class="n">6.8%</td><td class="n">0.0%</td><td class="n">4.02</td><td>+9.1%</td></tr>
+              <tr><td>Goldfish Twi (50k)</td><td>Twi (Akuapem)</td><td class="n">1.33</td><td class="n">6.9%</td><td class="n">0.0%</td><td class="n">4.00</td><td>+8.3%</td></tr>
+              <tr><td>Wikilangs Twi (16k)</td><td>Twi (Akuapem)</td><td class="n">1.37</td><td class="n">8.1%</td><td class="n">0.07%</td><td class="n">3.90</td><td>+5.1%</td></tr>
+              <tr><td>Wikilangs Twi (8k)</td><td>Twi (Akuapem)</td><td class="n">1.44</td><td class="n">10.1%</td><td class="n">0.07%</td><td class="n">3.70</td><td>+0.0%</td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Twi (Akuapem)</td><td class="n">1.47</td><td class="n">10.7%</td><td class="n">0.92%</td><td class="n">3.63</td><td><b>−2.0%</b></td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Ewe</td><td class="n"><b>1.43</b></td><td class="n">9.3%</td><td class="n"><b>0.0%</b></td><td class="n">3.94</td><td>—</td></tr>
+              <tr><td>Goldfish Ewe (50k)</td><td>Ewe</td><td class="n">1.33</td><td class="n">6.9%</td><td class="n">2.74%</td><td class="n">4.22</td><td>+7.5%</td></tr>
+              <tr><td>Wikilangs Ewe (32k)</td><td>Ewe</td><td class="n">1.39</td><td class="n">8.8%</td><td class="n">2.66%</td><td class="n">4.03</td><td>+2.9%</td></tr>
+              <tr><td>Wikilangs Ewe (16k)</td><td>Ewe</td><td class="n">1.44</td><td class="n">10.1%</td><td class="n">2.57%</td><td class="n">3.91</td><td><b>−0.7%</b></td></tr>
+              <tr><td>Wikilangs Ewe (8k)</td><td>Ewe</td><td class="n">1.49</td><td class="n">11.5%</td><td class="n">2.48%</td><td class="n">3.76</td><td><b>−4.0%</b></td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Ewe</td><td class="n">1.54</td><td class="n">12.7%</td><td class="n">0.02%</td><td class="n">3.64</td><td><b>−7.1%</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>In-domain benchmark: held-out curriculum test splits</h3>
+        <p>These sentences are held out from the same sources as Leke's curriculum training text. The Twi split is mostly Twi Wikipedia, which the Wikilangs and Goldfish tokenizers were likely trained on, so their Twi numbers here are optimistic. Leke also trains on Twi Wikipedia, with every article containing a dev/test sentence removed.</p>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>Leke fertility vs. this model</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Akan / Twi</td><td class="n"><b>1.38</b></td><td class="n">8.0%</td><td class="n"><b>0.0%</b></td><td class="n">4.01</td><td>—</td></tr>
+              <tr><td>Wikilangs Twi (32k)</td><td>Akan / Twi</td><td class="n">1.24</td><td class="n">4.5%</td><td class="n">0.11%</td><td class="n">4.46</td><td>+11.3%</td></tr>
+              <tr><td>Goldfish Twi (50k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.4%</td><td class="n">0.0%</td><td class="n">4.31</td><td>+7.8%</td></tr>
+              <tr><td>Goldfish Akan (50k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.2%</td><td class="n">0.0%</td><td class="n">4.31</td><td>+7.8%</td></tr>
+              <tr><td>Wikilangs Twi (16k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.6%</td><td class="n">0.1%</td><td class="n">4.33</td><td>+7.8%</td></tr>
+              <tr><td>Wikilangs Twi (8k)</td><td>Akan / Twi</td><td class="n">1.34</td><td class="n">7.4%</td><td class="n">0.1%</td><td class="n">4.12</td><td>+3.0%</td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Akan / Twi</td><td class="n">1.55</td><td class="n">12.6%</td><td class="n">0.26%</td><td class="n">3.57</td><td><b>−11.0%</b></td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Ewe</td><td class="n"><b>1.45</b></td><td class="n">10.4%</td><td class="n"><b>0.0%</b></td><td class="n">4.03</td><td>—</td></tr>
+              <tr><td>Wikilangs Ewe (32k)</td><td>Ewe</td><td class="n">1.34</td><td class="n">7.7%</td><td class="n">0.11%</td><td class="n">4.34</td><td>+8.2%</td></tr>
+              <tr><td>Goldfish Ewe (50k)</td><td>Ewe</td><td class="n">1.35</td><td class="n">8.3%</td><td class="n">0.03%</td><td class="n">4.32</td><td>+7.4%</td></tr>
+              <tr><td>Wikilangs Ewe (16k)</td><td>Ewe</td><td class="n">1.38</td><td class="n">9.0%</td><td class="n">0.11%</td><td class="n">4.22</td><td>+5.1%</td></tr>
+              <tr><td>Wikilangs Ewe (8k)</td><td>Ewe</td><td class="n">1.44</td><td class="n">10.3%</td><td class="n">0.11%</td><td class="n">4.07</td><td>+0.7%</td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Ewe</td><td class="n">1.65</td><td class="n">15.9%</td><td class="n">0.3%</td><td class="n">3.53</td><td><b>−12.1%</b></td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Ga</td><td class="n"><b>1.39</b></td><td class="n">7.9%</td><td class="n"><b>0.0%</b></td><td class="n">4.39</td><td>—</td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Ga</td><td class="n">1.93</td><td class="n">25.1%</td><td class="n">0.08%</td><td class="n">3.16</td><td><b>−28.0%</b></td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Fante</td><td class="n"><b>1.34</b></td><td class="n">6.2%</td><td class="n"><b>0.0%</b></td><td class="n">4.11</td><td>—</td></tr>
               <tr><td>Wikilangs Fante (32k)</td><td>Fante</td><td class="n">1.26</td><td class="n">5.0%</td><td class="n">0.02%</td><td class="n">4.36</td><td>+6.3%</td></tr>
+              <tr><td>Wikilangs Fante (16k)</td><td>Fante</td><td class="n">1.30</td><td class="n">6.2%</td><td class="n">0.02%</td><td class="n">4.23</td><td>+3.1%</td></tr>
               <tr><td>Wikilangs Fante (8k)</td><td>Fante</td><td class="n">1.38</td><td class="n">8.5%</td><td class="n">0.02%</td><td class="n">3.99</td><td><b>−2.9%</b></td></tr>
               <tr><td>Goldfish Akan (50k)</td><td>Fante</td><td class="n">1.39</td><td class="n">8.1%</td><td class="n">0.0%</td><td class="n">3.95</td><td><b>−3.6%</b></td></tr>
+              <tr><td>Wikilangs Twi (32k)</td><td>Fante</td><td class="n">1.51</td><td class="n">11.3%</td><td class="n">0.05%</td><td class="n">3.64</td><td><b>−11.3%</b></td></tr>
+              <tr><td>Wikilangs Twi (16k)</td><td>Fante</td><td class="n">1.60</td><td class="n">13.9%</td><td class="n">0.04%</td><td class="n">3.43</td><td><b>−16.2%</b></td></tr>
               <tr><td>NLLB-200 (256k)</td><td>Fante</td><td class="n">1.70</td><td class="n">17.2%</td><td class="n">0.61%</td><td class="n">3.24</td><td><b>−21.2%</b></td></tr>
+              <tr><td>Wikilangs Twi (8k)</td><td>Fante</td><td class="n">1.71</td><td class="n">16.5%</td><td class="n">0.04%</td><td class="n">3.22</td><td><b>−21.6%</b></td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="pitfall"><span class="label">Reading the comparison honestly</span>
-          <p>Leke uses <b>one 8k vocabulary for four languages</b>. It beats NLLB-200 on every language (by 4.5% on Twi up to 26.9% on Ga) and beats same-size 8k monolingual Wikilangs tokenizers on Ewe and Fante. Larger single-language tokenizers (Wikilangs 32k, Goldfish 50k) still reach lower fertility, and on Twi even the 8k Wikilangs tokenizer wins. Every baseline emits some <code>&lt;unk&gt;</code> tokens on at least one language (up to 0.61%); Leke stays at a <b>strict 0.0%</b>. The test splits come from the same textbooks as the training data, so these are in-domain results.</p>
-          <p><b>Out of domain, Leke trails.</b> On FLORES+ devtest (professionally translated sentences no compared tokenizer was trained on), Leke 8k has the highest fertility of all tokenizers: 1.66 on Asante Twi, 1.60 on Akuapem Twi and 1.66 on Ewe, vs. 1.47–1.59 for NLLB-200. Its ~9k-sentence training corpus fits curriculum text but generalizes poorly. Leke is still the only tokenizer at 0.0% <code>&lt;unk&gt;</code> on FLORES+ Ewe, where monolingual baselines emit 2.5–2.7% <code>&lt;unk&gt;</code>, largely on lookalike characters such as Greek <code>ͻ</code> for <code>ɔ</code>.</p>
+          <p>Leke uses <b>one 16k vocabulary for four languages</b>, trained on curriculum text plus MADLAD-400 web text (Akan, Ewe) and Wikipedia (Twi, Ewe, Fante). On FLORES+ it beats NLLB-200 on Asante Twi (−6.3%), Akuapem Twi (−2.0%) and Ewe (−7.1%), and narrowly beats the same-size 16k Ewe-only Wikilangs tokenizer. Dedicated Twi tokenizers are still 3–5% more compact on Twi at the same vocabulary size, and larger single-language tokenizers (Wikilangs 32k, Goldfish 50k) reach lower fertility on every language they cover. On curriculum text Leke beats NLLB-200 by 28% on Ga and 21% on Fante; the only dedicated Fante tokenizer, Wikilangs Fante 16k, is 3% more compact.</p>
+          <p>Every baseline emits some <code>&lt;unk&gt;</code> tokens; Leke stays at a <b>strict 0.0%</b>. The Ewe-only tokenizers lose 2.5–2.7% of FLORES+ Ewe tokens to <code>&lt;unk&gt;</code>, mostly the Greek lookalike <code>ͻ</code> used for <code>ɔ</code>, which Leke normalizes.</p>
         </div>
 
         <div class="quiz">
           <div class="label">Check yourself</div>
           <div class="q" data-answer="b">
-            <p>Why does Leke BPE-8k produce fewer tokens than NLLB-200 on Akan, Ewe, Ga, and Fante despite NLLB-200 having a 32× larger vocabulary (256,000 vs. 8,000)?</p>
+            <p>Why can Leke BPE-16k match or beat NLLB-200 on Akan, Ewe, Ga, and Fante despite NLLB-200 having a 16× larger vocabulary (256,000 vs. 16,384)?</p>
             <label><input type="radio" name="q-02" value="a"> <span>NLLB-200 does not include African languages in its training set</span></label>
-            <label><input type="radio" name="q-02" value="b"> <span>NLLB-200 divides its vocabulary across 200 languages (mostly high-resource scripts), whereas Leke dedicates all 8,000 merges to normalized Kwa subwords</span></label>
+            <label><input type="radio" name="q-02" value="b"> <span>NLLB-200 divides its vocabulary across 200 languages (mostly high-resource scripts), whereas Leke dedicates all of its merges to normalized Kwa subwords</span></label>
             <label><input type="radio" name="q-02" value="c"> <span>Leke deletes spaces between words</span></label>
-            <div class="why" hidden><b></b>In a 200-language model, high-resource languages dominate merge priority. A focused 8,000-token vocabulary trained specifically on normalized Kwa text allocates far more merges to Kwa roots and affixes.</div>
+            <div class="why" hidden><b></b>In a 200-language model, high-resource languages dominate merge priority. A focused 16,384-token vocabulary trained specifically on normalized Kwa text allocates far more merges to Kwa roots and affixes.</div>
           </div>
         </div>
 
@@ -1007,15 +1046,15 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
         <h3>Linguistic profile of the four supported languages</h3>
         <div class="facets">
           <div class="facet">
-            <span class="label">Tw · Akan / Twi (1.48 fertility)</span>
+            <span class="label">Tw · Akan / Twi (1.38 fertility)</span>
             <p>Covers Asante and Akuapem dialects. Features 7 oral vowels (`a, e, ɛ, i, o, ɔ, u`), ATR vowel harmony, and rich verbal prefixing (`re-` progressive, `bɛ-` future, `kɔ-` motional, `n-`/`m-` negative).</p>
           </div>
           <div class="facet">
-            <span class="label">Ee · Ewe / Èʋegbe (1.37 fertility)</span>
+            <span class="label">Ee · Ewe / Èʋegbe (1.45 fertility)</span>
             <p>Uses 5 extended African Reference Alphabet consonants: retroflex <code>ɖ</code>, bilabial fricative <code>ƒ</code>, velar fricative <code>ɣ</code>, velar nasal <code>ŋ</code>, and bilabial v-hook <code>ʋ</code>, plus nasalized vowels (`ã, ẽ, ĩ, õ, ũ`).</p>
           </div>
           <div class="facet">
-            <span class="label">Ga · Gã (1.41 fertility)</span>
+            <span class="label">Ga · Gã (1.39 fertility)</span>
             <p>Spoken in Greater Accra. Relies heavily on labial-velar and palatal digraphs (`gb, kp, ny, ŋm, sh, ts, dz`) and nasalized open vowels (`ɛ̃, ɔ̃`) that BPE merges into intact onset units.</p>
           </div>
           <div class="facet">
@@ -1116,34 +1155,34 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
         </div>
 
         <h3>Controlled head-to-head benchmark (`specs/algorithm_decision.md`)</h3>
-        <p>Both models were trained on the exact same temperature-upsampled corpus (`data/splits/pooled_train.txt`, seed 42, 8k vocabulary) and evaluated on held-out test splits:</p>
+        <p>Both models were trained on the exact same temperature-upsampled corpus (`data/raw/pooled_train_extended.txt`: curriculum text plus MADLAD-400 and Wikipedia, seed 42, 16k vocabulary) and evaluated on the held-out curriculum test splits:</p>
         <div class="tbl">
           <table>
             <thead>
               <tr><th>Language</th><th class="n">BPE Fertility ↓</th><th class="n">Unigram Fertility ↓</th><th class="n">BPE Split &gt;2 ↓</th><th class="n">Unigram Split &gt;2 ↓</th><th class="n">BPE Bytes/Tok ↑</th><th class="n">Uni Bytes/Tok ↑</th><th>Winner</th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Akan / Twi</b></td><td class="n"><b>1.48</b></td><td class="n">1.52</td><td class="n"><b>11.5%</b></td><td class="n">11.6%</td><td class="n"><b>3.75</b></td><td class="n">3.63</td><td><b>BPE</b></td></tr>
-              <tr><td><b>Ewe</b></td><td class="n"><b>1.37</b></td><td class="n">1.39</td><td class="n">8.3%</td><td class="n"><b>6.5%</b></td><td class="n"><b>4.27</b></td><td class="n">4.21</td><td><b>BPE</b></td></tr>
-              <tr><td><b>Ga</b></td><td class="n"><b>1.41</b></td><td class="n">1.48</td><td class="n"><b>8.3%</b></td><td class="n">9.9%</td><td class="n"><b>4.33</b></td><td class="n">4.11</td><td><b>BPE</b></td></tr>
-              <tr><td><b>Fante</b></td><td class="n"><b>1.34</b></td><td class="n">1.38</td><td class="n">7.1%</td><td class="n"><b>7.0%</b></td><td class="n"><b>4.11</b></td><td class="n">3.99</td><td><b>BPE</b></td></tr>
-              <tr><td><b>Macro Average</b></td><td class="n"><b>1.40</b></td><td class="n">1.44</td><td class="n"><b>8.8%</b></td><td class="n"><b>8.8%</b></td><td class="n"><b>4.12</b></td><td class="n">3.99</td><td><b>Byte-Level BPE</b></td></tr>
+              <tr><td><b>Akan / Twi</b></td><td class="n"><b>1.38</b></td><td class="n">1.45</td><td class="n"><b>8.0%</b></td><td class="n">8.8%</td><td class="n"><b>4.01</b></td><td class="n">3.81</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Ewe</b></td><td class="n">1.45</td><td class="n"><b>1.42</b></td><td class="n">10.4%</td><td class="n"><b>9.9%</b></td><td class="n">4.03</td><td class="n"><b>4.12</b></td><td><b>Unigram</b></td></tr>
+              <tr><td><b>Ga</b></td><td class="n"><b>1.39</b></td><td class="n">1.50</td><td class="n"><b>7.9%</b></td><td class="n">11.0%</td><td class="n"><b>4.39</b></td><td class="n">4.06</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Fante</b></td><td class="n"><b>1.34</b></td><td class="n">1.36</td><td class="n"><b>6.2%</b></td><td class="n">7.0%</td><td class="n"><b>4.11</b></td><td class="n">4.03</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Macro Average</b></td><td class="n"><b>1.39</b></td><td class="n">1.43</td><td class="n"><b>8.1%</b></td><td class="n">9.2%</td><td class="n"><b>4.14</b></td><td class="n">4.00</td><td><b>Byte-Level BPE</b></td></tr>
             </tbody>
           </table>
         </div>
 
-        <div class="project"><span class="label">Why Byte-Level BPE won on Kwa morphology</span>
-          <p>In Niger-Congo Kwa languages, words are formed by chaining short CV/CVC verbal prefixes (`mɛ-`, `re-`, `bɛ-`, `kɔ-`) onto stable roots. BPE's bottom-up pair merging naturally locks in these high-frequency 2- and 3-letter CV syllables early and keeps them intact. Unigram's global likelihood pruning reaches the same average split `>2` rate (<b>8.8%</b> for both), but it produces longer sequences overall (<b>1.44</b> vs. <b>1.40</b> mean fertility, lower bytes per token on every language) and emits stray <code>&lt;unk&gt;</code> tokens on Twi (`0.05%`) and Ewe (`0.06%`), where BPE stays at a strict <b>0.0%</b>.</p>
+        <div class="project"><span class="label">Why Byte-Level BPE is the default</span>
+          <p>In Niger-Congo Kwa languages, words are formed by chaining short CV/CVC verbal prefixes (`mɛ-`, `re-`, `bɛ-`, `kɔ-`) onto stable roots, and both algorithms learn these units. Byte-Level BPE wins on three of four languages (mean fertility <b>1.39</b> vs. <b>1.43</b>, with the largest gap on Ga: 1.39 vs. 1.50); Unigram is slightly better on Ewe (1.42 vs. 1.45). The deciding factor is coverage: Unigram has no byte fallback and emits stray <code>&lt;unk&gt;</code> tokens on Ewe (`0.04%`), while BPE stays at a strict <b>0.0%</b>.</p>
         </div>
 
         <div class="quiz">
           <div class="label">Check yourself</div>
           <div class="q" data-answer="b">
-            <p>Across the four Kwa languages, how much lower was Byte-Level BPE's mean fertility compared to Unigram LM at the same 8k vocabulary size?</p>
-            <label><input type="radio" name="q-08" value="a"> <span>They were identical (1.44 vs. 1.44)</span></label>
-            <label><input type="radio" name="q-08" value="b"> <span>1.40 vs. 1.44 tokens/word (about 3% fewer tokens per word on average, and lower on all four languages)</span></label>
+            <p>Across the four Kwa languages, how much lower was Byte-Level BPE's mean fertility compared to Unigram LM at the same 16k vocabulary size?</p>
+            <label><input type="radio" name="q-08" value="a"> <span>They were identical (1.43 vs. 1.43)</span></label>
+            <label><input type="radio" name="q-08" value="b"> <span>1.39 vs. 1.43 tokens/word (about 3% fewer tokens per word on average, lower on three of four languages)</span></label>
             <label><input type="radio" name="q-08" value="c"> <span>Unigram had lower fertility on every language</span></label>
-            <div class="why" hidden><b></b>Byte-Level BPE achieved 1.40 mean fertility vs. Unigram's 1.44, winning on all four languages (`1.48`, `1.37`, `1.41`, `1.34`) while keeping a strict 0.0% <code>&lt;unk&gt;</code> rate.</div>
+            <div class="why" hidden><b></b>Byte-Level BPE achieved 1.39 mean fertility vs. Unigram's 1.43, winning on Twi, Ga and Fante (Unigram is slightly better on Ewe) while keeping a strict 0.0% <code>&lt;unk&gt;</code> rate.</div>
           </div>
         </div>
 
@@ -1233,12 +1272,12 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
         <div class="tbl">
           <table>
             <thead>
-              <tr><th>Operation (1,151 test sentences, median of 7 runs)</th><th class="n">1 thread</th><th class="n">8 threads</th><th>Leke vs. HF <code>tokenizers</code></th></tr>
+              <tr><th>Operation (1,151 test sentences, median of 7 runs; range across runs and machine load)</th><th class="n">1 thread</th><th class="n">8 threads</th><th>Leke vs. HF <code>tokenizers</code></th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Encode throughput (tokens / sec)</b></td><td class="n"><b>~450k</b></td><td class="n"><b>~1.6M</b></td><td>On par (same normalizer + BPE pipeline)</td></tr>
-              <tr><td><b>Encode bandwidth (MB / sec)</b></td><td class="n"><b>~1.7</b></td><td class="n"><b>~6.4</b></td><td>On par</td></tr>
-              <tr><td><b>Decode throughput (sentences / sec)</b></td><td class="n"><b>~100k–135k</b></td><td class="n"><b>~300k</b></td><td>On par</td></tr>
+              <tr><td><b>Encode throughput (tokens / sec)</b></td><td class="n"><b>~240k–450k</b></td><td class="n"><b>~0.95M–1.6M</b></td><td>On par (same normalizer + BPE pipeline)</td></tr>
+              <tr><td><b>Encode bandwidth (MB / sec)</b></td><td class="n"><b>~0.9–1.7</b></td><td class="n"><b>~3.7–6.4</b></td><td>On par</td></tr>
+              <tr><td><b>Decode throughput (sentences / sec)</b></td><td class="n"><b>~60k–135k</b></td><td class="n"><b>~235k–300k</b></td><td>On par</td></tr>
             </tbody>
           </table>
         </div>
@@ -1259,7 +1298,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
             <tbody>
               <tr><td><b>Wikipedia Dumps</b></td><td>Akan/Twi (`tw`), Ewe (`ee`)</td><td>CC BY-SA 4.0</td><td>Yes (with attribution)</td></tr>
               <tr><td><b>Glot500</b></td><td>Akan (`aka`), Ewe (`ewe`), Ga (`gaa`), Fante (`fat`)</td><td>CC BY-SA / Apache 2.0 / MIT</td><td>Yes</td></tr>
-              <tr><td><b>MADLAD-400</b></td><td>Twi (`twi`), Ewe (`ewe`)</td><td>ODC-By v1.0</td><td>Yes</td></tr>
+              <tr><td><b>MADLAD-400</b></td><td>Akan (`ak`, used for Twi), Ewe (`ee`)</td><td>ODC-By v1.0</td><td>Yes</td></tr>
               <tr><td><b>MGhana-ST</b></td><td>Akan/Twi, Ewe, Ga</td><td>CC BY 4.0</td><td>Yes</td></tr>
             </tbody>
           </table>
@@ -1321,14 +1360,14 @@ print(norm.normalize_str("Akwaaba   ε   Ghana"))  # "Akwaaba ɛ Ghana"</code></
         <pre><code>from leke import LekeTokenizer
 
 # Load a trained model bundle from disk
-tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+tok = LekeTokenizer.from_file("models/bpe-16k/tokenizer.json")
 print("Vocabulary size:", tok.vocab_size)
 
 # Single-sentence encode -> returns an Encoding object (.ids, .tokens, .offsets)
 enc = tok.encode("Akwaaba ba Ghana man mu.")
-print("Tokens: ", enc.tokens)   # ['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
-print("IDs:    ", enc.ids)      # [570, 514, 339, 364, 338, 18]
-print("Offsets:", enc.offsets)  # [(0, 7), (7, 10), (10, 16), (16, 20), (20, 23), (23, 24)]
+print("Tokens: ", enc.tokens)   # ['A', 'kwaa', 'ba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
+print("IDs:    ", enc.ids)      # [37, 5091, 349, 562, 450, 703, 300, 18]
+print("Offsets:", enc.offsets)  # [(0, 1), (1, 5), (5, 7), (7, 10), (10, 16), (16, 20), (20, 23), (23, 24)]
 
 # Lossless round-trip decode
 restored = tok.decode(enc.ids)
@@ -1353,12 +1392,12 @@ tok_str = tok.id_to_token(tok_id)</code></pre>
 from transformers import PreTrainedTokenizerFast
 
 # Option A: Directly from an existing LekeTokenizer instance
-tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+tok = LekeTokenizer.from_file("models/bpe-16k/tokenizer.json")
 hf_tok = tok.to_transformers()
 
 # Option B: Load directly via Hugging Face transformers
 hf_tok = PreTrainedTokenizerFast(
-    tokenizer_file="models/bpe-8k/tokenizer.json",
+    tokenizer_file="models/bpe-16k/tokenizer.json",
     unk_token="&lt;unk&gt;",
     pad_token="&lt;pad&gt;",
     bos_token="&lt;bos&gt;",
@@ -1388,7 +1427,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 
     // 2. Train a Byte-Level BPE tokenizer and emit a SHA-256 provenance receipt
     let config = BpeTrainingConfig {
-        vocab_size: 8192,
+        vocab_size: 16384,
         min_frequency: 2,
         strip_accents: false,
         collapse_whitespace: true,
@@ -1399,23 +1438,23 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
         PathBuf::from("data/splits/ewe/train.txt"),
     ];
     let (tokenizer, receipt) = train_bpe(&amp;files, &amp;config)?;
-    save_tokenizer_bundle(&amp;tokenizer, &amp;receipt, Path::new("models/bpe-8k"))?;
+    save_tokenizer_bundle(&amp;tokenizer, &amp;receipt, Path::new("models/bpe-16k"))?;
     Ok(())
 }</code></pre>
 
         <h3>6. Training &amp; evaluating from the CLI</h3>
         <pre><code># 1. Train a Byte-Level BPE (or --algorithm unigram) model on custom corpora
 uv run python -m leke.trainer \
-  --corpus data/splits/pooled_train.txt \
-  --output-dir models/bpe-8k \
-  --vocab-size 8000 \
+  --corpus data/raw/pooled_train_extended.txt \
+  --output-dir models/bpe-16k \
+  --vocab-size 16384 \
   --algorithm bpe
 
 # 2. Run the evaluation harness on held-out test splits and generate a Markdown report
 uv run python -m leke.evaluate \
-  --bpe-model models/bpe-8k/tokenizer.json \
+  --model models/bpe-16k/tokenizer.json \
   --splits-dir data/splits \
-  --output-report specs/eval_results.md</code></pre>
+  --report-out specs/eval_results.md</code></pre>
 
         <div class="quiz">
           <div class="label">Check yourself</div>

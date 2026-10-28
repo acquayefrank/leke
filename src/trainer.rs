@@ -38,6 +38,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use tokenizers::models::bpe::{BpeTrainerBuilder, BPE};
 use tokenizers::models::unigram::{Unigram, UnigramTrainerBuilder};
 use tokenizers::normalizers::{Replace, Sequence, NFC};
@@ -361,23 +362,23 @@ pub fn save_tokenizer_bundle(
     Ok(())
 }
 
-/// Computes a hexadecimal SHA-256 equivalent digest of a file's binary contents.
+/// Computes the hexadecimal SHA-256 digest of a file, streaming it in chunks.
 fn compute_sha256(path: &Path) -> Result<String, std::io::Error> {
     let mut file = File::open(path)?;
-    let mut buffer = Vec::new();
-    file.read_to_end(&mut buffer)?;
-    let digest = format!("{:x}", simple_hash(&buffer));
-    Ok(digest)
-}
-
-/// Fast FNV-1a 128-bit hash function for deterministic file fingerprinting.
-fn simple_hash(bytes: &[u8]) -> u128 {
-    let mut hash: u128 = 0xcbf29ce484222325;
-    for &b in bytes {
-        hash ^= b as u128;
-        hash = hash.wrapping_mul(0x100000001b3);
+    let mut hasher = Sha256::new();
+    let mut buffer = [0u8; 64 * 1024];
+    loop {
+        let n = file.read(&mut buffer)?;
+        if n == 0 {
+            break;
+        }
+        hasher.update(&buffer[..n]);
     }
-    hash
+    Ok(hasher
+        .finalize()
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect())
 }
 
 #[cfg(test)]
@@ -419,5 +420,16 @@ mod tests {
         // Test roundtrip
         let decoded = tokenizer.decode(encoding.get_ids(), true).unwrap();
         assert_eq!(decoded.trim(), "Akwaaba pápá");
+    }
+
+    #[test]
+    fn test_compute_sha256_matches_known_digest() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let path = temp_dir.path().join("abc.txt");
+        std::fs::write(&path, b"abc").unwrap();
+        assert_eq!(
+            compute_sha256(&path).unwrap(),
+            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        );
     }
 }

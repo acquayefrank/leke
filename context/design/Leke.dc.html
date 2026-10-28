@@ -121,12 +121,12 @@ code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em;
 
   <section id="leaderboard" style="padding: 56px 0 84px;">
     <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 14px;">Leaderboard</span>
-    <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0;">Fewer tokens per word, in every language.</h2>
-    <p style="font-size: 16px; line-height: 1.7; max-width: 58ch; margin: 16px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent);">Fertility on held-out test splits, against multilingual NLLB-200 and monolingual baselines. Lower is better.</p>
+    <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0;">One vocabulary, four languages, no lost characters.</h2>
+    <p style="font-size: 16px; line-height: 1.7; max-width: 58ch; margin: 16px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent);">Fertility (tokens per word, lower is better), with every tokenizer measured on the same text. Twi and Ewe use out-of-domain FLORES+; Ga and Fante use held-out curriculum text. Monolingual is the same-size 16k Wikilangs tokenizer.</p>
     <div style="overflow-x: auto; margin-top: 32px;">
       <table class="table" style="font-size: 16px; min-width: 620px;">
         <thead>
-          <tr><th>Language</th><th>Leke BPE 8k</th><th>NLLB-200</th><th>Monolingual</th><th>vs NLLB</th></tr>
+          <tr><th>Language</th><th>Leke BPE 16k</th><th>NLLB-200</th><th>Monolingual</th><th>vs NLLB</th></tr>
         </thead>
         <tbody>
           <sc-for list="{{ board }}" as="r" hint-placeholder-count="5">
@@ -206,10 +206,10 @@ const CODE = {
 raw = "Wɔfrε no pápá!"
 clean = leke.normalize(raw)        # 'Wɔfrɛ no pápá!'  (Greek ε → Latin ɛ)
 
-tok = leke.LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+tok = leke.LekeTokenizer.from_file("models/bpe-16k/tokenizer.json")
 enc = tok.encode("Akwaaba ba Ghana man mu.")
-print(enc.tokens)  # ['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
-print(enc.ids)     # [570, 514, 339, 364, 338, 18]
+print(enc.tokens)  # ['A', 'kwaa', 'ba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
+print(enc.ids)     # [37, 5091, 349, 562, 450, 703, 300, 18]
 print(tok.decode(enc.ids))`,
   rust: `use _leke::normalizer::KwaNormalizer;
 use _leke::trainer::{train_bpe, BpeTrainingConfig, save_tokenizer_bundle};
@@ -222,24 +222,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = BpeTrainingConfig::default();
     let files = vec![PathBuf::from("data/splits/twi/train.txt")];
     let (tokenizer, receipt) = train_bpe(&files, &config)?;
-    save_tokenizer_bundle(&tokenizer, &receipt, Path::new("models/bpe-8k"))?;
+    save_tokenizer_bundle(&tokenizer, &receipt, Path::new("models/bpe-16k"))?;
     Ok(())
 }`,
   hf: `from transformers import PreTrainedTokenizerFast
 
-tokenizer = PreTrainedTokenizerFast.from_pretrained("models/bpe-8k")
+tokenizer = PreTrainedTokenizerFast.from_pretrained("models/bpe-16k")
 inputs = tokenizer("Akwaaba ba Ghana man mu.", return_tensors="pt")
-print(inputs.input_ids)  # tensor([[570, 514, 339, 364, 338, 18]])`,
+print(inputs.input_ids)  # tensor([[37, 5091, 349, 562, 450, 703, 300, 18]])`,
   cli: `python -m leke.trainer \\
-  --corpus data/splits/twi/train.txt data/splits/ewe/train.txt \\
-  --output-dir models/bpe-8k \\
-  --vocab-size 8192 \\
+  --corpus data/raw/pooled_train_extended.txt \\
+  --output-dir models/bpe-16k \\
+  --vocab-size 16384 \\
   --algorithm bpe
 
 python -m leke.evaluate \\
-  --model-path models/bpe-8k/tokenizer.json \\
+  --model models/bpe-16k/tokenizer.json \\
   --splits-dir data/splits \\
-  --output-report specs/eval_results.md`
+  --report-out specs/eval_results.md`
 };
 
 function hashId(s) { let h = 2166136261; for (const c of s) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return 256 + (Math.abs(h) % 7936); }
@@ -315,21 +315,22 @@ class Component extends DCLogic {
       ],
       index: [
         { label: 'Kwa languages supported', value: '4', color: 'var(--color-accent-700)' },
-        { label: 'Lower fertility than NLLB-200', value: '1.83×', color: 'var(--color-text)' },
+        { label: 'Lower fertility than NLLB-200', value: '−2% to −28%', color: 'var(--color-text)' },
         { label: 'Hard <unk> rate, guaranteed', value: '0.00%', color: 'var(--color-text)' },
-        { label: 'Tokens per second, single core', value: '356k', color: 'var(--color-text)' }
+        { label: 'Tokens per second, single thread', value: '400k', color: 'var(--color-text)' }
       ],
       board: [
-        { lang: 'Akan / Twi', leke: '2.23', nllb: '2.92', mono: '1.62 (Goldfish)', delta: '−24%' },
-        { lang: 'Ewe', leke: '2.77', nllb: '3.15', mono: '1.71 (Wikilangs)', delta: '−12%' },
-        { lang: 'Ga', leke: '2.38', nllb: '3.20', mono: '—', delta: '−26%' },
-        { lang: 'Fante', leke: '2.16', nllb: '2.98', mono: '—', delta: '−28%' },
-        { lang: 'Unknown rate', leke: '0.0%', nllb: '0.0%', mono: '0.4–0.6%', delta: 'Guaranteed' }
+        { lang: 'Twi (Asante)', leke: '1.49', nllb: '1.59', mono: '1.45', delta: '−6%' },
+        { lang: 'Twi (Akuapem)', leke: '1.44', nllb: '1.47', mono: '1.37', delta: '−2%' },
+        { lang: 'Ewe', leke: '1.43', nllb: '1.54', mono: '1.44', delta: '−7%' },
+        { lang: 'Ga', leke: '1.39', nllb: '1.93', mono: '—', delta: '−28%' },
+        { lang: 'Fante', leke: '1.34', nllb: '1.70', mono: '1.30', delta: '−21%' },
+        { lang: 'Unknown rate', leke: '0.0%', nllb: '0.02–1.52%', mono: '0.02–2.57%', delta: 'Guaranteed' }
       ],
       features: [
         { title: 'Orthographic harmonization', body: 'Keyboards often produce Greek ε and γ or Cyrillic є in place of Kwa letters. Leke maps every variant to the official Latin code points — ɛ, ɣ, ŋ, ɖ — before training.' },
         { title: 'Zero <unk>, guaranteed', body: 'The base vocabulary is seeded with all 256 bytes. Any unseen character, emoji, formula or code snippet degrades into byte tokens rather than collapsing into <unk>.' },
-        { title: 'A high-throughput bridge', body: 'A multi-threaded Rust core encodes over 356,000 tokens a second on ordinary CPUs. Zero-copy transfers release the Python GIL for parallel data loading.' },
+        { title: 'A high-throughput bridge', body: 'The Rust core encodes about 400,000 tokens a second on one thread and over a million across eight, on par with Hugging Face\'s own tokenizers library.' },
         { title: 'Tone, preserved', body: 'Tone carries meaning in Akan and Ewe — Twi pápá, “goodness”, against papá, “father”. Diacritics are kept by default, with tone-agnostic stripping when a task calls for it.' },
         { title: 'Drop into Hugging Face', body: 'Exports a standard tokenizer.json that transformers.PreTrainedTokenizerFast reads directly, for PyTorch, JAX or any Hugging Face training pipeline.' },
         { title: 'Cryptographic receipts', body: 'Every model bundle ships with a SHA-256 fingerprint recording dataset provenance, configuration, vocabulary distribution and seed — reproducible by design.' }
