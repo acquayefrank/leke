@@ -58,14 +58,8 @@ The landing page for the Leke docs site (https://acquayefrank.com/leke/). It has
 
 ## Behaviour
 - The active sidebar item tracks the current route.
-- Card and grid links are wired to functional routes:
-  - Quickstart -> `Leke.dc.html#docs`
-  - Field Manual -> `manual.html` (Interactive Field Manual)
-  - Benchmarks -> `Leke.dc.html#leaderboard`
-  - API Reference -> Python/Rust repository documentation
-  - Languages -> `Leke.dc.html#leaderboard` / `#playground`
-  - Bindings -> Python / Rust / HF / CLI repository docs
-- "Playground" links to the interactive tokenizer on the main site (`Leke.dc.html#playground` or `/leke/#playground`).
+- Card and grid links are wired to in-page documentation sections (`docs/docs.html#...`) or the main showcase (`docs/index.html#playground`).
+- "Playground" links to the interactive tokenizer on the main site (`index.html#playground` or `/leke/#playground`).
 - Search input supports instant ⌘K / Ctrl+K keyboard shortcut and displays interactive matching results dropdown.
 - Every interactive element has a hover state and the cyan focus-visible ring.
 

@@ -76,9 +76,6 @@ a:hover { color: #0088b0; }
         </sc-if>
       </div>
       <div style="display: flex; align-items: center; gap: 18px;">
-        <a href="manual.html" style="font-size: 14px; color: #006786; font-weight: 500; display: flex; align-items: center; gap: 5px; white-space: nowrap;" style-hover="color: #0088b0;">
-          <i class="ph-duotone ph-compass" style="font-size: 17px;"></i>Field Manual
-        </a>
         <a href="Leke.dc.html#playground" style="font-size: 14px; color: #5e5f6e; white-space: nowrap;" style-hover="color: #131316;">Playground</a>
         <a href="https://github.com/acquayefrank/leke" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #131316; white-space: nowrap;" style-hover="color: #006786;">
           <i class="ph-duotone ph-github-logo" style="font-size: 18px;"></i>GitHub
@@ -177,7 +174,6 @@ class Component extends DCLogic {
   renderVals() {
     const primary = [
       ['Home', 'ph-house', 'Leke Docs.dc.html'],
-      ['Field Manual', 'ph-compass', 'manual.html'],
       ['Quickstart', 'ph-check-circle', 'Leke.dc.html#docs'],
       ['Playground', 'ph-play-circle', 'Leke.dc.html#playground'],
       ['API Reference', 'ph-code', 'https://github.com/acquayefrank/leke#quickstart'],
@@ -223,10 +219,10 @@ class Component extends DCLogic {
         href: 'Leke.dc.html#docs'
       },
       {
-        icon: 'ph-duotone ph-compass',
-        title: 'Interactive Field Manual',
-        body: 'Hands-on tutorial with live benches: normalization, fertility, BPE vs Unigram, and byte fallback.',
-        href: 'manual.html'
+        icon: 'ph-duotone ph-cube',
+        title: 'Pretrained tokenizers',
+        body: 'Load the 8k BPE vocabulary directly into Hugging Face Transformers.',
+        href: 'https://github.com/acquayefrank/leke/tree/main/models'
       },
       {
         icon: 'ph-duotone ph-chart-bar',
@@ -257,7 +253,6 @@ class Component extends DCLogic {
     ];
 
     const allSearchable = [
-      { title: 'Interactive Field Manual', desc: 'Explorable manual with simulations, benches and quizzes', href: 'manual.html' },
       { title: 'Quickstart & Installation', desc: 'Python pip install and cargo build guide', href: 'Leke.dc.html#docs' },
       { title: 'Playground', desc: 'Live in-browser tokenization and lookalike normalizer', href: 'Leke.dc.html#playground' },
       { title: 'Benchmark Leaderboard', desc: 'Held-out test evaluations across 4 Kwa languages', href: 'Leke.dc.html#leaderboard' },
