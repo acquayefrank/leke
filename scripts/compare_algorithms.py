@@ -1,8 +1,9 @@
 """Runs head-to-head architectural evaluation comparing BPE and Unigram models."""
 
 from pathlib import Path
-from tabulate import tabulate
+
 from leke import LekeTokenizer, calculate_metrics
+from tabulate import tabulate
 
 LANGUAGES = ["twi", "ewe", "gaa", "fat"]
 LANGUAGE_NAMES = {
@@ -40,18 +41,20 @@ def run_comparison(bpe_path: Path, unigram_path: Path, splits_dir: Path, output_
 
         winner = "BPE" if bpe_m["fertility"] <= uni_m["fertility"] else "Unigram"
 
-        table_data.append([
-            LANGUAGE_NAMES[lang],
-            f"{bpe_m['fertility']}",
-            f"{uni_m['fertility']}",
-            f"{bpe_m['split_rate_gt2']}%",
-            f"{uni_m['split_rate_gt2']}%",
-            f"{bpe_m['unk_rate']}%",
-            f"{uni_m['unk_rate']}%",
-            f"{bpe_m['compression_ratio']}",
-            f"{uni_m['compression_ratio']}",
-            f"**{winner}**",
-        ])
+        table_data.append(
+            [
+                LANGUAGE_NAMES[lang],
+                f"{bpe_m['fertility']}",
+                f"{uni_m['fertility']}",
+                f"{bpe_m['split_rate_gt2']}%",
+                f"{uni_m['split_rate_gt2']}%",
+                f"{bpe_m['unk_rate']}%",
+                f"{uni_m['unk_rate']}%",
+                f"{bpe_m['compression_ratio']}",
+                f"{uni_m['compression_ratio']}",
+                f"**{winner}**",
+            ]
+        )
 
     headers = [
         "Language",

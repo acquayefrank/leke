@@ -1,4 +1,3 @@
-import pytest
 from leke import KwaNormalizer, normalize
 
 

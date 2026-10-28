@@ -1,5 +1,6 @@
 from pathlib import Path
-from leke import LekeTokenizer, calculate_metrics, evaluate_all
+
+from leke import calculate_metrics, evaluate_all
 
 
 class DummyTokenizer:
@@ -10,6 +11,7 @@ class DummyTokenizer:
         class DummyEnc:
             def __init__(self, ids):
                 self.ids = ids
+
         # Returns 2 tokens per word
         words = text.split()
         return DummyEnc([1, 2] * len(words))

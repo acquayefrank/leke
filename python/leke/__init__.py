@@ -3,6 +3,7 @@
 try:
     from leke._leke import KwaNormalizer, normalize, version
 except ImportError:
+
     def version() -> str:
         return "0.1.0 (uncompiled)"
 
@@ -13,12 +14,13 @@ except ImportError:
         def __init__(self, *args, **kwargs):
             raise ImportError("Leke C-extension is not compiled. Run `maturin develop`.")
 
+
 __version__ = version()
 
-from leke.corpus import CorpusProcessor, split_dataset, temperature_upsample, run_pipeline
-from leke.trainer import train_bpe, train_unigram
-from leke.tokenizer import LekeTokenizer
+from leke.corpus import CorpusProcessor, run_pipeline, split_dataset, temperature_upsample
 from leke.evaluate import calculate_metrics, evaluate_all
+from leke.tokenizer import LekeTokenizer
+from leke.trainer import train_bpe, train_unigram
 
 try:
     from leke._leke import Encoding

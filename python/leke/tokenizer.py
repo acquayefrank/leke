@@ -42,7 +42,9 @@ class LekeTokenizer:
         """Decodes token IDs back into normalized text."""
         return self._native.decode(ids, skip_special_tokens)
 
-    def decode_batch(self, batch_ids: List[List[int]], skip_special_tokens: bool = True) -> List[str]:
+    def decode_batch(
+        self, batch_ids: List[List[int]], skip_special_tokens: bool = True
+    ) -> List[str]:
         """Decodes a batch of token ID sequences."""
         return self._native.decode_batch(batch_ids, skip_special_tokens)
 
@@ -57,6 +59,7 @@ class LekeTokenizer:
     def to_transformers(self):
         """Converts to a Hugging Face transformers PreTrainedTokenizerFast instance."""
         from transformers import PreTrainedTokenizerFast
+
         return PreTrainedTokenizerFast(tokenizer_file=self.path)
 
     def __repr__(self) -> str:

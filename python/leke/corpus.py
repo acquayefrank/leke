@@ -8,7 +8,10 @@ import random
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from leke import KwaNormalizer
+try:
+    from leke._leke import KwaNormalizer
+except ImportError:
+    from leke import KwaNormalizer  # type: ignore
 
 DEFAULT_LANGUAGES = ["twi", "ewe", "gaa", "fat"]
 PRIMARY_LANGUAGES = {"twi", "ewe"}
@@ -26,7 +29,9 @@ def sha256_of_file(filepath: Path) -> str:
 class CorpusProcessor:
     """Cleans, normalizes, and filters raw text lines."""
 
-    def __init__(self, normalizer: Optional[KwaNormalizer] = None, min_words: int = 3, max_words: int = 250):
+    def __init__(
+        self, normalizer: Optional[KwaNormalizer] = None, min_words: int = 3, max_words: int = 250
+    ):
         self.normalizer = normalizer or KwaNormalizer()
         self.min_words = min_words
         self.max_words = max_words
@@ -187,7 +192,9 @@ def run_pipeline(
         "sha256": sha256_of_file(pooled_path),
     }
 
-    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     return manifest
 
 

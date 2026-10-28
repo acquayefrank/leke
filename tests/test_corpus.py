@@ -1,6 +1,6 @@
 import json
-from pathlib import Path
-from leke.corpus import CorpusProcessor, split_dataset, temperature_upsample, run_pipeline
+
+from leke.corpus import CorpusProcessor, run_pipeline, split_dataset, temperature_upsample
 
 
 def test_corpus_processor_cleaning():
@@ -50,8 +50,12 @@ def test_temperature_upsampling_balance():
 def test_run_pipeline_end_to_end(tmp_path):
     raw_dir = tmp_path / "raw"
     raw_dir.mkdir()
-    (raw_dir / "twi.txt").write_text("Wɔfrɛ me Kofi wɔ Kumasi.\nAkwaaba ba Ghana man mu.\nObi nkyerɛ abofra Nyame koraa.\n")
-    (raw_dir / "ewe.txt").write_text("Ŋkɔnye enye Yao le Kpalime.\nEvegbe nye gbe nyui aɖe.\nMìedó gbe na mi nyuie.\n")
+    (raw_dir / "twi.txt").write_text(
+        "Wɔfrɛ me Kofi wɔ Kumasi.\nAkwaaba ba Ghana man mu.\nObi nkyerɛ abofra Nyame koraa.\n"
+    )
+    (raw_dir / "ewe.txt").write_text(
+        "Ŋkɔnye enye Yao le Kpalime.\nEvegbe nye gbe nyui aɖe.\nMìedó gbe na mi nyuie.\n"
+    )
 
     out_dir = tmp_path / "splits"
     manifest_path = tmp_path / "manifest.json"
