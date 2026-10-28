@@ -640,33 +640,33 @@
       <section class="chapter" id="why-tokenize" data-track="1" data-title="Why we tokenize: characters to subwords" style="--c: var(--accent)">
         <div class="eyebrow"><span class="num">01</span> Orientation</div>
         <h2>Why we tokenize: from characters to subwords</h2>
-        <p class="intro">Neural networks cannot multiply strings. Before a Transformer can read a sentence, raw text must be converted into a sequence of discrete integers $t_1, t_2, \dots, t_L \in \{0, \dots, |V|-1\}$, each indexing a row in an embedding matrix $E \in \mathbb{R}^{|V| \times d}$.</p>
+        <p class="intro">Neural networks cannot multiply strings. Before a Transformer can read a sentence, raw text must be converted into a sequence of discrete integers <i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>, …, <i>t</i><sub><i>L</i></sub> ∈ {0, …, |<i>V</i>| − 1}, each indexing a row in an embedding matrix <i>E</i> ∈ ℝ<sup>|<i>V</i>| × <i>d</i></sup>.</p>
 
         <h3>The fundamental granularity trilemma</h3>
         <p>Every tokenizer chooses how large its units are. Historically, NLP tried two extremes before settling on subwords:</p>
         <div class="tbl">
           <table>
             <thead>
-              <tr><th>Granularity</th><th>Vocabulary $|V|$</th><th>Sequence length $L$</th><th>Fatal flaw on Kwa languages</th></tr>
+              <tr><th>Granularity</th><th>Vocabulary |<i>V</i>|</th><th>Sequence length <i>L</i></th><th>Fatal flaw on Kwa languages</th></tr>
             </thead>
             <tbody>
               <tr>
                 <td><b>Word-level</b><br><small><code>["Mema", "wo", "akwaaba"]</code></small></td>
-                <td>$100\text{k} - 1\text{M}+$</td>
-                <td>Very short ($1\times$ words)</td>
+                <td>100k to 1M+</td>
+                <td>Very short (1× words)</td>
                 <td>Agglutinative prefixes (<code>mɛ-</code>, <code>re-</code>, <code>bɛ-</code>) create millions of surface inflections; unseen words collapse into <code>&lt;unk&gt;</code>.</td>
               </tr>
               <tr>
                 <td><b>Character / Byte-level</b><br><small><code>['M','e','m','a',' ','w','o']</code></small></td>
-                <td>$256$ (UTF-8 bytes)</td>
-                <td>Very long ($5\times - 8\times$ words)</td>
-                <td>Transformer self-attention scales as $O(L^2)$. A $6\times$ longer sequence costs $36\times$ more attention compute and shrinks effective context window by $6\times$.</td>
+                <td>256 (UTF-8 bytes)</td>
+                <td>Very long (5× to 8× words)</td>
+                <td>Transformer self-attention scales as <i>O</i>(<i>L</i>²). A 6× longer sequence costs 36× more attention compute and shrinks effective context window by 6×.</td>
               </tr>
               <tr>
-                <td><b>Subword-level (Leke)</b><br><small><code>["Mema", "Ġwo", "Ġakwaaba"]</code></small></td>
-                <td>$8\text{k} - 64\text{k}$</td>
-                <td>Compact ($\approx 2.2\times$ words)</td>
-                <td>Common words stay intact as single tokens; rare inflected forms split into reusable roots and affixes; unseen bytes fall back losslessly.</td>
+                <td><b>Subword-level (Leke)</b><br><small><code>["Me", "ma", "Ġwo", "Ġakwaa", "ba"]</code></small></td>
+                <td>8k to 64k</td>
+                <td>Compact (≈1.4× words)</td>
+                <td>Frequent words stay intact; rarer words split into reusable pieces such as roots and affixes; unseen bytes fall back losslessly.</td>
               </tr>
             </tbody>
           </table>
@@ -674,7 +674,7 @@
 
         <div class="formula">
           <div class="eq">Total Step Cost ≈ <span class="frac"><span>|V| · d</span><span>embedding parameters</span></span> + <span class="frac"><span>L<sub>layers</sub> · (N<sub>words</sub> · F)² · d</span><span>quadratic self-attention FLOPs</span></span></div>
-          <div class="where">$|V|$: vocabulary size; $d$: model hidden dimension; $N_{\text{words}}$: words in document; $F$: <span class="g" data-g="fertility" tabindex="0">fertility</span> (tokens per word). Doubling fertility quadruples attention cost.</div>
+          <div class="where">|<i>V</i>|: vocabulary size; <i>d</i>: model hidden dimension; <i>N</i><sub>words</sub>: words in document; <i>F</i>: <span class="g" data-g="fertility" tabindex="0">fertility</span> (tokens per word). Doubling fertility quadruples attention cost.</div>
         </div>
 
         <!-- Interactive Bench: Granularity & Attention Cost -->
@@ -705,11 +705,11 @@
         <div class="quiz">
           <div class="label">Check yourself</div>
           <div class="q" data-answer="c">
-            <p>If Tokenizer A has a fertility of 4.0 tokens/word on Ewe and Tokenizer B (Leke) has a fertility of 2.0 tokens/word, how much more quadratic self-attention work ($O(L^2)$) does Tokenizer A require on the same document?</p>
+            <p>If Tokenizer A has a fertility of 4.0 tokens/word on Ewe and Tokenizer B (Leke) has a fertility of 2.0 tokens/word, how much more quadratic self-attention work (<i>O</i>(<i>L</i>²)) does Tokenizer A require on the same document?</p>
             <label><input type="radio" name="q-01" value="a"> <span>The same amount</span></label>
             <label><input type="radio" name="q-01" value="b"> <span>2× as much</span></label>
-            <label><input type="radio" name="q-01" value="c"> <span>4× as much ($2^2 = 4$)</span></label>
-            <div class="why" hidden><b></b>Because self-attention scales quadratically with sequence length $L = N_{\text{words}} \cdot F$, halving fertility reduces the $L^2$ attention matrix by a factor of $4$.</div>
+            <label><input type="radio" name="q-01" value="c"> <span>4× as much (2² = 4)</span></label>
+            <div class="why" hidden><b></b>Because self-attention scales quadratically with sequence length <i>L</i> = <i>N</i><sub>words</sub> · <i>F</i>, halving fertility reduces the <i>L</i>² attention matrix by a factor of 4.</div>
           </div>
         </div>
 
@@ -746,13 +746,13 @@
         <div class="example"><span class="label">Worked example: Tokenizing two Twi sentences</span>
           <p>Fertility only means something over thousands of sentences, but two short examples show what the numbers count. Tokens below are produced by <code>models/bpe-16k</code> and by NLLB-200's tokenizer; the <code>Ġ</code> and <code>▁</code> prefixes mark a preceding space.</p>
           <ul>
-            <li><code>"Akwaaba ba Ghana man mu."</code> (5 words): <b>Leke BPE-16k</b> gives <code>['A', 'kwaa', 'ba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']</code> and <b>NLLB-200</b> gives <code>['▁Ak', 'wa', 'aba', '▁ba', '▁Ghana', '▁man', '▁mu', '.']</code>: 8 tokens each, fertility $8 / 5 = 1.60$.</li>
+            <li><code>"Akwaaba ba Ghana man mu."</code> (5 words): <b>Leke BPE-16k</b> gives <code>['A', 'kwaa', 'ba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']</code> and <b>NLLB-200</b> gives <code>['▁Ak', 'wa', 'aba', '▁ba', '▁Ghana', '▁man', '▁mu', '.']</code>: 8 tokens each, fertility 8 / 5 = 1.60.</li>
             <li><code>"Mɛkɔsrɛ no aduane."</code> (3 words): Leke gives <code>['Mɛ', 'kɔ', 'srɛ', 'Ġno', 'Ġaduane', '.']</code> (6 tokens) while NLLB-200 gives <code>['▁Mɛ', 'kɔ', 's', 'rɛ', '▁no', '▁aduane', '.']</code> (7 tokens), splitting the verb into one more piece.</li>
           </ul>
         </div>
 
         <h3>Out-of-domain benchmark: FLORES+ devtest (<code>specs/eval_results.md</code>)</h3>
-        <p>Leke's main results compare it with Meta's 200-language <b>NLLB-200</b> (`256k` SentencePiece vocabulary) and single-language tokenizers from <b>Goldfish</b> (`50k`) and <b>Wikilangs</b> (`8k`, `16k`, `32k`). Every tokenizer is scored with the same metric code on the same text (`scripts/measure_baselines.py`), with special tokens disabled. FLORES+ devtest consists of professionally translated sentences that none of these tokenizers were trained on; it covers Twi and Ewe but not Ga or Fante.</p>
+        <p>Leke's main results compare it with Meta's 200-language <b>NLLB-200</b> (<code>256k</code> SentencePiece vocabulary) and single-language tokenizers from <b>Goldfish</b> (<code>50k</code>) and <b>Wikilangs</b> (<code>8k</code>, <code>16k</code>, <code>32k</code>). Every tokenizer is scored with the same metric code on the same text (<code>scripts/measure_baselines.py</code>), with special tokens disabled. FLORES+ devtest consists of professionally translated sentences that none of these tokenizers were trained on; it covers Twi and Ewe but not Ga or Fante.</p>
         <div class="tbl">
           <table>
             <thead>
@@ -850,31 +850,31 @@
         <p class="intro">Even within a single language family, open datasets are deeply imbalanced. In public corpora (Wikipedia, MADLAD-400, Glot500, MGhana-ST), Akan/Twi and Ewe have roughly 6× to 8× more text than Ga and Fante. If you simply concatenate the files and train BPE, Zipf's law guarantees that Twi and Ewe monopolize the merge table.</p>
 
         <h3>Multinomial temperature upsampling</h3>
-        <p>To prevent high-resource siblings from starving lower-resource languages, Leke's corpus pipeline (<code>temperature_upsample</code> in <code>python/leke/corpus.py</code>) re-weights each language $i$ with raw line count $N_i$ using a temperature exponent $\alpha \in [0, 1]$:</p>
+        <p>To prevent high-resource siblings from starving lower-resource languages, Leke's corpus pipeline (<code>temperature_upsample</code> in <code>python/leke/corpus.py</code>) re-weights each language <i>i</i> with raw line count <i>N</i><sub><i>i</i></sub> using a temperature exponent α ∈ [0, 1]:</p>
         <div class="formula">
           <div class="eq">p<sub>i</sub>(α) = <span class="frac"><span>N<sub>i</sub><sup>α</sup></span><span>Σ<sub>j=1</sub><sup>K</sup> N<sub>j</sub><sup>α</sup></span></span></div>
           <div class="where">
-            At $\alpha = 1.0$: sampling is proportional to raw corpus size (Ga and Fante are starved).<br>
-            At $\alpha = 0.0$: uniform sampling ($25\%$ each; tiny corpora repeat so often that the tokenizer memorizes rare noise words).<br>
-            At $\alpha = 0.5$ (square-root smoothing): Leke's default balance.
+            At α = 1.0: sampling is proportional to raw corpus size (Ga and Fante are starved).<br>
+            At α = 0.0: uniform sampling (25% each; tiny corpora repeat so often that the tokenizer memorizes rare noise words).<br>
+            At α = 0.5 (square-root smoothing): the default in <code>leke.corpus</code>. The shipped <code>bpe-16k</code> model uses α = 0.2, chosen on dev sets to protect Ga and Fante.
           </div>
         </div>
 
-        <div class="example"><span class="label">Worked example: Square-root smoothing ($\alpha = 0.5$)</span>
-          <p>Suppose our training split has $N_{\text{twi}} = 49{,}000$, $N_{\text{ewe}} = 36{,}000$, $N_{\text{ga}} = 6{,}400$, and $N_{\text{fante}} = 4{,}900$ lines ($96{,}300$ total):</p>
+        <div class="example"><span class="label">Worked example: square-root smoothing (alpha = 0.5)</span>
+          <p>Suppose our training split has <i>N</i><sub>twi</sub> = 49,000, <i>N</i><sub>ewe</sub> = 36,000, <i>N</i><sub>ga</sub> = 6,400, and <i>N</i><sub>fante</sub> = 4,900 lines (96,300 total):</p>
           <ul>
-            <li><b>Raw share ($\alpha = 1.0$):</b> Twi gets $50.9\%$, Ewe $37.4\%$, Ga $6.6\%$, and Fante only $\mathbf{5.1\%}$.</li>
-            <li><b>Square-root weights ($N_i^{0.5}$):</b> $\sqrt{49000} \approx 221.4$, $\sqrt{36000} \approx 189.7$, $\sqrt{64000/10} = 80.0$, $\sqrt{4900} = 70.0$ (sum $= 561.1$).</li>
-            <li><b>Upsampled share ($\alpha = 0.5$):</b> Twi $39.5\%$, Ewe $33.8\%$, Ga $\mathbf{14.3\%}$, Fante $\mathbf{12.5\%}$. Ga and Fante representation more than doubles without overfitting.</li>
+            <li><b>Raw share (α = 1.0):</b> Twi gets 50.9%, Ewe 37.4%, Ga 6.6%, and Fante only <b>5.1%</b>.</li>
+            <li><b>Square-root weights (<i>N</i><sub><i>i</i></sub><sup>0.5</sup>):</b> √49,000 ≈ 221.4, √36,000 ≈ 189.7, √6,400 = 80.0, √4,900 = 70.0 (sum = 561.1).</li>
+            <li><b>Upsampled share (α = 0.5):</b> Twi 39.5%, Ewe 33.8%, Ga <b>14.3%</b>, Fante <b>12.5%</b>. Ga and Fante representation more than doubles without overfitting.</li>
           </ul>
         </div>
 
         <!-- Interactive Bench: Temperature Upsampling -->
         <div class="bench" id="bench-temp">
-          <header><span class="label">Bench</span><h4>Explore multinomial temperature upsampling ($\alpha$)</h4></header>
-          <p class="note">Drag $\alpha$ from <code>0.00</code> (uniform) to <code>1.00</code> (raw corpus proportions) and watch how training mixture shares and estimated Ga/Fante fertility respond.</p>
+          <header><span class="label">Bench</span><h4>Explore multinomial temperature upsampling (α)</h4></header>
+          <p class="note">Drag α from <code>0.00</code> (uniform) to <code>1.00</code> (raw corpus proportions) and watch how training mixture shares and estimated Ga/Fante fertility respond.</p>
           <div class="controls">
-            <label for="temp-alpha">Temperature exponent $\alpha$ <output id="temp-alpha-out">0.50</output>
+            <label for="temp-alpha">Temperature exponent α <output id="temp-alpha-out">0.50</output>
               <input id="temp-alpha" type="range" min="0" max="1" step="0.05" value="0.50">
             </label>
           </div>
@@ -890,11 +890,11 @@
         <div class="quiz">
           <div class="label">Check yourself</div>
           <div class="q" data-answer="b">
-            <p>Why not set $\alpha = 0.0$ so all four languages get an exact 25% share during BPE training?</p>
-            <label><input type="radio" name="q-03" value="a"> <span>Because $\alpha = 0.0$ causes division by zero</span></label>
+            <p>Why not set α = 0.0 so all four languages get an exact 25% share during BPE training?</p>
+            <label><input type="radio" name="q-03" value="a"> <span>Because α = 0.0 causes division by zero</span></label>
             <label><input type="radio" name="q-03" value="b"> <span>Because repeating a small corpus 8× to match a large one causes BPE to memorize rare, idiosyncratic words from the small corpus at the expense of general stems</span></label>
             <label><input type="radio" name="q-03" value="c"> <span>Because Rust does not support floating-point exponents</span></label>
-            <div class="why" hidden><b></b>At $\alpha = 0.0$, every sentence in a small corpus is duplicated many times, artificially inflating the count of rare proper nouns or typos in that split above common words in the larger languages.</div>
+            <div class="why" hidden><b></b>At α = 0.0, every sentence in a small corpus is duplicated many times, artificially inflating the count of rare proper nouns or typos in that split above common words in the larger languages.</div>
           </div>
         </div>
 
@@ -918,10 +918,10 @@
           <li><b><span class="g" data-g="nfc" tabindex="0">Unicode NFC</span> (Canonical Composition):</b> Stored as a single precomposed codepoint <code>U+00E1</code> (UTF-8 bytes <code>0xC3 0xA1</code>).</li>
           <li><b><span class="g" data-g="nfd" tabindex="0">Unicode NFD</span> (Canonical Decomposition):</b> Stored as two codepoints: base ASCII <code>a</code> (<code>U+0061</code>, byte <code>0x61</code>) followed by the floating Combining Acute Accent <code>◌́</code> (<code>U+0301</code>, bytes <code>0xCC 0x81</code>).</li>
         </ul>
-        <p>For open vowels like <code>ɛ́</code> (<code>U+025B</code> + <code>U+0301</code>) and <code>ɔ̀</code> (<code>U+0254</code> + <code>U+0300</code>), no single precomposed Unicode point exists, so NFC keeps the base African Latin vowel followed by the canonical ordered combining mark, while composing every vowel that <i>does</i> have a precomposed form (`á, é, í, ó, ú, ã, ẽ, ĩ, õ, ũ`).</p>
+        <p>For open vowels like <code>ɛ́</code> (<code>U+025B</code> + <code>U+0301</code>) and <code>ɔ̀</code> (<code>U+0254</code> + <code>U+0300</code>), no single precomposed Unicode point exists, so NFC keeps the base African Latin vowel followed by the canonical ordered combining mark, while composing every vowel that <i>does</i> have a precomposed form (<code>á, é, í, ó, ú, ã, ẽ, ĩ, õ, ũ</code>).</p>
 
         <div class="pitfall"><span class="label">What happens if you skip NFC before BPE</span>
-          <p>In web-scraped Ewe and Twi corpora, macOS/iOS keyboards often emit NFD while Windows/Android keyboards emit NFC. An unnormalized byte-level BPE tokenizer treats NFD <code>a + U+0301</code> and NFC <code>á</code> as unrelated byte sequences, and frequently splits the combining accent <code>0xCC 0x81</code> away from its vowel, attaching the floating tone mark to the <i>next</i> consonant. Leke's <code>KwaNormalizer</code> runs `.nfc()` as Stage 1 of every normalization call.</p>
+          <p>In web-scraped Ewe and Twi corpora, macOS/iOS keyboards often emit NFD while Windows/Android keyboards emit NFC. An unnormalized byte-level BPE tokenizer treats NFD <code>a + U+0301</code> and NFC <code>á</code> as unrelated byte sequences, and frequently splits the combining accent <code>0xCC 0x81</code> away from its vowel, attaching the floating tone mark to the <i>next</i> consonant. Leke's <code>KwaNormalizer</code> runs <code>.nfc()</code> as Stage 1 of every normalization call.</p>
         </div>
 
         <div class="quiz">
@@ -947,7 +947,7 @@
       <section class="chapter" id="lookalikes" data-track="1" data-title="Lookalike character harmonization" style="--c: var(--ling)">
         <div class="eyebrow"><span class="num">05</span> Part II · Kwa Linguistics &amp; Normalization</div>
         <h2>Lookalike character harmonization</h2>
-        <p class="intro">Standard QWERTY keyboards shipped in West Africa historically lacked keys for African Reference Alphabet letters (`ɛ, ɔ, ɣ, ɖ, ŋ`). Typists, typesetters, and OCR pipelines routinely substituted visually identical letters from Greek, Cyrillic, or IPA blocks.</p>
+        <p class="intro">Standard QWERTY keyboards shipped in West Africa historically lacked keys for African Reference Alphabet letters (<code>ɛ, ɔ, ɣ, ɖ, ŋ</code>). Typists, typesetters, and OCR pipelines routinely substituted visually identical letters from Greek, Cyrillic, or IPA blocks.</p>
 
         <h3>The byte-level collision</h3>
         <p>To a human reader, Greek Small Letter Epsilon <code>ε</code> (<code>U+03B5</code>), Greek Lunate Epsilon <code>ϵ</code> (<code>U+03F5</code>), Cyrillic Ukrainian Ie <code>є</code> (<code>U+0454</code>), and African Latin Small Letter Open E <code>ɛ</code> (<code>U+025B</code>) look nearly identical. To a byte-level tokenizer, they share zero bytes:</p>
@@ -962,13 +962,13 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
               <tr><th>Source Glyph(s)</th><th>Source Unicode Block</th><th>Canonical Kwa Target</th><th>Target Codepoint</th><th>Languages Affected</th></tr>
             </thead>
             <tbody>
-              <tr><td><code>ε</code>, <code>ϵ</code>, <code>є</code></td><td>Greek (`U+03B5`, `U+03F5`), Cyrillic (`U+0454`)</td><td><b><code>ɛ</code></b> (Latin Small Open E)</td><td><code>U+025B</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
-              <tr><td><code>Ε</code>, <code>Є</code></td><td>Greek (`U+0395`), Cyrillic (`U+0404`)</td><td><b><code>Ɛ</code></b> (Latin Capital Open E)</td><td><code>U+0190</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
-              <tr><td><code>ↄ</code>, <code>ᴐ</code></td><td>Latin Extended (`U+2184`, `U+1D10`)</td><td><b><code>ɔ</code></b> (Latin Small Open O)</td><td><code>U+0254</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
-              <tr><td><code>Ↄ</code></td><td>Roman Numeral (`U+2183`)</td><td><b><code>Ɔ</code></b> (Latin Capital Open O)</td><td><code>U+0186</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
-              <tr><td><code>ɳ</code>, <code>ɲ</code></td><td>IPA Retroflex/Palatal Nasal (`U+0273`, `U+0272`)</td><td><b><code>ŋ</code></b> (Latin Small Eng)</td><td><code>U+014B</code></td><td>Ewe, Ga</td></tr>
-              <tr><td><code>ð</code>, <code>Ð</code></td><td>Latin Eth (`U+00F0`, `U+00D0`)</td><td><b><code>ɖ</code> / <code>Ɖ</code></b> (Retroflex D)</td><td><code>U+0256</code> / <code>U+0189</code></td><td>Ewe</td></tr>
-              <tr><td><code>γ</code>, <code>ɤ</code>, <code>Γ</code></td><td>Greek Gamma (`U+03B3`, `U+0393`), Rams Horn (`U+0264`)</td><td><b><code>ɣ</code> / <code>Ɣ</code></b> (Latin Gamma)</td><td><code>U+0263</code> / <code>U+0194</code></td><td>Ewe</td></tr>
+              <tr><td><code>ε</code>, <code>ϵ</code>, <code>є</code></td><td>Greek (<code>U+03B5</code>, <code>U+03F5</code>), Cyrillic (<code>U+0454</code>)</td><td><b><code>ɛ</code></b> (Latin Small Open E)</td><td><code>U+025B</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
+              <tr><td><code>Ε</code>, <code>Є</code></td><td>Greek (<code>U+0395</code>), Cyrillic (<code>U+0404</code>)</td><td><b><code>Ɛ</code></b> (Latin Capital Open E)</td><td><code>U+0190</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
+              <tr><td><code>ↄ</code>, <code>ᴐ</code></td><td>Latin Extended (<code>U+2184</code>, <code>U+1D10</code>)</td><td><b><code>ɔ</code></b> (Latin Small Open O)</td><td><code>U+0254</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
+              <tr><td><code>Ↄ</code></td><td>Roman Numeral (<code>U+2183</code>)</td><td><b><code>Ɔ</code></b> (Latin Capital Open O)</td><td><code>U+0186</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
+              <tr><td><code>ɳ</code>, <code>ɲ</code></td><td>IPA Retroflex/Palatal Nasal (<code>U+0273</code>, <code>U+0272</code>)</td><td><b><code>ŋ</code></b> (Latin Small Eng)</td><td><code>U+014B</code></td><td>Ewe, Ga</td></tr>
+              <tr><td><code>ð</code>, <code>Ð</code></td><td>Latin Eth (<code>U+00F0</code>, <code>U+00D0</code>)</td><td><b><code>ɖ</code> / <code>Ɖ</code></b> (Retroflex D)</td><td><code>U+0256</code> / <code>U+0189</code></td><td>Ewe</td></tr>
+              <tr><td><code>γ</code>, <code>ɤ</code>, <code>Γ</code></td><td>Greek Gamma (<code>U+03B3</code>, <code>U+0393</code>), Rams Horn (<code>U+0264</code>)</td><td><b><code>ɣ</code> / <code>Ɣ</code></b> (Latin Gamma)</td><td><code>U+0263</code> / <code>U+0194</code></td><td>Ewe</td></tr>
               <tr><td><code>U+00A0</code>, <code>U+2000..200A</code>, <code>U+3000</code></td><td>15 exotic Unicode space characters</td><td><b><code>" "</code></b> (ASCII Space)</td><td><code>U+0020</code></td><td>All corpora</td></tr>
             </tbody>
           </table>
@@ -977,7 +977,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
         <!-- Interactive Bench: Lookalike & Byte Inspector -->
         <div class="bench" id="bench-look">
           <header><span class="label">Bench</span><h4>Live Lookalike &amp; UTF-8 Byte Harmonizer</h4></header>
-          <p class="note">Type or edit text containing Greek/Cyrillic lookalikes (`ε, є, ↄ, γ, ɳ, ð`). Compare the raw UTF-8 hex bytes before and after `KwaNormalizer`.</p>
+          <p class="note">Type or edit text containing Greek/Cyrillic lookalikes (<code>ε, є, ↄ, γ, ɳ, ð</code>). Compare the raw UTF-8 hex bytes before and after <code>KwaNormalizer</code>.</p>
           <div class="controls">
             <label for="look-in">Input text (mixed scripts)
               <input id="look-in" type="text" value="Wↄfrε me Kofi. Mìedó gbe na γe ɳkↄ ðeke!">
@@ -994,7 +994,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
         <div class="quiz">
           <div class="label">Check yourself</div>
           <div class="q" data-answer="b">
-            <p>What happens to a BPE vocabulary if half the training corpus writes <code>wɔfrɛ</code> with Greek <code>ε</code> (`U+03B5`) and half writes it with African Latin <code>ɛ</code> (`U+025B`)?</p>
+            <p>What happens to a BPE vocabulary if half the training corpus writes <code>wɔfrɛ</code> with Greek <code>ε</code> (<code>U+03B5</code>) and half writes it with African Latin <code>ɛ</code> (<code>U+025B</code>)?</p>
             <label><input type="radio" name="q-05" value="a"> <span>The tokenizer automatically knows they sound the same</span></label>
             <label><input type="radio" name="q-05" value="b"> <span>Each spelling gets half the frequency, wasting vocabulary slots on duplicate tokens and splitting embeddings in downstream models</span></label>
             <label><input type="radio" name="q-05" value="c"> <span>Both words are deleted</span></label>
@@ -1017,7 +1017,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
         <p class="intro">All four target languages in Leke belong to the <b>Kwa branch of the Niger-Congo family</b> spoken across Ghana and Togo. They are tonal and agglutinative, meaning pitch and affixation carry core lexical and grammatical distinctions.</p>
 
         <h3>Why tone preservation is the strict default</h3>
-        <p>Many western NLP pipelines start by stripping diacritics (`unicodedata` category `Mn`). On Kwa languages, stripping tone marks destroys meaning:</p>
+        <p>Many western NLP pipelines start by stripping diacritics (<code>unicodedata</code> category <code>Mn</code>). On Kwa languages, stripping tone marks destroys meaning:</p>
         <div class="tbl">
           <table>
             <thead>
@@ -1041,25 +1041,25 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
             </tbody>
           </table>
         </div>
-        <p>In Leke, <code>KwaNormalizer::default()</code> sets <code>strip_accents = false</code>, preserving acute (<code>U+0301</code>), grave (<code>U+0300</code>), circumflex (<code>U+0302</code>), tilde (<code>U+0303</code>), macron (<code>U+0304</code>), and caron (<code>U+030C</code>) marks. Tone stripping (`strip_accents = true`) is strictly opt-in for tone-insensitive keyword search.</p>
+        <p>In Leke, <code>KwaNormalizer::default()</code> sets <code>strip_accents = false</code>, preserving acute (<code>U+0301</code>), grave (<code>U+0300</code>), circumflex (<code>U+0302</code>), tilde (<code>U+0303</code>), macron (<code>U+0304</code>), and caron (<code>U+030C</code>) marks. Tone stripping (<code>strip_accents = true</code>) is strictly opt-in for tone-insensitive keyword search.</p>
 
         <h3>Linguistic profile of the four supported languages</h3>
         <div class="facets">
           <div class="facet">
             <span class="label">Tw · Akan / Twi (1.38 fertility)</span>
-            <p>Covers Asante and Akuapem dialects. Features 7 oral vowels (`a, e, ɛ, i, o, ɔ, u`), ATR vowel harmony, and rich verbal prefixing (`re-` progressive, `bɛ-` future, `kɔ-` motional, `n-`/`m-` negative).</p>
+            <p>Covers Asante and Akuapem dialects. Features 7 oral vowels (<code>a, e, ɛ, i, o, ɔ, u</code>), ATR vowel harmony, and rich verbal prefixing (<code>re-</code> progressive, <code>bɛ-</code> future, <code>kɔ-</code> motional, <code>n-</code>/<code>m-</code> negative).</p>
           </div>
           <div class="facet">
             <span class="label">Ee · Ewe / Èʋegbe (1.45 fertility)</span>
-            <p>Uses 5 extended African Reference Alphabet consonants: retroflex <code>ɖ</code>, bilabial fricative <code>ƒ</code>, velar fricative <code>ɣ</code>, velar nasal <code>ŋ</code>, and bilabial v-hook <code>ʋ</code>, plus nasalized vowels (`ã, ẽ, ĩ, õ, ũ`).</p>
+            <p>Uses 5 extended African Reference Alphabet consonants: retroflex <code>ɖ</code>, bilabial fricative <code>ƒ</code>, velar fricative <code>ɣ</code>, velar nasal <code>ŋ</code>, and bilabial v-hook <code>ʋ</code>, plus nasalized vowels (<code>ã, ẽ, ĩ, õ, ũ</code>).</p>
           </div>
           <div class="facet">
             <span class="label">Ga · Gã (1.39 fertility)</span>
-            <p>Spoken in Greater Accra. Relies heavily on labial-velar and palatal digraphs (`gb, kp, ny, ŋm, sh, ts, dz`) and nasalized open vowels (`ɛ̃, ɔ̃`) that BPE merges into intact onset units.</p>
+            <p>Spoken in Greater Accra. Relies heavily on labial-velar and palatal digraphs (<code>gb, kp, ny, ŋm, sh, ts, dz</code>) and nasalized open vowels (<code>ɛ̃, ɔ̃</code>) that BPE merges into intact onset units.</p>
           </div>
           <div class="facet">
             <span class="label">Fa · Fante / Mfantse (1.34 fertility)</span>
-            <p>Coastal Akan literary variety. Shares `ɛ` and `ɔ` harmony with Twi while featuring distinct palatalized and labialized consonant clusters (`dz, ts, kw, hw, tw, dw, hy`).</p>
+            <p>Coastal Akan literary variety. Shares <code>ɛ</code> and <code>ɔ</code> harmony with Twi while featuring distinct palatalized and labialized consonant clusters (<code>dz, ts, kw, hw, tw, dw, hy</code>).</p>
           </div>
         </div>
 
@@ -1070,7 +1070,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
             <label><input type="radio" name="q-06" value="a"> <span>Always, because accents waste tokens</span></label>
             <label><input type="radio" name="q-06" value="b"> <span>When training a Text-to-Speech (TTS) or machine translation model</span></label>
             <label><input type="radio" name="q-06" value="c"> <span>Only when building a tone-agnostic search index where users query without typing diacritics</span></label>
-            <div class="why" hidden><b></b>Translation and TTS depend on phonemic tone (`pápá` vs. `papá`). Stripping tone marks is only appropriate for tone-agnostic search or retrieval against unaccented queries.</div>
+            <div class="why" hidden><b></b>Translation and TTS depend on phonemic tone (<code>pápá</code> vs. <code>papá</code>). Stripping tone marks is only appropriate for tone-agnostic search or retrieval against unaccented queries.</div>
           </div>
         </div>
 
@@ -1090,19 +1090,19 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
 
         <h3>The training algorithm</h3>
         <ol>
-          <li><b>Initialize the base alphabet $V_0$:</b> Seed the vocabulary with all 256 byte symbols (`0x00`..`0xFF`) plus special tokens (`&lt;pad&gt;`, `&lt;unk&gt;`, `&lt;bos&gt;`, `&lt;eos&gt;`). Pre-tokenize text at whitespace boundaries, replacing leading spaces with the visible marker <code>Ġ</code> (`U+0120`).</li>
-          <li><b>Count adjacent pairs:</b> Across all words $w$ weighted by corpus frequency $f(w)$, count every adjacent symbol pair $(u, v)$:</li>
+          <li><b>Initialize the base alphabet <i>V</i><sub>0</sub>:</b> Seed the vocabulary with all 256 byte symbols (<code>0x00</code>..<code>0xFF</code>) plus special tokens (<code>&lt;pad&gt;</code>, <code>&lt;unk&gt;</code>, <code>&lt;bos&gt;</code>, <code>&lt;eos&gt;</code>). Pre-tokenize text at whitespace boundaries, replacing leading spaces with the visible marker <code>Ġ</code> (<code>U+0120</code>).</li>
+          <li><b>Count adjacent pairs:</b> Across all words <i>w</i> weighted by corpus frequency <i>f</i>(<i>w</i>), count every adjacent symbol pair (<i>u</i>, <i>v</i>):</li>
         </ol>
         <div class="formula">
           <div class="eq">(u*, v*) = argmax<sub>(u, v) ∈ V × V</sub> &nbsp; Σ<sub>w ∈ Corpus</sub> f(w) · count<sub>w</sub>(u, v)</div>
-          <div class="where">At each step $t = 1, \dots, M$, mint a new token $z = u^* \circ v^*$, add $z$ to $V$, and record the merge rule $(u^*, v^*) \to z$ at priority rank $t$.</div>
+          <div class="where">At each step <i>t</i> = 1, …, <i>M</i>, mint a new token <i>z</i> = <i>u</i>* ∘ <i>v</i>*, add <i>z</i> to <i>V</i>, and record the merge rule (<i>u</i>*, <i>v</i>*) → <i>z</i> at priority rank <i>t</i>.</div>
         </div>
         <p>At inference time, a word is split into base bytes and merge rules are applied in the exact priority order they were learned during training until no further pairs can be merged.</p>
 
         <!-- Interactive Bench: Step-by-Step BPE Merge Simulator -->
         <div class="bench" id="bench-bpe-step">
           <header><span class="label">Bench</span><h4>Step through BPE merges on a mini Twi corpus</h4></header>
-          <p class="note">Click <b>Apply next merge</b> to watch BPE discover common Akan morphemes (`ba`, `wa`, `kwa`, `akwaaba`, `wɔ`, `frɛ`) step by step on <code>["akwaaba", "Ġba", "Ġwɔfrɛ", "Ġmema"]</code>.</p>
+          <p class="note">Click <b>Apply next merge</b> to watch BPE discover common Akan morphemes (<code>ba</code>, <code>wa</code>, <code>kwa</code>, <code>akwaaba</code>, <code>wɔ</code>, <code>frɛ</code>) step by step on <code>["akwaaba", "Ġba", "Ġwɔfrɛ", "Ġmema"]</code>.</p>
           <div class="btnrow">
             <button class="btn solid" type="button" id="bpe-next">Apply next merge</button>
             <button class="btn" type="button" id="bpe-all">Run all 10 merges</button>
@@ -1124,7 +1124,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
             <label><input type="radio" name="q-07" value="a"> <span>In the exact priority order the merges were learned during training (most frequent pair first)</span></label>
             <label><input type="radio" name="q-07" value="b"> <span>Randomly until the word is one token</span></label>
             <label><input type="radio" name="q-07" value="c"> <span>From right to left alphabetically</span></label>
-            <div class="why" hidden><b></b>Each merge rule has a fixed rank $t$. Applying rules in rank order guarantees that inference segmentation exactly mirrors training segmentation.</div>
+            <div class="why" hidden><b></b>Each merge rule has a fixed rank <i>t</i>. Applying rules in rank order guarantees that inference segmentation exactly mirrors training segmentation.</div>
           </div>
         </div>
 
@@ -1140,22 +1140,22 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
       <section class="chapter" id="bpe-vs-unigram" data-track="1" data-title="Byte-Level BPE vs. Unigram LM" style="--c: var(--algo)">
         <div class="eyebrow"><span class="num">08</span> Part III · Subword Algorithms</div>
         <h2>Byte-Level BPE vs. Unigram Language Model</h2>
-        <p class="intro">Two subword algorithms dominate modern NLP: bottom-up <b>Byte-Level BPE</b> (used in GPT-4, LLaMA-3, Mistral) and top-down <span class="g" data-g="unigram" tabindex="0">Unigram LM</span> (Kudo 2018, used in SentencePiece, T5, NLLB). Leke implements both in Rust (`src/trainer.rs`) and ran a controlled head-to-head experiment (`specs/algorithm_decision.md`) to decide which should be the default.</p>
+        <p class="intro">Two subword algorithms dominate modern NLP: bottom-up <b>Byte-Level BPE</b> (used in GPT-4, LLaMA-3, Mistral) and top-down <span class="g" data-g="unigram" tabindex="0">Unigram LM</span> (Kudo 2018, used in SentencePiece, T5, NLLB). Leke implements both in Rust (<code>src/trainer.rs</code>) and ran a controlled head-to-head experiment (<code>specs/algorithm_decision.md</code>) to decide which should be the default.</p>
 
         <h3>How Unigram differs from BPE</h3>
         <div class="facets">
           <div class="facet">
             <span class="label">Byte-Level BPE (Bottom-Up)</span>
-            <p>Starts with 256 bytes and greedily <b>adds</b> the highest-frequency adjacent pair at each step until reaching $|V| = 8{,}000$.</p>
+            <p>Starts with 256 bytes and greedily <b>adds</b> the highest-frequency adjacent pair at each step until reaching |<i>V</i>|&nbsp;=&nbsp;16,384.</p>
           </div>
           <div class="facet">
             <span class="label">Unigram LM (Top-Down)</span>
-            <p>Starts with a huge seed vocabulary ($100\text{k}+$ substrings), estimates token probabilities $P(x_i)$ via EM, and iteratively <b>prunes</b> tokens that least reduce corpus log-likelihood $\mathcal{L} = \sum \log P(x^*)$.</p>
+            <p>Starts with a huge seed vocabulary (100k+ substrings), estimates token probabilities <i>P</i>(<i>x</i><sub><i>i</i></sub>) via EM, and iteratively <b>prunes</b> tokens that least reduce corpus log-likelihood ℒ = Σ log <i>P</i>(<i>x</i>*).</p>
           </div>
         </div>
 
-        <h3>Controlled head-to-head benchmark (`specs/algorithm_decision.md`)</h3>
-        <p>Both models were trained on the exact same temperature-upsampled corpus (`data/raw/pooled_train_extended.txt`: curriculum text plus MADLAD-400 and Wikipedia, seed 42, 16k vocabulary) and evaluated on the held-out curriculum test splits:</p>
+        <h3>Controlled head-to-head benchmark (<code>specs/algorithm_decision.md</code>)</h3>
+        <p>Both models were trained on the exact same temperature-upsampled corpus (<code>data/raw/pooled_train_extended.txt</code>: curriculum text plus MADLAD-400 and Wikipedia, seed 42, 16k vocabulary) and evaluated on the held-out curriculum test splits:</p>
         <div class="tbl">
           <table>
             <thead>
@@ -1172,7 +1172,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
         </div>
 
         <div class="project"><span class="label">Why Byte-Level BPE is the default</span>
-          <p>In Niger-Congo Kwa languages, words are formed by chaining short CV/CVC verbal prefixes (`mɛ-`, `re-`, `bɛ-`, `kɔ-`) onto stable roots, and both algorithms learn these units. Byte-Level BPE wins on three of four languages (mean fertility <b>1.39</b> vs. <b>1.43</b>, with the largest gap on Ga: 1.39 vs. 1.50); Unigram is slightly better on Ewe (1.42 vs. 1.45). The deciding factor is coverage: Unigram has no byte fallback and emits stray <code>&lt;unk&gt;</code> tokens on Ewe (`0.04%`), while BPE stays at a strict <b>0.0%</b>.</p>
+          <p>In Niger-Congo Kwa languages, words are formed by chaining short CV/CVC verbal prefixes (<code>mɛ-</code>, <code>re-</code>, <code>bɛ-</code>, <code>kɔ-</code>) onto stable roots, and both algorithms learn these units. Byte-Level BPE wins on three of four languages (mean fertility <b>1.39</b> vs. <b>1.43</b>, with the largest gap on Ga: 1.39 vs. 1.50); Unigram is slightly better on Ewe (1.42 vs. 1.45). The deciding factor is coverage: Unigram has no byte fallback and emits stray <code>&lt;unk&gt;</code> tokens on Ewe (<code>0.04%</code>), while BPE stays at a strict <b>0.0%</b>.</p>
         </div>
 
         <div class="quiz">
@@ -1203,7 +1203,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
         <h3>How byte-level fallback guarantees lossless round-trips</h3>
         <p>Every valid UTF-8 string is a sequence of bytes in <code>0x00..0xFF</code>. Because Leke seeds its base vocabulary with all 256 byte tokens before learning any merges, <b>no UTF-8 string can ever be out-of-vocabulary</b>:</p>
         <ul>
-          <li>Known Kwa words and morphemes merge into compact subword tokens (`Akwaaba`, `Ġba`, `ĠGhana`).</li>
+          <li>Known Kwa words and morphemes merge into compact subword tokens (<code>Akwaaba</code>, <code>Ġba</code>, <code>ĠGhana</code>).</li>
           <li>Unseen symbols (like the Ghana flag <code>🇬🇭</code> or math symbols <code>∑x² = λ</code>) decompose into their exact UTF-8 byte tokens (e.g. <code>&lt;0xF0&gt;&lt;0x9F&gt;&lt;0x87&gt;&lt;0xAC&gt;</code>), which <code>tok.decode()</code> reassembles losslessly back into the original characters.</li>
         </ul>
 
@@ -1250,7 +1250,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
             <label><input type="radio" name="q-09" value="a"> <span>A capital Ga consonant</span></label>
             <label><input type="radio" name="q-09" value="b"> <span>A leading ASCII space (0x20) attached to the start of a word so detokenization can restore exact whitespace without losing spaces</span></label>
             <label><input type="radio" name="q-09" value="c"> <span>An unknown character</span></label>
-            <div class="why" hidden><b></b>Byte-Level BPE maps raw byte <code>0x20</code> (space) to the visible printable character <code>Ġ</code> (`U+0120`) so spaces are preserved inside tokens and `decode(encode(text))` is exact.</div>
+            <div class="why" hidden><b></b>Byte-Level BPE maps raw byte <code>0x20</code> (space) to the visible printable character <code>Ġ</code> (<code>U+0120</code>) so spaces are preserved inside tokens and <code>decode(encode(text))</code> is exact.</div>
           </div>
         </div>
 
@@ -1266,9 +1266,9 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
       <section class="chapter" id="rust-pyo3" data-track="1" data-title="Rust core, PyO3 bindings and provenance" style="--c: var(--eng)">
         <div class="eyebrow"><span class="num">10</span> Part IV · Systems &amp; Library Guide</div>
         <h2>Rust core, PyO3 bindings &amp; cryptographic provenance</h2>
-        <p class="intro">A tokenizer sits on the hot path of every LLM training loop and inference server. If normalization or BPE lookup runs in pure Python, CPU data loaders become the bottleneck while GPUs sit idle. Leke is written in Rust (`src/`) and exposed to Python via a compiled <span class="g" data-g="pyo3" tabindex="0">PyO3</span> C-extension (`leke._leke`).</p>
+        <p class="intro">A tokenizer sits on the hot path of every LLM training loop and inference server. If normalization or BPE lookup runs in pure Python, CPU data loaders become the bottleneck while GPUs sit idle. Leke is written in Rust (<code>src/</code>) and exposed to Python via a compiled <span class="g" data-g="pyo3" tabindex="0">PyO3</span> C-extension (<code>leke._leke</code>).</p>
 
-        <h3>Measured throughput (`specs/benchmarks.md`)</h3>
+        <h3>Measured throughput (<code>specs/benchmarks.md</code>)</h3>
         <div class="tbl">
           <table>
             <thead>
@@ -1282,23 +1282,23 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
           </table>
         </div>
 
-        <h3>Three systems engineering choices in `src/`</h3>
+        <h3>Three systems engineering choices in <code>src/</code></h3>
         <ul>
           <li><b>Batch execution across the FFI boundary:</b> Calling into Rust once per sentence pays Python's C-API call overhead every time. <code>tok.encode_batch(texts)</code> crosses the Python/Rust boundary once, normalizes and encodes the entire list inside Rust, and returns contiguous vectors.</li>
-          <li><b><span class="g" data-g="abi3" tabindex="0">ABI3 stable wheels</span>:</b> Configured in `Cargo.toml` with `pyo3 = { features = ["extension-module", "abi3-py39"] }`, allowing a single compiled wheel (`_leke.abi3.so` / `.pyd`) to work across Python 3.9, 3.10, 3.11, 3.12, and 3.13+ without recompiling per minor version.</li>
-          <li><b>Cryptographic provenance receipts (`receipt.json`):</b> Every trained model bundle writes a JSON receipt beside `tokenizer.json` containing the SHA-256 hash of every training file, the exact normalizer flags, vocabulary size, and random seed (`42`).</li>
+          <li><b><span class="g" data-g="abi3" tabindex="0">ABI3 stable wheels</span>:</b> Configured in <code>Cargo.toml</code> with <code>pyo3 = { features = ["extension-module", "abi3-py39"] }</code>, allowing a single compiled wheel (<code>_leke.abi3.so</code> / <code>.pyd</code>) to work across Python 3.9, 3.10, 3.11, 3.12, and 3.13+ without recompiling per minor version.</li>
+          <li><b>Cryptographic provenance receipts (<code>receipt.json</code>):</b> Every trained model bundle writes a JSON receipt beside <code>tokenizer.json</code> containing the SHA-256 hash of every training file, the exact normalizer flags, vocabulary size, and random seed (<code>42</code>).</li>
         </ul>
 
-        <h3>Audited corpus licensing (`specs/corpus_licenses.md`)</h3>
+        <h3>Audited corpus licensing (<code>specs/corpus_licenses.md</code>)</h3>
         <div class="tbl">
           <table>
             <thead>
               <tr><th>Source Corpus</th><th>Languages</th><th>License</th><th>Commercial Use</th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Wikipedia Dumps</b></td><td>Akan/Twi (`tw`), Ewe (`ee`)</td><td>CC BY-SA 4.0</td><td>Yes (with attribution)</td></tr>
-              <tr><td><b>Glot500</b></td><td>Akan (`aka`), Ewe (`ewe`), Ga (`gaa`), Fante (`fat`)</td><td>CC BY-SA / Apache 2.0 / MIT</td><td>Yes</td></tr>
-              <tr><td><b>MADLAD-400</b></td><td>Akan (`ak`, used for Twi), Ewe (`ee`)</td><td>ODC-By v1.0</td><td>Yes</td></tr>
+              <tr><td><b>Wikipedia Dumps</b></td><td>Akan/Twi (<code>tw</code>), Ewe (<code>ee</code>)</td><td>CC BY-SA 4.0</td><td>Yes (with attribution)</td></tr>
+              <tr><td><b>Glot500</b></td><td>Akan (<code>aka</code>), Ewe (<code>ewe</code>), Ga (<code>gaa</code>), Fante (<code>fat</code>)</td><td>CC BY-SA / Apache 2.0 / MIT</td><td>Yes</td></tr>
+              <tr><td><b>MADLAD-400</b></td><td>Akan (<code>ak</code>, used for Twi), Ewe (<code>ee</code>)</td><td>ODC-By v1.0</td><td>Yes</td></tr>
               <tr><td><b>MGhana-ST</b></td><td>Akan/Twi, Ewe, Ga</td><td>CC BY 4.0</td><td>Yes</td></tr>
             </tbody>
           </table>
@@ -1414,7 +1414,7 @@ batch_tensors = hf_tok(
 print(batch_tensors["input_ids"])
 print(batch_tensors["attention_mask"])</code></pre>
 
-        <h3>5. Using the native Rust crate (`_leke`)</h3>
+        <h3>5. Using the native Rust crate (<code>_leke</code>)</h3>
         <pre><code>use _leke::normalizer::KwaNormalizer;
 use _leke::trainer::{train_bpe, BpeTrainingConfig, save_tokenizer_bundle};
 use std::path::{Path, PathBuf};
@@ -1463,7 +1463,7 @@ uv run python -m leke.evaluate \
             <label><input type="radio" name="q-11" value="a"> <span><code>tok.to_transformers()</code></span></label>
             <label><input type="radio" name="q-11" value="b"> <span><code>tok.encode_batch()</code></span></label>
             <label><input type="radio" name="q-11" value="c"> <span><code>leke.version()</code></span></label>
-            <div class="why" hidden><b></b><code>tok.to_transformers()</code> wraps the underlying `tokenizer.json` path into a `transformers.PreTrainedTokenizerFast` with `&lt;unk&gt;`, `&lt;pad&gt;`, `&lt;bos&gt;`, and `&lt;eos&gt;` pre-populated.</div>
+            <div class="why" hidden><b></b><code>tok.to_transformers()</code> wraps the underlying <code>tokenizer.json</code> path into a <code>transformers.PreTrainedTokenizerFast</code> with <code>&lt;unk&gt;</code>, <code>&lt;pad&gt;</code>, <code>&lt;bos&gt;</code>, and <code>&lt;eos&gt;</code> pre-populated.</div>
           </div>
         </div>
 
@@ -1483,82 +1483,82 @@ uv run python -m leke.evaluate \
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">1. The floating tone mark that joined the next consonant · Unicode</span>
-          <p><b>What happened.</b> In decomposed (NFD) Ewe text, a vowel followed by a combining acute accent (`U+0301`) was segmented by byte-level BPE so that the base vowel merged with the preceding consonant while the floating accent bytes (`0xCC 0x81`) merged with the <i>following</i> consonant.</p>
+          <p><b>What happened.</b> In decomposed (NFD) Ewe text, a vowel followed by a combining acute accent (<code>U+0301</code>) was segmented by byte-level BPE so that the base vowel merged with the preceding consonant while the floating accent bytes (<code>0xCC 0x81</code>) merged with the <i>following</i> consonant.</p>
           <p><b>The principle.</b> Always run Unicode NFC canonical composition before any character mapping or byte-level pre-tokenization.</p>
           <p><a href="#unicode-nfc">Related chapter: 04 · Unicode NFC vs. NFD</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">2. Twin vocabulary entries for the same Twi word · Orthography</span>
-          <p><b>What happened.</b> Early vocabularies contained both <code>wɔfrɛ</code> (Latin `ɛ`, `0xC9 0x9B`) and <code>wɔfrε</code> (Greek `ε`, `0xCE 0xB5`) as separate tokens, cutting the effective frequency of every open-vowel word in half.</p>
-          <p><b>The principle.</b> Harmonize visual script lookalikes in a deterministic table (`data/char_mappings.json`) before both training and inference.</p>
+          <p><b>What happened.</b> Early vocabularies contained both <code>wɔfrɛ</code> (Latin <code>ɛ</code>, <code>0xC9 0x9B</code>) and <code>wɔfrε</code> (Greek <code>ε</code>, <code>0xCE 0xB5</code>) as separate tokens, cutting the effective frequency of every open-vowel word in half.</p>
+          <p><b>The principle.</b> Harmonize visual script lookalikes in a deterministic table (<code>data/char_mappings.json</code>) before both training and inference.</p>
           <p><a href="#lookalikes">Related chapter: 05 · Lookalike character harmonization</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">3. Tone stripping that turned “father” into “goodness” · Linguistics</span>
           <p><b>What happened.</b> Enabling standard accent stripping collapsed Twi <code>pápá</code> (“goodness”), <code>papá</code> (“father”), and <code>pàpà</code> (“fan”) into a single token <code>papa</code>, and Ewe <code>mí</code> (“we”) into <code>mi</code> (“you”).</p>
-          <p><b>The principle.</b> In tonal Niger-Congo languages, diacritics are phonemic, not decorative. Preserve tone by default (`strip_accents = false`) and make stripping strictly opt-in.</p>
+          <p><b>The principle.</b> In tonal Niger-Congo languages, diacritics are phonemic, not decorative. Preserve tone by default (<code>strip_accents = false</code>) and make stripping strictly opt-in.</p>
           <p><a href="#tone-languages">Related chapter: 06 · Phonemic tone &amp; Kwa languages</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">4. Ga and Fante starved by raw corpus concatenation · Statistics</span>
           <p><b>What happened.</b> Pooling raw datasets without re-weighting gave Twi and Ewe over 88% of the training lines, leaving Ga and Fante words splintered into single characters.</p>
-          <p><b>The principle.</b> Balance multi-language corpora with multinomial temperature upsampling ($\alpha = 0.5$) so low-resource languages receive fair merge allocation without overfitting.</p>
+          <p><b>The principle.</b> Balance multi-language corpora with multinomial temperature upsampling (α = 0.5) so low-resource languages receive fair merge allocation without overfitting.</p>
           <p><a href="#upsampling">Related chapter: 03 · Zipf's law &amp; temperature upsampling</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">5. Unigram shattering 64.5% of Ewe words · Algorithms</span>
-          <p><b>What happened.</b> On the early 100-sentence pilot corpus, Unigram LM pruned away mid-frequency Ewe syllables containing extended Latin consonants (`ɖ, ƒ, ɣ, ŋ, ʋ`), pushing Ewe fertility to `3.55` vs. Byte-Level BPE's `2.77`.</p>
+          <p><b>What happened.</b> On the early 100-sentence pilot corpus, Unigram LM pruned away mid-frequency Ewe syllables containing extended Latin consonants (<code>ɖ, ƒ, ɣ, ŋ, ʋ</code>), pushing Ewe fertility to <code>3.55</code> vs. Byte-Level BPE's <code>2.77</code>.</p>
           <p><b>The principle.</b> Test candidate subword algorithms head-to-head on held-out splits with fixed seeds before picking a default.</p>
           <p><a href="#bpe-vs-unigram">Related chapter: 08 · Byte-Level BPE vs. Unigram LM</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">6. Baseline tokenizers dropping characters into &lt;unk&gt; · Evaluation</span>
-          <p><b>What happened.</b> SentencePiece baselines without byte fallback (`NLLB-200`, `Wikilangs`) emitted 0.02%–0.61% `&lt;unk&gt;` tokens on the held-out Kwa test splits, permanently erasing those characters.</p>
-          <p><b>The principle.</b> Seed the base vocabulary with all 256 byte values so unknown characters degrade into UTF-8 bytes with a hard 0.0% `&lt;unk&gt;` rate.</p>
+          <p><b>What happened.</b> SentencePiece baselines without byte fallback (<code>NLLB-200</code>, <code>Wikilangs</code>) emitted 0.02%–0.61% <code>&lt;unk&gt;</code> tokens on the held-out Kwa test splits, permanently erasing those characters.</p>
+          <p><b>The principle.</b> Seed the base vocabulary with all 256 byte values so unknown characters degrade into UTF-8 bytes with a hard 0.0% <code>&lt;unk&gt;</code> rate.</p>
           <p><a href="#zero-unk">Related chapter: 09 · The 0.0% &lt;unk&gt; guarantee</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">7. Non-standard exotic spaces breaking word pre-tokenization · Data hygiene</span>
-          <p><b>What happened.</b> Web-scraped texts contained non-breaking spaces (`U+00A0`), thin spaces (`U+2009`), and ideographic spaces (`U+3000`) that standard ASCII space splitters treated as word characters, gluing whole phrases into single giant tokens.</p>
-          <p><b>The principle.</b> Normalize all 15 Unicode space variants to standard ASCII `U+0020` and collapse consecutive spaces in linear time.</p>
+          <p><b>What happened.</b> Web-scraped texts contained non-breaking spaces (<code>U+00A0</code>), thin spaces (<code>U+2009</code>), and ideographic spaces (<code>U+3000</code>) that standard ASCII space splitters treated as word characters, gluing whole phrases into single giant tokens.</p>
+          <p><b>The principle.</b> Normalize all 15 Unicode space variants to standard ASCII <code>U+0020</code> and collapse consecutive spaces in linear time.</p>
           <p><a href="#lookalikes">Related chapter: 05 · Lookalike character harmonization</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">8. Per-sentence Python loops bottlenecking throughput · Systems</span>
-          <p><b>What happened.</b> Calling Rust `encode()` inside a Python `for` loop spent more time crossing the Python/C-API boundary than running BPE merges.</p>
-          <p><b>The principle.</b> Expose batch APIs (`encode_batch`, `decode_batch`) that cross the FFI boundary once and process the entire batch in native Rust.</p>
+          <p><b>What happened.</b> Calling Rust <code>encode()</code> inside a Python <code>for</code> loop spent more time crossing the Python/C-API boundary than running BPE merges.</p>
+          <p><b>The principle.</b> Expose batch APIs (<code>encode_batch</code>, <code>decode_batch</code>) that cross the FFI boundary once and process the entire batch in native Rust.</p>
           <p><a href="#rust-pyo3">Related chapter: 10 · Rust core &amp; PyO3 bindings</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">9. Custom normalizer blocking Hugging Face AutoTokenizer · Interop</span>
-          <p><b>What happened.</b> Attaching a custom Rust-only normalizer struct inside `tokenizer.json` caused standard `transformers.PreTrainedTokenizerFast` loaders (which don't link Leke's Rust crate) to reject the JSON schema.</p>
-          <p><b>The principle.</b> Serialize `tokenizer.json` using standard composable Hugging Face normalizer primitives (`NFC` + `Replace` + `PreTokenizer`) so any stock `transformers` environment can load the bundle without custom C++ plugins.</p>
+          <p><b>What happened.</b> Attaching a custom Rust-only normalizer struct inside <code>tokenizer.json</code> caused standard <code>transformers.PreTrainedTokenizerFast</code> loaders (which don't link Leke's Rust crate) to reject the JSON schema.</p>
+          <p><b>The principle.</b> Serialize <code>tokenizer.json</code> using standard composable Hugging Face normalizer primitives (<code>NFC</code> + <code>Replace</code> + <code>PreTokenizer</code>) so any stock <code>transformers</code> environment can load the bundle without custom C++ plugins.</p>
           <p><a href="#library-guide">Related chapter: 11 · Using Leke with Hugging Face</a></p>
         </div>
 
         <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
           <span class="label">10. Unreproducible vocabulary merges across runs · Governance</span>
           <p><b>What happened.</b> Training a tokenizer twice on slightly different corpus snapshots produced subtly different token IDs, invalidating cached dataset tensors.</p>
-          <p><b>The principle.</b> Emit a cryptographic `receipt.json` alongside every `tokenizer.json` recording the SHA-256 hash of every input file, config parameter, and seed.</p>
+          <p><b>The principle.</b> Emit a cryptographic <code>receipt.json</code> alongside every <code>tokenizer.json</code> recording the SHA-256 hash of every input file, config parameter, and seed.</p>
           <p><a href="#rust-pyo3">Related chapter: 10 · Cryptographic provenance</a></p>
         </div>
 
         <div class="quiz">
           <div class="label">Check yourself</div>
           <div class="q" data-answer="b">
-            <p>Why does Leke export its normalization rules into `tokenizer.json` using composable standard primitives (`NFC`, `Replace`) in addition to providing the native `KwaNormalizer` struct?</p>
+            <p>Why does Leke export its normalization rules into <code>tokenizer.json</code> using composable standard primitives (<code>NFC</code>, <code>Replace</code>) in addition to providing the native <code>KwaNormalizer</code> struct?</p>
             <label><input type="radio" name="q-12" value="a"> <span>Because Rust cannot read JSON files</span></label>
-            <label><input type="radio" name="q-12" value="b"> <span>So stock Hugging Face `PreTrainedTokenizerFast` and `AutoTokenizer` pipelines can load `tokenizer.json` out-of-the-box without needing custom C++/Rust plugins installed</span></label>
+            <label><input type="radio" name="q-12" value="b"> <span>So stock Hugging Face <code>PreTrainedTokenizerFast</code> and <code>AutoTokenizer</code> pipelines can load <code>tokenizer.json</code> out-of-the-box without needing custom C++/Rust plugins installed</span></label>
             <label><input type="radio" name="q-12" value="c"> <span>To double the file size</span></label>
-            <div class="why" hidden><b></b>Using standard Hugging Face normalizer primitives in the exported JSON ensures zero-friction compatibility with PyTorch, vLLM, and `transformers`.</div>
+            <div class="why" hidden><b></b>Using standard Hugging Face normalizer primitives in the exported JSON ensures zero-friction compatibility with PyTorch, vLLM, and <code>transformers</code>.</div>
           </div>
         </div>
 
@@ -1577,34 +1577,34 @@ uv run python -m leke.evaluate \
         <p class="intro">Every dotted term in the documentation, defined in one place.</p>
         <dl class="glossary">
           <dt id="g-abi3">ABI3 Wheel</dt>
-          <dd>CPython's stable Application Binary Interface (`abi3-py39`), allowing a single compiled Rust PyO3 wheel to run across Python 3.9 through 3.13+.</dd>
+          <dd>CPython's stable Application Binary Interface (<code>abi3-py39</code>), allowing a single compiled Rust PyO3 wheel to run across Python 3.9 through 3.13+.</dd>
 
           <dt id="g-byte-bpe">Byte-Level BPE</dt>
-          <dd>Byte-Pair Encoding whose base alphabet is all 256 UTF-8 byte values (`0x00..0xFF`), guaranteeing a 0.0% unknown-token rate on any input string.</dd>
+          <dd>Byte-Pair Encoding whose base alphabet is all 256 UTF-8 byte values (<code>0x00..0xFF</code>), guaranteeing a 0.0% unknown-token rate on any input string.</dd>
 
           <dt id="g-compression">Compression (bytes / token)</dt>
           <dd>Total UTF-8 byte length of a text divided by the number of tokens produced. Higher values mean each token packs more information.</dd>
 
           <dt id="g-fertility">Fertility</dt>
-          <dd>The average number of subword tokens produced per whitespace-delimited word ($\text{tokens} \div \text{words}$). Lower fertility means shorter sequences and lower $O(L^2)$ attention cost.</dd>
+          <dd>The average number of subword tokens produced per whitespace-delimited word (tokens ÷ words). Lower fertility means shorter sequences and lower <i>O</i>(<i>L</i>²) attention cost.</dd>
 
           <dt id="g-lookalike">Lookalike Character</dt>
-          <dd>A glyph from another Unicode block (such as Greek `ε` or `γ`, or Cyrillic `є`) typed in place of a visually identical African Latin letter (`ɛ`, `ɣ`).</dd>
+          <dd>A glyph from another Unicode block (such as Greek <code>ε</code> or <code>γ</code>, or Cyrillic <code>є</code>) typed in place of a visually identical African Latin letter (<code>ɛ</code>, <code>ɣ</code>).</dd>
 
           <dt id="g-nfc">Unicode NFC</dt>
-          <dd>Normalization Form Canonical Composition: decomposes characters and recomposes them into canonical precomposed codepoints (`a + U+0301 → á`).</dd>
+          <dd>Normalization Form Canonical Composition: decomposes characters and recomposes them into canonical precomposed codepoints (<code>a + U+0301 → á</code>).</dd>
 
           <dt id="g-nfd">Unicode NFD</dt>
           <dd>Normalization Form Canonical Decomposition: separates precomposed accented letters into base characters plus floating combining marks.</dd>
 
           <dt id="g-pyo3">PyO3</dt>
-          <dd>The Rust library and compiler bridge used to expose native Rust structs (`KwaNormalizer`, `NativeTokenizer`) as zero-overhead Python classes.</dd>
+          <dd>The Rust library and compiler bridge used to expose native Rust structs (<code>KwaNormalizer</code>, <code>NativeTokenizer</code>) as zero-overhead Python classes.</dd>
 
           <dt id="g-split-rate">Excessive Split Rate (&gt;2)</dt>
           <dd>The percentage of whitespace words segmented into 3 or more subword tokens. Measures morphological over-fragmentation.</dd>
 
           <dt id="g-temperature">Temperature Upsampling</dt>
-          <dd>Rescaling corpus sampling probabilities by $p_i \propto N_i^\alpha$ ($\alpha = 0.5$) so lower-resource languages (Ga, Fante) are not starved by larger ones (Twi, Ewe).</dd>
+          <dd>Rescaling corpus sampling probabilities by <i>p</i><sub><i>i</i></sub> ∝ <i>N</i><sub><i>i</i></sub><sup>α</sup> (α = 0.5) so lower-resource languages (Ga, Fante) are not starved by larger ones (Twi, Ewe).</dd>
 
           <dt id="g-unigram">Unigram LM</dt>
           <dd>A top-down subword algorithm that starts with a large seed vocabulary and iteratively prunes tokens that least reduce unigram log-likelihood.</dd>
