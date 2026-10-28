@@ -314,6 +314,10 @@ mod tests {
         assert_eq!(norm.normalize_str("Ͻsᴐ"), "Ɔsɔ");
         assert_eq!(norm.normalize_str("⊃no"), "ɔno");
         assert_eq!(norm.normalize_str("Kofi φo nɔvia"), "Kofi ƒo nɔvia");
+        // FLORES+ Ewe lookalikes: Hebrew tet -> ʋ, Croatian D with stroke -> Ɖ
+        assert_eq!(norm.normalize_str("Đeטeטe"), "Ɖeʋeʋe");
+        // Zero-width space is removed
+        assert_eq!(norm.normalize_str("\u{200b}\u{200b}ne"), "ne");
     }
 
     #[test]
