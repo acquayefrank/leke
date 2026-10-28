@@ -1262,6 +1262,28 @@ African Latin ɛ (U+025B): 0xC9 0x9B</code></pre>
           <p>Open corpora for Akan/Twi and Ewe are roughly 8× larger than available corpora for Ga and Fante. Naive concatenation starves smaller languages of subword merges.</p>
           <p>Leke balances multi-language training using multinomial <span class="g" data-g="temperature" tabindex="0">temperature upsampling</span> ($\alpha = 0.5$), where each language's sampling probability $p_i$ is computed from its raw document count $N_i$:</p>
           <pre><code>p_i = (N_i)^α / Σ_j (N_j)^α    where α = 0.5</code></pre>
+          <p>At $\alpha = 1.0$, sampling matches raw corpus size (high imbalance). At $\alpha = 0.0$, all languages are sampled uniformly (overfitting tiny corpora). At $\alpha = 0.5$, low-resource Ga and Fante receive enough subword merges to reach 2.38 and 2.16 fertility without starving Twi or Ewe.</p>
+
+          <!-- Interactive Bench: Temperature Upsampling -->
+          <div class="bench" id="bench-temp">
+            <div class="bench-head">
+              <span class="bench-tag">Interactive Bench</span>
+              <h4>Multinomial temperature upsampling ($\alpha$)</h4>
+            </div>
+            <p style="margin: 0; font-size: 13.5px;">Drag the temperature exponent $\alpha$ between <code>0.0</code> (uniform) and <code>1.0</code> (raw corpus ratio) to see how vocabulary training allocation shifts across the four Kwa corpora.</p>
+            <label class="bench-input-label" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Temperature exponent ($\alpha$)</span>
+              <code id="alpha-val">0.50</code>
+            </label>
+            <input id="alpha-slider" type="range" min="0" max="1" step="0.05" value="0.5" style="width: 100%; margin-top: 8px; accent-color: var(--accent);">
+            <div class="readouts" id="alpha-readouts">
+              <div class="readout"><span>Akan / Twi share</span><b id="share-twi">–</b></div>
+              <div class="readout"><span>Ewe share</span><b id="share-ewe">–</b></div>
+              <div class="readout"><span>Ga share</span><b id="share-ga">–</b></div>
+              <div class="readout"><span>Fante share</span><b id="share-fante">–</b></div>
+            </div>
+          </div>
+
           <p>Every trained vocabulary bundle is accompanied by a cryptographic SHA-256 provenance receipt (<code>receipt.json</code>) recording corpus hashes, normalizer flags, and merge statistics.</p>
 
           <div class="section-foot">
@@ -1316,8 +1338,14 @@ African Latin ɛ (U+025B): 0xC9 0x9B</code></pre>
              ========================================================== -->
         <section class="doc-section" id="quickstart">
           <div class="doc-eyebrow">Reference · Quickstart &amp; Bindings</div>
-          <h2 id="python-api">Python API (PyO3)</h2>
-          <p>Install the package and encode single strings or multi-threaded batches. Batch calls release Python's GIL via <code>Python::allow_threads</code>:</p>
+          <h2 id="python-api">Python API (PyO3) &amp; Systems Architecture</h2>
+          <p>High-throughput data loaders in PyTorch cannot afford slow Python tokenizers. Leke executes all normalization and subword segmentation inside native Rust compiled with PyO3:</p>
+          <ul>
+            <li><strong>&gt;356,000 tokens/second</strong> single-threaded encoding on standard x86_64 CPUs.</li>
+            <li><strong>GIL Release:</strong> Batch encoding releases Python's Global Interpreter Lock (<code>Python::allow_threads</code>), allowing multi-worker PyTorch <code>DataLoader</code> processes to encode in parallel.</li>
+            <li><strong>ABI3 Wheels:</strong> Ships precompiled CPython stable-ABI wheels so a single binary installs cleanly across Python 3.9 through 3.13+.</li>
+          </ul>
+          <p>Install the package and encode single strings or multi-threaded batches:</p>
           <pre><code>from leke import LekeTokenizer
 
 tok = LekeTokenizer.from_pretrained("leke-bpe-8k")
@@ -1400,6 +1428,8 @@ out = tok("Mema wo akye!", return_tensors="pt")</code></pre>
             <dd>A character from another script (such as Greek <code>ε</code> or <code>γ</code>) used as a visual substitute for an African Latin letter (<code>ɛ</code>, <code>ɣ</code>).</dd>
             <dt>Temperature Upsampling</dt>
             <dd>Exponentiating corpus frequencies by $\alpha \in (0, 1)$ so lower-resource languages receive balanced merge allocation.</dd>
+            <dt>&lt;unk&gt; Token</dt>
+            <dd>Special unknown token emitted when encountering characters outside the model vocabulary. Guaranteed 0.0% in Leke via <span class="g" data-g="unk" tabindex="0">byte fallback</span>.</dd>
           </dl>
         </section>
       </main>
@@ -1518,7 +1548,8 @@ out = tok("Mema wo akye!", return_tensors="pt")</code></pre>
         'byte-bpe': ['Byte-Level BPE', 'Subword algorithm backed by all 256 byte tokens, guaranteeing 0.0% unknown tokens.'],
         'lookalike': ['Lookalike Character', 'Visually identical Greek or Cyrillic letters mapped to canonical African Latin codepoints.'],
         'nfc': ['Unicode NFC', 'Canonical composition combining base letters and accents into single precomposed codepoints.'],
-        'temperature': ['Temperature Upsampling', 'Smoothing corpus sampling probabilities with α = 0.5 so low-resource languages are not starved.']
+        'temperature': ['Temperature Upsampling', 'Smoothing corpus sampling probabilities with α = 0.5 so low-resource languages are not starved.'],
+        'unk': ['<unk> Token', 'Special unknown token emitted when encountering out-of-vocabulary characters. Guaranteed 0.0% in Leke.']
       };
 
       var tip = document.createElement('div');
@@ -1615,6 +1646,30 @@ out = tok("Mema wo akye!", return_tensors="pt")</code></pre>
         updateByteBench();
       }
 
+      // Live Bench 3: Temperature Upsampling (α)
+      var alphaSlider = $('alpha-slider');
+      var alphaVal = $('alpha-val');
+      var rawSizes = { twi: 48000, ewe: 36000, ga: 6000, fante: 5500 };
+
+      function updateAlphaBench() {
+        if (!alphaSlider) return;
+        var a = parseFloat(alphaSlider.value);
+        if (alphaVal) alphaVal.textContent = a.toFixed(2);
+        var wTwi = Math.pow(rawSizes.twi, a);
+        var wEwe = Math.pow(rawSizes.ewe, a);
+        var wGa = Math.pow(rawSizes.ga, a);
+        var wFante = Math.pow(rawSizes.fante, a);
+        var total = wTwi + wEwe + wGa + wFante;
+        $('share-twi').textContent = (100 * wTwi / total).toFixed(1) + '%';
+        $('share-ewe').textContent = (100 * wEwe / total).toFixed(1) + '%';
+        $('share-ga').textContent = (100 * wGa / total).toFixed(1) + '%';
+        $('share-fante').textContent = (100 * wFante / total).toFixed(1) + '%';
+      }
+      if (alphaSlider) {
+        alphaSlider.addEventListener('input', updateAlphaBench);
+        updateAlphaBench();
+      }
+
       // Instant Search (⌘K / Ctrl+K)
       var searchInput = $('search-input');
       var searchDropdown = $('search-dropdown');
@@ -1692,3 +1747,4 @@ out = tok("Mema wo akye!", return_tensors="pt")</code></pre>
   </script>
 </body>
 </html>
+
