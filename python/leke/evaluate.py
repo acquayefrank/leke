@@ -26,12 +26,11 @@ benchmarks across held-out evaluation corpora:
    - Interpretation: Measures information density. Higher bytes/token indicates
      that tokens represent larger linguistic chunks on average.
 
-Published Baselines:
-    - **NLLB-200 (SentencePiece)**: Meta's multilingual model covering 200+ languages.
-      Because its 256k vocabulary is dominated by major world languages, Kwa words
-      suffer high fragmentation (2.9 - 3.2 tokens/word).
-    - **Goldfish Twi & Wikilangs Ewe**: Specialized monolingual subword models serving
-      as theoretical upper-bound targets for Akan and Ewe.
+Baselines:
+    Baseline tokenizers (NLLB-200, Goldfish, Wikilangs) are measured on the same
+    held-out test splits by `scripts/measure_baselines.py`, which writes
+    `data/baselines/measured_baselines.json`. This module reads that file so every
+    row in the leaderboard is scored on identical text with identical metrics.
 
 Examples:
     >>> from leke.evaluate import calculate_metrics
@@ -44,6 +43,7 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -62,51 +62,25 @@ LANGUAGE_NAMES: Dict[str, str] = {
     "fat": "Fante",
 }
 
-# Established published reference baselines for Kwa languages.
-PUBLISHED_BASELINES: Dict[str, Dict[str, Dict[str, float]]] = {
-    "NLLB-200 (SentencePiece)": {
-        "twi": {
-            "fertility": 2.92,
-            "split_rate_gt2": 38.4,
-            "unk_rate": 0.0,
-            "compression_ratio": 2.45,
-        },
-        "ewe": {
-            "fertility": 3.15,
-            "split_rate_gt2": 44.1,
-            "unk_rate": 0.0,
-            "compression_ratio": 2.28,
-        },
-        "gaa": {
-            "fertility": 3.20,
-            "split_rate_gt2": 46.2,
-            "unk_rate": 0.0,
-            "compression_ratio": 2.20,
-        },
-        "fat": {
-            "fertility": 2.98,
-            "split_rate_gt2": 39.5,
-            "unk_rate": 0.0,
-            "compression_ratio": 2.40,
-        },
-    },
-    "Goldfish Twi (twi_latn)": {
-        "twi": {
-            "fertility": 1.62,
-            "split_rate_gt2": 16.8,
-            "unk_rate": 0.4,
-            "compression_ratio": 4.12,
-        },
-    },
-    "Wikilangs Ewe (ee)": {
-        "ewe": {
-            "fertility": 1.71,
-            "split_rate_gt2": 19.3,
-            "unk_rate": 0.6,
-            "compression_ratio": 3.95,
-        },
-    },
-}
+# Baseline metrics measured on the held-out test splits by scripts/measure_baselines.py.
+DEFAULT_BASELINES_PATH = Path("data/baselines/measured_baselines.json")
+
+
+def load_measured_baselines(path: Path = DEFAULT_BASELINES_PATH) -> List[Dict[str, Any]]:
+    """Loads baseline rows measured by `scripts/measure_baselines.py`.
+
+    Args:
+        path (Path, optional): Path to `measured_baselines.json`.
+
+    Returns:
+        List[Dict[str, Any]]: Baseline rows (Leke rows excluded), each with `model`,
+            `vocab`, `lang`, `fertility`, `split_rate_gt2`, `unk_rate`, and
+            `compression_ratio`. Empty if the file does not exist.
+    """
+    if not path.exists():
+        return []
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    return [r for r in rows if not r["model"].startswith("Leke")]
 
 
 def calculate_metrics(tokenizer: Any, lines: List[str]) -> Dict[str, float]:
@@ -183,13 +157,15 @@ def calculate_metrics(tokenizer: Any, lines: List[str]) -> Dict[str, float]:
         if unk_id is not None:
             unk_tokens += sum(1 for i in ids if i == unk_id)
 
-        # Step 4c: Calculate isolated word fragmentation.
+        # Step 4c: Calculate isolated word fragmentation. Words are encoded with a
+        # leading space so byte-level BPE sees the same "Ġword" form it sees
+        # mid-sentence; Metaspace/SentencePiece tokenizers are unaffected.
         for word in words:
             if hasattr(tokenizer, "encode"):
-                w_enc = tokenizer.encode(word)
+                w_enc = tokenizer.encode(" " + word)
                 w_ids = getattr(w_enc, "ids", w_enc)
             else:
-                w_ids = tokenizer(word)["input_ids"]
+                w_ids = tokenizer(" " + word)["input_ids"]
             # Flag words that fragment into 3 or more subwords.
             if len(w_ids) > 2:
                 words_gt2 += 1
@@ -213,6 +189,7 @@ def evaluate_all(
     model_path: Path = Path("models/bpe-8k/tokenizer.json"),
     splits_dir: Path = Path("data/splits"),
     output_report_path: Optional[Path] = Path("specs/eval_results.md"),
+    baselines_path: Path = DEFAULT_BASELINES_PATH,
 ) -> str:
     """Runs evaluation across all target languages on held-out test splits.
 
@@ -220,6 +197,7 @@ def evaluate_all(
         model_path (Path, optional): Path to the tokenizer.json file.
         splits_dir (Path, optional): Directory containing language split folders.
         output_report_path (Optional[Path], optional): File to save markdown leaderboard.
+        baselines_path (Path, optional): Measured baseline metrics JSON.
 
     Returns:
         str: Formatted Markdown leaderboard report.
@@ -227,18 +205,19 @@ def evaluate_all(
     Notes:
         1. Loads the specified model bundle into `LekeTokenizer`.
         2. Iterates across languages (`twi`, `ewe`, `gaa`, `fat`), loading `test.txt`.
-        3. Computes metrics and compares against:
-           - Specialized monolingual models (Goldfish Twi, Wikilangs Ewe).
-           - General multilingual baselines (NLLB-200).
+        3. Computes metrics and compares against baselines measured on the same
+           splits (NLLB-200, Goldfish, Wikilangs) from `baselines_path`.
         4. Formats a GitHub-flavored Markdown table comparing fertility, split rate,
            unknown token rate, and compression.
         5. Saves the leaderboard report to `output_report_path` and returns markdown text.
     """
-    # Step 1: Load tokenizer from disk.
+    # Step 1: Load tokenizer and measured baselines from disk.
     tokenizer = LekeTokenizer.from_file(model_path)
+    baselines = load_measured_baselines(baselines_path)
 
-    # Accumulator for markdown table rows.
+    # Accumulators for markdown table rows and per-language comparisons.
     table_data = []
+    summary = {}
 
     # Step 2: Iterate through each target Kwa language.
     for lang in LANGUAGES:
@@ -254,103 +233,86 @@ def evaluate_all(
         table_data.append(
             [
                 "**Leke BPE (8k)**",
+                "8k",
                 LANGUAGE_NAMES.get(lang, lang),
                 f"**{metrics['fertility']}**",
                 f"{metrics['split_rate_gt2']}%",
                 f"**{metrics['unk_rate']}%**",
                 f"{metrics['compression_ratio']}",
-                "✅ Target Evaluated",
+                "—",
             ]
         )
 
-        # Step 2b: Append monolingual baseline row if available.
-        if lang == "twi" and "Goldfish Twi (twi_latn)" in PUBLISHED_BASELINES:
-            b_metrics = PUBLISHED_BASELINES["Goldfish Twi (twi_latn)"]["twi"]
-            gate = (
-                "✅ Matched/Beat" if metrics["fertility"] <= b_metrics["fertility"] else "⚠️ Close"
-            )
+        # Step 2b: Append baseline rows measured on the same split, best first.
+        lang_baselines = sorted(
+            (b for b in baselines if b["lang"] == lang), key=lambda b: b["fertility"]
+        )
+        for b_metrics in lang_baselines:
+            delta = (metrics["fertility"] / b_metrics["fertility"] - 1.0) * 100.0
+            status = "✅ Leke lower" if delta < 0 else "⚠️ Baseline lower"
             table_data.append(
                 [
-                    "Goldfish Twi (monolingual)",
+                    b_metrics["model"],
+                    b_metrics["vocab"],
                     LANGUAGE_NAMES[lang],
                     f"{b_metrics['fertility']}",
                     f"{b_metrics['split_rate_gt2']}%",
                     f"{b_metrics['unk_rate']}%",
                     f"{b_metrics['compression_ratio']}",
-                    f"{gate} (Baseline)",
+                    f"{status} ({delta:+.1f}%)",
                 ]
             )
-        elif lang == "ewe" and "Wikilangs Ewe (ee)" in PUBLISHED_BASELINES:
-            b_metrics = PUBLISHED_BASELINES["Wikilangs Ewe (ee)"]["ewe"]
-            gate = (
-                "✅ Matched/Beat" if metrics["fertility"] <= b_metrics["fertility"] else "⚠️ Close"
-            )
-            table_data.append(
-                [
-                    "Wikilangs Ewe (monolingual)",
-                    LANGUAGE_NAMES[lang],
-                    f"{b_metrics['fertility']}",
-                    f"{b_metrics['split_rate_gt2']}%",
-                    f"{b_metrics['unk_rate']}%",
-                    f"{b_metrics['compression_ratio']}",
-                    f"{gate} (Baseline)",
-                ]
-            )
-
-        # Step 2c: Append multilingual NLLB baseline row.
-        if "NLLB-200 (SentencePiece)" in PUBLISHED_BASELINES:
-            n_metrics = PUBLISHED_BASELINES["NLLB-200 (SentencePiece)"][lang]
-            table_data.append(
-                [
-                    "NLLB-200 (multilingual)",
-                    LANGUAGE_NAMES[lang],
-                    f"{n_metrics['fertility']}",
-                    f"{n_metrics['split_rate_gt2']}%",
-                    f"{n_metrics['unk_rate']}%",
-                    f"{n_metrics['compression_ratio']}",
-                    "✅ Leke Superior",
-                ]
-            )
+        summary[lang] = (metrics, lang_baselines)
 
     # Step 3: Format the table headers and markdown string.
     headers = [
         "Model",
+        "Vocab",
         "Language",
         "Fertility (tok/word)",
         "Split >2 (%)",
         "Unknown (%)",
         "Compression (bytes/tok)",
-        "Status",
+        "Leke fertility vs. baseline",
     ]
     table_str = tabulate(table_data, headers=headers, tablefmt="github")
 
-    # Step 4: Construct comprehensive leaderboard report.
+    # Step 4: Summarize where Leke wins and loses on fertility per language.
+    gate_items = []
+    for lang, (metrics, lang_baselines) in summary.items():
+        beaten = [b["model"] for b in lang_baselines if metrics["fertility"] < b["fertility"]]
+        ahead = [b["model"] for b in lang_baselines if b["fertility"] <= metrics["fertility"]]
+        line = (
+            f"- **{LANGUAGE_NAMES[lang]}**: Leke fertility {metrics['fertility']}, "
+            f"`<unk>` rate {metrics['unk_rate']}%."
+        )
+        if beaten:
+            line += f" Lower fertility than: {', '.join(beaten)}."
+        if ahead:
+            line += f" Higher fertility than: {', '.join(ahead)}."
+        gate_items.append(line)
+    gate_lines = "\n".join(gate_items)
+
+    # Step 5: Construct comprehensive leaderboard report.
     report = f"""# Leke Subword Tokenizer — Evaluation Leaderboard
 
-This report compiles the official evaluation benchmarks across held-out test splits for Kwa languages (`twi`, `ewe`, `gaa`, `fat`), testing adherence to the release gates defined in `specs/mission.md`.
+This report compiles the official evaluation benchmarks across held-out test splits for Kwa languages (`twi`, `ewe`, `gaa`, `fat`), comparing Leke against baseline tokenizers measured on the same splits by `scripts/measure_baselines.py`.
 
 ## Held-Out Test Evaluation
 
 {table_str}
 
-## Release Gate Analysis
+## Comparison Summary
 
-1. **Akan / Twi Gate**:
-   - Leke BPE-8k achieves low fertility with 0.0% unknown tokens, beating the multilingual NLLB baseline and the monolingual Goldfish Twi baseline on fertility.
-2. **Ewe Gate**:
-   - Leke BPE-8k achieves compact subword representation with 0.0% unknown tokens, outperforming both NLLB and the monolingual Wikilangs Ewe baseline on fertility.
-3. **Zero OOV Guarantee**:
-   - Zero `<unk>` tokens emitted across 100% of the held-out evaluation text due to byte-level fallback.
-4. **Secondary Languages (Ga and Fante)**:
-   - Both secondary languages exhibit low fertility and 0% unknown tokens.
+{gate_lines}
 """
 
-    # Step 5: Save markdown leaderboard report to disk if path is provided.
+    # Step 6: Save markdown leaderboard report to disk if path is provided.
     if output_report_path:
         output_report_path.parent.mkdir(parents=True, exist_ok=True)
         output_report_path.write_text(report, encoding="utf-8")
 
-    # Step 6: Return the report string.
+    # Step 7: Return the report string.
     return report
 
 

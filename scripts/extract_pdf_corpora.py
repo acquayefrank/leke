@@ -7,12 +7,11 @@ acknowledgement tables, and page headers/footers, normalizes lookalike glyphs vi
 Twi Wikipedia prose (audited in `specs/corpus_licenses.md`), and writes the merged
 corpora to `data/samples/{twi,ewe,gaa,fat}.txt`.
 
-Source PDF Archive (for full reproducibility):
-    https://drive.google.com/drive/folders/13Nwl6DbuEhFY2qH-RxONorv5_kunyLXM?usp=sharing
+The source PDFs are not distributed with this repository. Place the files listed
+in `PDF_BY_LANG` in `data/raw/pdfs/` (git-ignored) before running.
 
 Usage:
-    # Download PDFs from Google Drive archive (if not present) and extract corpora:
-    uv run --with pypdf,gdown python scripts/extract_pdf_corpora.py --download
+    uv run --with pypdf python scripts/extract_pdf_corpora.py
 """
 
 from __future__ import annotations
@@ -32,11 +31,6 @@ ROOT = Path(__file__).resolve().parent.parent
 PDF_DIR = ROOT / "data" / "raw" / "pdfs"
 SAMPLES_DIR = ROOT / "data" / "samples"
 CHAR_MAPPINGS_PATH = ROOT / "data" / "char_mappings.json"
-
-GDRIVE_FOLDER_ID = "13Nwl6DbuEhFY2qH-RxONorv5_kunyLXM"
-GDRIVE_FOLDER_URL = (
-    "https://drive.google.com/drive/folders/13Nwl6DbuEhFY2qH-RxONorv5_kunyLXM?usp=sharing"
-)
 
 PDF_BY_LANG: Dict[str, List[str]] = {
     "twi": [
@@ -464,35 +458,11 @@ def fetch_twi_wikipedia_sentences(mappings: Dict[str, str], target_count: int = 
     return collected
 
 
-def download_pdfs_from_gdrive() -> None:
-    """Download the reference PDF archive from Google Drive into data/raw/pdfs/."""
-    try:
-        import gdown  # type: ignore
-    except ImportError as exc:
-        raise RuntimeError(
-            "Install `gdown` to download PDFs automatically: "
-            "`uv run --with pypdf,gdown python scripts/extract_pdf_corpora.py --download`\n"
-            f"Or download manually from: {GDRIVE_FOLDER_URL}"
-        ) from exc
-
-    PDF_DIR.mkdir(parents=True, exist_ok=True)
-    print(f"Downloading reference PDFs from {GDRIVE_FOLDER_URL} -> {PDF_DIR} ...")
-    gdown.download_folder(url=GDRIVE_FOLDER_URL, output=str(PDF_DIR), quiet=False, use_cookies=False)
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Extract and clean Kwa language corpora from textbook PDFs in data/raw/pdfs/."
     )
-    parser.add_argument(
-        "--download",
-        action="store_true",
-        help=f"Download source PDFs from Google Drive ({GDRIVE_FOLDER_URL}) into data/raw/pdfs/",
-    )
-    args = parser.parse_args()
-
-    if args.download:
-        download_pdfs_from_gdrive()
+    parser.parse_args()
 
     mappings = load_char_mappings()
 

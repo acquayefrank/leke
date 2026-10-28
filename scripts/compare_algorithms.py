@@ -117,7 +117,7 @@ This document records the empirical head-to-head comparison between **Byte-Level
 
 1. **Fertility & Fragmentation**:
    - **Byte-Level BPE** achieves lower tokens-per-word fertility and higher byte compression across all four target Kwa languages (Akan/Twi, Ewe, Ga, and Fante), with a strict 0.0% unknown-token rate.
-   - Unigram spreads its splits more evenly, so fewer words break into more than two pieces (lower >2 split rate), but it emits a small number of `<unk>` tokens and produces longer sequences overall.
+   - Unigram reaches a comparable >2 split rate (see summary table) but produces longer sequences overall and can emit `<unk>` tokens on characters missing from its vocabulary.
    - This occurs because BPE greedily merges high-frequency adjacent syllable affixes (CV, CVC), perfectly aligning with Niger-Congo agglutinative and compound word morphology.
 2. **Standard Ecosystem Interoperability**:
    - Byte-Level BPE is the standard subword architecture for state-of-the-art transformer LLMs (GPT-4, LLaMA-3, Mistral, Gemma).
