@@ -34,3 +34,6 @@ htmlcov/
 data/raw/
 data/processed/
 artifacts/
+
+# FLORES+ evaluation data (gated; do not republish)
+data/eval/
