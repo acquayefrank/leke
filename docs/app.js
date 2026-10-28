@@ -159,15 +159,18 @@ python -m leke.evaluate \\
 
   function renderPresets() {
     if (!elPresets) return;
-    elPresets.innerHTML = `<span style="font-size: 13px; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-right: 6px;">Samples</span>`;
+    elPresets.innerHTML = `<span style="font-size: 13px; color: var(--color-subtle); margin-right: 6px;">Samples</span>`;
     PRESETS.forEach(([name, txt], idx) => {
+      const active = state.preset === idx;
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn btn-secondary';
-      btn.style.minHeight = '32px';
-      btn.style.padding = '4px 12px';
-      btn.style.fontSize = '14px';
-      btn.style.background = state.preset === idx ? 'var(--color-accent-100)' : 'transparent';
+      btn.style.minHeight = '30px';
+      btn.style.padding = '4px 11px';
+      btn.style.fontSize = '13px';
+      btn.style.background = active ? 'var(--color-accent-100)' : '#ffffff';
+      btn.style.borderColor = active ? 'var(--color-accent-600)' : 'var(--color-input-border)';
+      btn.style.color = active ? 'var(--color-accent-700)' : 'var(--color-text)';
       btn.textContent = name;
       btn.addEventListener('click', () => {
         state.text = txt;
