@@ -3,226 +3,128 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Leke Documentation — Subword Tokenization for Kwa Languages</title>
-  <meta name="description" content="Official documentation and interactive manual for Leke: a high-performance subword tokenizer for Akan/Twi, Ewe, Ga and Fante.">
+  <title>The Leke Field Manual &amp; Documentation — Subword Tokenization for Kwa Languages</title>
+  <meta name="description" content="A self-contained interactive tutorial and reference covering the science of subword tokenization, Kwa linguistics, Byte-Level BPE, and the Leke Rust/Python library.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23131316'/%3E%3Ctext x='32' y='45' text-anchor='middle' fill='%23ffffff' font-family='Geist,system-ui,-apple-system,sans-serif' font-size='38' font-weight='600'%3EL%3C/text%3E%3C/svg%3E">
   <style>
     :root {
-      --bg: #ffffff;
-      --text: #131316;
-      --muted: #5e5f6e;
-      --subtle: #7a7b88;
-      --border: #ececef;
+      --paper: #ffffff;
+      --sheet: #fafafa;
+      --ink: #131316;
+      --ink-2: #5e5f6e;
+      --ink-3: #7a7b88;
+      --rule: #ececef;
       --card-border: #e8e8ec;
-      --card-border-hover: #d4d4da;
       --input-border: #e3e3e7;
-      --hero-dec: #f0f0f2;
-      --fill-hover: #f4f4f5;
+      --tint: #f4f4f5;
       --accent: #006786;
       --accent-hover: #0088b0;
-      --accent-badge-bg: #eef9fe;
+      --accent-ink: #ffffff;
+      --accent-badge: #eef9fe;
+      --info: #a35c00;     /* Part I   Information theory & metrics */
+      --ling: #006786;     /* Part II  Kwa linguistics & normalization */
+      --algo: #2457a6;     /* Part III Subword algorithms */
+      --eng: #5b4bb5;      /* Part IV  Systems & library guide */
+      --case: #9b2f5a;     /* Part V   Case studies */
       --good: #1f7a3a;
       --bad: #b3261e;
-      --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-mono: "Geist Mono", ui-monospace, Menlo, Consolas, monospace;
+      --code-bg: #f4f4f5;
+      --font-display: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-body: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
     }
 
     * { box-sizing: border-box; }
-    html {
-      scroll-padding-top: 80px;
-      scroll-behavior: smooth;
-    }
-    html, body {
+    html { scroll-padding-top: 76px; scroll-behavior: smooth; }
+    body {
       margin: 0;
-      padding: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-sans);
+      background: var(--paper);
+      color: var(--ink);
+      font: 15.5px/1.68 var(--font-body);
       -webkit-font-smoothing: antialiased;
       text-wrap: pretty;
     }
-
-    a { color: var(--accent); text-decoration: none; transition: color .15s; }
+    a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
     a:hover { color: var(--accent-hover); }
-    *:focus-visible { outline: 2px solid var(--accent-hover); outline-offset: 2px; }
-
-    code, kbd {
-      font-family: var(--font-mono);
-      font-size: 0.88em;
-      background: var(--fill-hover);
-      padding: 2px 6px;
-      border-radius: 5px;
-      color: var(--text);
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .g:focus-visible {
+      outline: 2px solid var(--accent-hover);
+      outline-offset: 2px;
+      border-radius: 4px;
     }
-
+    h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; line-height: 1.2; letter-spacing: -0.02em; margin: 0; color: var(--ink); }
+    p { margin: 0 0 0.95em; color: var(--ink-2); }
+    p strong, li strong, td strong, b { color: var(--ink); font-weight: 600; }
+    code, kbd, .mono { font-family: var(--font-mono); font-size: 0.87em; }
+    code { background: var(--code-bg); color: var(--ink); padding: 0.12em 0.4em; border-radius: 5px; }
     pre {
       font: 13.5px/1.6 var(--font-mono);
-      background: #fafafa;
+      background: var(--sheet);
       border: 1px solid var(--card-border);
-      padding: 16px 18px;
+      padding: 14px 16px;
       border-radius: 10px;
       overflow-x: auto;
-      margin: 14px 0 20px;
-      color: var(--text);
+      margin: 0 0 1.1em;
+      color: var(--ink);
     }
     pre code { background: none; padding: 0; font-size: inherit; }
+    .label { font: 600 0.72rem/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); }
 
-    .layout {
-      display: flex;
-      min-height: 100vh;
-      align-items: flex-start;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      flex: 0 0 264px;
-      width: 264px;
+    /* ---------- Top bar ---------- */
+    .topbar {
       position: sticky;
       top: 0;
-      height: 100vh;
-      overflow-y: auto;
-      border-right: 1px solid var(--border);
-      padding: 0 12px 36px;
-      background: var(--bg);
-      z-index: 30;
-      transition: transform .2s ease;
-    }
-
-    .brand-row {
+      z-index: 25;
       height: 60px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--rule);
+      padding: 0 clamp(16px, 3vw, 28px);
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 0 8px;
+      gap: 14px;
     }
-
-    .brand-logo {
-      display: flex;
+    .brand-link {
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: var(--text);
+      color: var(--ink);
       font-weight: 600;
       font-size: 20px;
       letter-spacing: -0.02em;
+      text-decoration: none;
+      white-space: nowrap;
     }
-    .brand-logo:hover { color: var(--text); }
-
+    .brand-link:hover { color: var(--ink); }
     .brand-icon {
       width: 22px;
       height: 22px;
       border-radius: 6px;
-      background: var(--text);
-      color: #fff;
+      background: var(--ink);
+      color: #ffffff;
       display: grid;
       place-items: center;
       font-size: 13px;
       font-weight: 600;
     }
-
     .docs-pill {
       font-size: 11.5px;
       font-weight: 500;
-      color: var(--muted);
+      color: var(--ink-2);
       border: 1px solid var(--input-border);
       border-radius: 5px;
       padding: 1px 6px;
     }
-
-    .nav-list {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      margin-top: 10px;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 7px 10px;
-      border-radius: 7px;
-      font-size: 14px;
-      color: var(--text);
-      text-decoration: none;
-      transition: background .12s, color .12s;
-    }
-
-    .nav-item:hover, .nav-item.active {
-      background: var(--fill-hover);
-      color: var(--text);
-    }
-    .nav-item.active { font-weight: 600; }
-
-    .nav-item i {
-      font-size: 18px;
-      color: var(--muted);
-      flex: none;
-    }
-
-    .nav-item .tick {
-      margin-left: auto;
-      font-size: 12px;
-      color: var(--good);
-      visibility: hidden;
-      font-weight: 600;
-    }
-    .nav-item.read .tick { visibility: visible; }
-
-    .nav-group {
-      margin-top: 24px;
-    }
-
-    .nav-group-title {
-      font-size: 12.5px;
-      color: var(--subtle);
-      padding: 0 10px 8px;
-    }
-
-    .glyph-badge {
-      width: 18px;
-      height: 18px;
-      border-radius: 5px;
-      background: var(--accent-badge-bg);
-      color: var(--accent);
-      display: grid;
-      place-items: center;
-      font-size: 10.5px;
-      font-weight: 600;
-      flex: none;
-    }
-
-    /* Content Area */
-    .content-pane {
-      flex: 1 1 0%;
+    .topbar .search {
+      flex: 1 1 auto;
       min-width: 0;
-    }
-
-    .top-header {
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 0 clamp(16px, 3vw, 28px);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(8px);
-      z-index: 25;
-    }
-
-    .search-wrapper {
       position: relative;
-      flex: 0 1 260px;
-      min-width: 160px;
-      max-width: 260px;
+      max-width: 360px;
+      margin-left: auto;
     }
-
     .search-box {
       height: 34px;
       display: flex;
@@ -231,1520 +133,1895 @@
       padding: 0 10px;
       border: 1px solid var(--input-border);
       border-radius: 8px;
+      background: var(--paper);
       box-shadow: 0 1px 2px rgba(19, 19, 22, 0.04);
-      color: var(--subtle);
-      background: var(--bg);
+      color: var(--ink-3);
     }
-
-    .search-box input {
+    .search-box input[type="search"] {
       flex: 1;
       min-width: 0;
       border: 0;
       outline: none;
-      font: inherit;
-      font-size: 13.5px;
-      color: var(--text);
+      font: 13.5px var(--font-display);
       background: transparent;
+      color: var(--ink);
     }
-
-    .search-results {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      min-width: 300px;
-      z-index: 50;
-      background: var(--bg);
-      border: 1px solid var(--input-border);
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(19, 19, 22, 0.1);
-      max-height: 340px;
-      overflow-y: auto;
-      padding: 6px;
-    }
-
-    .search-results a {
-      display: block;
-      padding: 8px 10px;
-      border-radius: 6px;
-      text-decoration: none;
-      color: var(--text);
-    }
-    .search-results a:hover {
-      background: var(--fill-hover);
-      color: var(--accent);
-    }
-
-    .header-links {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .progress-pill {
+    .progress {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 12.5px;
-      color: var(--muted);
+      font: 500 12.5px var(--font-display);
+      color: var(--ink-2);
       white-space: nowrap;
     }
-    .progress-bar {
-      width: 72px;
-      height: 5px;
-      background: var(--fill-hover);
+    .progress .bar {
+      width: 84px;
+      height: 6px;
+      background: var(--tint);
       border-radius: 3px;
       overflow: hidden;
     }
-    .progress-bar i {
+    .progress .bar i {
       display: block;
       height: 100%;
       width: 0;
       background: var(--accent);
-      transition: width .2s ease;
+      transition: width 0.2s ease;
     }
-
-    .header-link {
-      font-size: 14px;
-      color: var(--muted);
-      white-space: nowrap;
-      text-decoration: none;
-      display: flex;
+    .gh-link {
+      display: inline-flex;
       align-items: center;
       gap: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      white-space: nowrap;
     }
-    .header-link:hover { color: var(--text); }
-    .header-link.gh { color: var(--text); font-weight: 500; }
-    .header-link.gh:hover { color: var(--accent); }
-
-    .menu-toggle {
+    .gh-link:hover { color: var(--accent); }
+    .menu-btn {
       display: none;
+      font: 600 13px var(--font-display);
       border: 1px solid var(--input-border);
-      background: #fff;
-      border-radius: 6px;
-      padding: 6px 9px;
-      font-size: 18px;
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 7px;
+      padding: 6px 10px;
       cursor: pointer;
-      color: var(--text);
     }
-
-    /* Main body */
-    main {
-      position: relative;
-      overflow: hidden;
-      padding: 0 clamp(20px, 5vw, 76px) 96px;
-      max-width: 1040px;
-    }
-
-    .hero-shape-1 {
+    .results {
       position: absolute;
-      left: 52px;
-      top: -40px;
-      width: 280px;
-      height: 280px;
-      border: 1px solid var(--hero-dec);
-      border-radius: 40px;
-      pointer-events: none;
-    }
-    .hero-shape-2 {
-      position: absolute;
-      right: -60px;
-      top: -30px;
-      width: 300px;
-      height: 210px;
-      border: 1px solid var(--hero-dec);
-      border-radius: 40px;
-      pointer-events: none;
-    }
-    .hero-shape-3 {
-      position: absolute;
-      right: -120px;
-      top: 200px;
-      width: 220px;
-      height: 160px;
-      border: 1px solid var(--hero-dec);
-      border-radius: 40px;
-      pointer-events: none;
-    }
-
-    .section-intro {
-      position: relative;
-      padding-top: 68px;
-    }
-
-    .kicker {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(28px, 3.2vw, 34px);
-      font-weight: 600;
-      letter-spacing: -0.025em;
-      line-height: 1.2;
-    }
-
-    .lede {
-      margin: 12px 0 0;
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--muted);
-      max-width: 60ch;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
-      gap: 20px;
-      margin-top: 44px;
-    }
-
-    .entry-card {
-      display: flex;
-      flex-direction: column;
-      padding: 24px 22px;
-      border: 1px solid var(--card-border);
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background: var(--paper);
+      border: 1px solid var(--input-border);
       border-radius: 10px;
-      background: #ffffff;
-      box-shadow: 0 1px 2px rgba(19, 19, 22, 0.04);
-      color: var(--text);
-      text-decoration: none;
-      transition: border-color .15s, box-shadow .15s;
+      box-shadow: 0 10px 28px rgba(19, 19, 22, 0.12);
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 6px;
     }
-    .entry-card:hover {
-      border-color: var(--card-border-hover);
-      box-shadow: 0 4px 14px rgba(19, 19, 22, 0.07);
-      color: var(--text);
-    }
-
-    .entry-card i {
-      font-size: 30px;
-      color: var(--muted);
-    }
-
-    .entry-card-title {
-      margin-top: 36px;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .entry-card-body {
-      margin: 8px 0 0;
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--muted);
-    }
-
-    .section-title {
-      margin: 0;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .section-subtitle {
-      margin: 10px 0 0;
-      font-size: 15px;
-      color: var(--muted);
-    }
-
-    .link-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-      gap: 34px 40px;
-      margin-top: 36px;
-    }
-
-    .grid-item {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      color: var(--text);
-      text-decoration: none;
-    }
-    .grid-item:hover {
-      color: var(--accent);
-    }
-
-    .circle-glyph {
-      flex: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--text);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .grid-item i {
-      flex: none;
-      font-size: 32px;
-      color: var(--text);
-    }
-
-    .grid-item-title {
+    .results a {
       display: block;
-      font-size: 15px;
-      font-weight: 600;
-      transition: color .15s;
+      padding: 8px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--ink);
     }
+    .results a:hover, .results a:focus-visible { background: var(--tint); }
+    .results b { font: 600 13.5px var(--font-display); display: block; }
+    .results small { color: var(--ink-2); font-size: 12px; }
+    .results mark { background: var(--accent-badge); color: var(--accent); border-radius: 2px; padding: 0 2px; }
 
-    .grid-item-desc {
-      display: block;
-      margin-top: 6px;
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--muted);
+    /* ---------- Shell ---------- */
+    .shell {
+      display: grid;
+      grid-template-columns: 272px minmax(0, 1fr);
+      gap: 48px;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 28px clamp(16px, 4vw, 48px) 96px;
     }
-
-    /* Documentation Content Sections */
-    .doc-divider {
-      margin: 72px 0 0;
-      border: 0;
-      border-top: 1px solid var(--border);
+    nav.toc {
+      position: sticky;
+      top: 78px;
+      align-self: start;
+      max-height: calc(100vh - 96px);
+      overflow-y: auto;
+      padding-right: 8px;
+      font-family: var(--font-display);
     }
-
-    section.doc-section {
-      padding: 56px 0 40px;
-      border-bottom: 1px solid var(--border);
-      max-width: 760px;
-    }
-    section.doc-section:last-of-type {
-      border-bottom: 0;
-    }
-
-    .doc-eyebrow {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
+    nav.toc .part {
+      margin: 18px 0 6px;
+      padding: 0 8px;
+      font: 600 11.5px/1.2 var(--font-display);
       text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 8px;
+      letter-spacing: 0.07em;
+    }
+    nav.toc .part:first-child { margin-top: 4px; }
+    nav.toc ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 2px;
+    }
+    nav.toc a {
       display: flex;
-      align-items: center;
       gap: 8px;
-    }
-
-    .doc-section h2 {
-      font-size: 24px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      margin: 0 0 14px;
-      color: var(--text);
-    }
-
-    .doc-section h3 {
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      margin: 28px 0 10px;
-      color: var(--text);
-    }
-
-    .doc-section p {
-      font-size: 15px;
-      line-height: 1.7;
-      color: var(--muted);
-      margin: 0 0 14px;
-    }
-    .doc-section p strong, .doc-section li strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .doc-section ul, .doc-section ol {
-      padding-left: 20px;
-      margin: 0 0 16px;
-      font-size: 15px;
-      line-height: 1.7;
-      color: var(--muted);
-    }
-    .doc-section li { margin-bottom: 6px; }
-
-    /* 4-part Facets */
-    .facets {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin: 18px 0 22px;
-    }
-    .facet {
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 14px 16px;
-      background: #fafafa;
-    }
-    .facet-label {
-      display: block;
-      font-size: 11.5px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
-    .facet p {
+      align-items: baseline;
+      text-decoration: none;
+      color: var(--ink-2);
       font-size: 13.5px;
-      line-height: 1.55;
-      margin: 0;
+      padding: 6px 8px;
+      border-radius: 7px;
+      transition: background 0.12s, color 0.12s;
     }
+    nav.toc a:hover { background: var(--tint); color: var(--ink); }
+    nav.toc a.current { background: var(--tint); color: var(--ink); font-weight: 600; }
+    nav.toc a .n { font: 500 11.5px var(--font-mono); color: var(--ink-3); min-width: 1.9em; }
+    nav.toc a .tick { margin-left: auto; color: var(--good); font-size: 12px; visibility: hidden; font-weight: 600; }
+    nav.toc a.read .tick { visibility: visible; }
+
+    main { min-width: 0; }
+    .cover {
+      padding: 8px 0 32px;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 12px;
+      display: grid;
+      gap: 14px;
+      max-width: 76ch;
+    }
+    .cover h1 { font-size: clamp(2rem, 4.2vw, 2.75rem); letter-spacing: -0.03em; }
+    .cover h1 em { font-style: normal; color: var(--accent); }
+    .cover .lede { font-size: 1.08rem; color: var(--ink-2); max-width: 65ch; margin: 0; }
+    .parts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .parts a {
+      text-decoration: none;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--card-border);
+      border-top: 3px solid var(--c);
+      border-radius: 9px;
+      padding: 12px 13px;
+      display: grid;
+      gap: 4px;
+      box-shadow: 0 1px 2px rgba(19, 19, 22, 0.04);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .parts a:hover { box-shadow: 0 4px 14px rgba(19, 19, 22, 0.07); }
+    .parts a b { font: 600 14px var(--font-display); color: var(--ink); }
+    .parts a span { font-size: 12.5px; color: var(--ink-2); line-height: 1.45; }
+
+    section.chapter {
+      padding: 44px 0 32px;
+      border-bottom: 1px solid var(--rule);
+      max-width: 74ch;
+    }
+    .chapter .eyebrow {
+      font: 600 11.5px/1 var(--font-display);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--c);
+      margin-bottom: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .chapter .eyebrow .num { font-family: var(--font-mono); }
+    .chapter h2 { font-size: clamp(1.45rem, 3vw, 1.85rem); letter-spacing: -0.02em; margin-bottom: 14px; }
+    .chapter h3 { font-size: 1.12rem; margin: 28px 0 8px; }
+    .chapter h4 { font-size: 0.96rem; margin: 18px 0 6px; color: var(--ink-2); }
+    .chapter ul, .chapter ol { padding-left: 1.35em; margin: 0 0 1em; color: var(--ink-2); }
+    .chapter li { margin-bottom: 0.38em; }
+    .intro { font-size: 1.03rem; color: var(--ink-2); }
+
+    /* Four-part principle frame */
+    .facets { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin: 10px 0 18px; }
+    .facet { background: var(--sheet); border: 1px solid var(--card-border); border-radius: 9px; padding: 12px 14px; font-size: 14px; min-width: 0; }
+    .facet .label { display: block; margin-bottom: 5px; color: var(--c); }
+    .facet p:last-child { margin-bottom: 0; font-size: 13.5px; line-height: 1.55; }
+
+    /* Formulas, Worked Examples, In Leke callouts, Pitfalls */
+    .formula {
+      background: var(--sheet);
+      border: 1px solid var(--card-border);
+      border-left: 3px solid var(--c);
+      border-radius: 8px;
+      padding: 12px 15px;
+      margin: 0 0 1.1em;
+      overflow-x: auto;
+    }
+    .formula .eq { font: 500 14.5px/1.7 var(--font-mono); color: var(--ink); white-space: nowrap; }
+    .formula .where { font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+    .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 3px; }
+    .frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 4px; }
+    .frac > span:last-child { padding: 0 4px; }
+
+    .example { background: var(--tint); border-radius: 9px; padding: 13px 15px; margin: 0 0 1.1em; font-size: 14.5px; }
+    .example .label { display: block; margin-bottom: 6px; }
+    .example p:last-child { margin-bottom: 0; }
+
+    .project { border-left: 3px solid var(--c); padding: 2px 0 2px 14px; margin: 0 0 1.1em; }
+    .project .label { display: block; margin-bottom: 5px; color: var(--c); }
+    .project p:last-child { margin-bottom: 0; }
+
+    .pitfall {
+      background: color-mix(in srgb, var(--bad) 6%, var(--paper));
+      border: 1px solid color-mix(in srgb, var(--bad) 26%, var(--rule));
+      border-radius: 9px;
+      padding: 12px 15px;
+      margin: 0 0 1.1em;
+      font-size: 14.5px;
+    }
+    .pitfall .label { color: var(--bad); display: block; margin-bottom: 5px; }
+    .pitfall p:last-child, .pitfall ul:last-child { margin-bottom: 0; }
 
     /* Tables */
-    .tbl-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      margin: 16px 0 22px;
-    }
-    table.doc-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      font-variant-numeric: tabular-nums;
-    }
-    .doc-table th, .doc-table td {
-      padding: 10px 14px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    .doc-table th {
-      background: #fafafa;
-      font-weight: 600;
-      color: var(--text);
-      font-size: 13px;
-    }
-    .doc-table td { color: var(--muted); }
-    .doc-table tr:last-child td { border-bottom: 0; }
-    .badge-win {
-      display: inline-block;
-      padding: 2px 7px;
-      border-radius: 5px;
-      background: var(--accent-badge-bg);
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 600;
-    }
+    .tbl { overflow-x: auto; margin: 0 0 1.1em; border: 1px solid var(--card-border); border-radius: 9px; background: var(--paper); }
+    table { border-collapse: collapse; width: 100%; font: 13.5px/1.48 var(--font-display); font-variant-numeric: tabular-nums; }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+    th { font-weight: 600; color: var(--ink); background: var(--sheet); font-size: 12.5px; }
+    td { color: var(--ink-2); }
+    tr:last-child td { border-bottom: 0; }
+    td.n, th.n { text-align: right; }
 
     /* Interactive Benches */
     .bench {
+      background: var(--paper);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 18px 20px;
-      margin: 20px 0 24px;
-      background: #ffffff;
+      border-radius: 12px;
+      padding: 18px;
+      margin: 12px 0 22px;
+      display: grid;
+      gap: 12px;
+      min-width: 0;
       box-shadow: 0 1px 2px rgba(19, 19, 22, 0.04);
     }
-    .bench-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    .bench-tag {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 2px 7px;
-      border-radius: 5px;
-      background: var(--accent-badge-bg);
-      color: var(--accent);
-    }
-    .bench-head h4 {
-      margin: 0;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-    }
-    .bench-input-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--muted);
-      margin-top: 12px;
-    }
-    .bench-input {
-      width: 100%;
-      margin-top: 6px;
-      padding: 9px 12px;
+    .bench header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .bench header h4 { margin: 0; color: var(--ink); font-size: 15px; font-weight: 600; }
+    .bench header .label { color: var(--c); background: var(--accent-badge); padding: 3px 7px; border-radius: 5px; }
+    .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 16px; font: 13.5px var(--font-display); }
+    .controls label { display: grid; gap: 5px; color: var(--ink-2); }
+    .controls output { font: 600 13.5px var(--font-mono); color: var(--ink); }
+    .controls input[type="range"] { width: 100%; accent-color: var(--c); }
+    .controls select, .controls input[type="text"], .controls textarea {
+      font: 13.5px var(--font-mono);
+      padding: 7px 10px;
+      border-radius: 7px;
       border: 1px solid var(--input-border);
-      border-radius: 8px;
-      font: 14px var(--font-mono);
-      color: var(--text);
-      background: #fafafa;
+      background: var(--sheet);
+      color: var(--ink);
+      width: 100%;
     }
-    .readouts {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 10px;
-      margin-top: 14px;
+    .readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); gap: 8px; }
+    .readout { background: var(--tint); border-radius: 8px; padding: 9px 11px; display: grid; gap: 3px; }
+    .readout span { font: 500 11.5px var(--font-display); color: var(--ink-2); }
+    .readout b { font: 600 1.08rem var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+    .canvas-wrap { position: relative; width: 100%; }
+    .canvas-wrap canvas { width: 100%; height: auto; display: block; border-radius: 8px; background: var(--sheet); border: 1px solid var(--rule); }
+    .btnrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .btn {
+      font: 500 13px var(--font-display);
+      border-radius: 7px;
+      padding: 6px 12px;
+      cursor: pointer;
+      border: 1px solid var(--input-border);
+      background: var(--paper);
+      color: var(--ink);
+      transition: background 0.12s, border-color 0.12s;
     }
-    .readout {
-      background: var(--fill-hover);
-      border-radius: 8px;
-      padding: 10px 12px;
-    }
-    .readout span {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .readout b {
-      display: block;
-      margin-top: 4px;
-      font: 600 16px var(--font-mono);
-      color: var(--text);
-    }
+    .btn.solid { background: var(--ink); border-color: var(--ink); color: #ffffff; }
+    .btn:hover { background: var(--tint); }
+    .btn.solid:hover { background: var(--accent); border-color: var(--accent); }
+    .note { font-size: 13px; color: var(--ink-2); margin: 0; }
+
     .token-chips {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       padding: 12px;
-      margin-top: 12px;
-      background: #fafafa;
-      border: 1px solid var(--border);
+      background: var(--sheet);
+      border: 1px solid var(--rule);
       border-radius: 8px;
-      min-height: 44px;
+      min-height: 46px;
     }
     .chip {
-      padding: 3px 8px;
-      border-radius: 5px;
+      display: inline-flex;
+      flex-direction: column;
+      padding: 4px 8px;
+      border-radius: 6px;
       font: 13px var(--font-mono);
-      background: var(--accent-badge-bg);
+      background: var(--accent-badge);
       color: var(--accent);
       border: 1px solid rgba(0, 103, 134, 0.2);
     }
+    .chip small { font-size: 10px; opacity: 0.75; }
     .chip.byte {
       background: #fff1f4;
       color: #790e3d;
       border-color: rgba(214, 0, 108, 0.25);
     }
 
-    /* Quiz */
-    .quiz {
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 16px 18px;
-      margin: 20px 0;
-      background: #fafafa;
-    }
-    .quiz-label {
-      font-size: 11.5px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-    .q p {
-      font-size: 14.5px;
-      font-weight: 600;
-      color: var(--text);
-      margin: 0 0 10px;
-    }
-    .q label {
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-      font-size: 14px;
-      color: var(--muted);
-      cursor: pointer;
-      padding: 6px 8px;
-      border-radius: 6px;
-    }
-    .q label:hover { background: var(--fill-hover); color: var(--text); }
-    .q label.right { background: rgba(31, 122, 58, 0.12); color: var(--text); }
-    .q label.wrong { background: rgba(179, 38, 30, 0.1); color: var(--text); }
-    .q .why {
-      margin-top: 10px;
-      font-size: 13.5px;
-      color: var(--muted);
-      border-left: 2px solid var(--accent);
-      padding-left: 10px;
-    }
+    /* Quizzes */
+    .quiz { background: var(--sheet); border: 1px solid var(--card-border); border-radius: 10px; padding: 14px 16px; margin: 18px 0 8px; display: grid; gap: 14px; }
+    .quiz > .label { color: var(--c); }
+    .q { display: grid; gap: 6px; }
+    .q > p { font-weight: 600; font-family: var(--font-display); font-size: 14.5px; color: var(--ink); margin: 0; }
+    .q label { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--ink-2); cursor: pointer; padding: 5px 8px; border-radius: 6px; }
+    .q label:hover { background: var(--tint); color: var(--ink); }
+    .q label.right { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--ink); }
+    .q label.wrong { background: color-mix(in srgb, var(--bad) 12%, transparent); color: var(--ink); }
+    .q .why { font-size: 13.5px; color: var(--ink-2); border-left: 2px solid var(--c); padding-left: 10px; margin-top: 4px; }
 
-    /* Section Footer & Mark as Read */
-    .section-foot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 22px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .mark-read {
-      font: 500 13px var(--font-sans);
-      border-radius: 7px;
-      padding: 6px 12px;
-      cursor: pointer;
-      border: 1px solid var(--input-border);
-      background: #fff;
-      color: var(--text);
-      transition: background .12s, border-color .12s;
-    }
-    .mark-read:hover { background: var(--fill-hover); }
-    .mark-read[aria-pressed="true"] {
-      background: rgba(31, 122, 58, 0.1);
-      border-color: var(--good);
-      color: var(--good);
-      font-weight: 600;
-    }
+    .chapter-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+    .mark-read { font: 500 13px var(--font-display); border-radius: 7px; padding: 7px 12px; cursor: pointer; border: 1px solid var(--input-border); background: var(--paper); color: var(--ink); }
+    .mark-read:hover { background: var(--tint); }
+    .mark-read[aria-pressed="true"] { background: color-mix(in srgb, var(--good) 12%, var(--paper)); border-color: var(--good); color: var(--good); font-weight: 600; }
 
-    /* Glossary & Tooltips */
-    .g {
-      border-bottom: 1px dotted var(--subtle);
-      cursor: help;
-      color: var(--text);
-    }
+    /* Glossary terms */
+    .g { border-bottom: 1px dotted var(--ink-3); cursor: help; color: var(--ink); }
     .tip {
       position: absolute;
-      z-index: 60;
-      max-width: 320px;
-      background: var(--text);
-      color: #fff;
-      font-size: 13px;
-      line-height: 1.45;
+      z-index: 50;
+      max-width: min(340px, calc(100vw - 32px));
+      background: var(--ink);
+      color: var(--paper);
+      font: 13px/1.48 var(--font-display);
       padding: 9px 12px;
       border-radius: 8px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     }
-    .tip b { display: block; margin-bottom: 3px; font-weight: 600; }
+    .tip b { display: block; margin-bottom: 2px; color: #ffffff; }
+    dl.glossary { display: grid; grid-template-columns: minmax(140px, 210px) minmax(0, 1fr); gap: 8px 18px; font-size: 14px; }
+    dl.glossary dt { font: 600 13.5px var(--font-display); color: var(--ink); }
+    dl.glossary dd { margin: 0; color: var(--ink-2); }
 
-    dl.glossary {
-      display: grid;
-      grid-template-columns: minmax(140px, 200px) 1fr;
-      gap: 10px 20px;
-      font-size: 14px;
-      margin-top: 16px;
-    }
-    dl.glossary dt { font-weight: 600; color: var(--text); }
-    dl.glossary dd { margin: 0; color: var(--muted); line-height: 1.6; }
-
-    /* Mobile drawer */
-    @media (max-width: 840px) {
-      .sidebar {
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: minmax(0, 1fr); }
+      nav.toc {
         position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        transform: translateX(-100%);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        z-index: 35;
+        inset: 60px auto 0 0;
+        width: min(300px, 86vw);
+        max-height: none;
+        background: var(--paper);
+        border-right: 1px solid var(--rule);
+        padding: 14px 14px 40px;
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
       }
-      .sidebar.open { transform: translateX(0); }
-      .menu-toggle { display: block; }
-      .progress-bar { display: none; }
-      .backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.3);
-        z-index: 28;
-      }
-      dl.glossary { grid-template-columns: 1fr; }
+      nav.toc.open { transform: none; }
+      .menu-btn { display: inline-block; }
+      .progress .bar { display: none; }
+      dl.glossary { grid-template-columns: minmax(0, 1fr); }
+      dl.glossary dd { margin-bottom: 8px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="layout">
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="brand-row">
-        <a href="index.html" class="brand-logo">
-          <span class="brand-icon">L</span>
-          <span>leke</span>
-        </a>
-        <span class="docs-pill">Docs</span>
-      </div>
+  <!-- Top Header: Logo goes back to index.html; everything else is 100% self-contained -->
+  <header class="topbar">
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="toc">Chapters</button>
+    <a href="index.html" class="brand-link" title="Back to Leke home">
+      <span class="brand-icon">L</span>
+      <span>leke</span>
+    </a>
+    <span class="docs-pill">Field Manual &amp; Docs</span>
 
-      <nav class="nav-list">
-        <a href="#home" class="nav-item active">
-          <i class="ph-duotone ph-house"></i>
-          <span>Home</span>
-        </a>
-        <a href="#quickstart" class="nav-item">
-          <i class="ph-duotone ph-check-circle"></i>
-          <span>Quickstart</span>
-        </a>
-        <a href="index.html#playground" class="nav-item">
-          <i class="ph-duotone ph-play-circle"></i>
-          <span>Playground</span>
-        </a>
-        <a href="#python-api" class="nav-item">
-          <i class="ph-duotone ph-code"></i>
-          <span>API Reference</span>
-        </a>
-      </nav>
-
-      <div class="nav-group">
-        <div class="nav-group-title">Core concepts</div>
-        <div class="nav-list">
-          <a href="#introduction" class="nav-item">
-            <span>Introduction</span>
-            <span class="tick">✓</span>
-          </a>
-          <a href="#unicode-norm" class="nav-item">
-            <span>Unicode normalization</span>
-            <span class="tick">✓</span>
-          </a>
-          <a href="#lookalikes" class="nav-item">
-            <span>Lookalike mapping</span>
-            <span class="tick">✓</span>
-          </a>
-          <a href="#tone-policy" class="nav-item">
-            <span>Tone policy</span>
-            <span class="tick">✓</span>
-          </a>
-          <a href="#byte-bpe" class="nav-item">
-            <span>Byte-level BPE</span>
-            <span class="tick">✓</span>
-          </a>
-          <a href="#training-vocab" class="nav-item">
-            <span>Training a vocabulary</span>
-            <span class="tick">✓</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="nav-group">
-        <div class="nav-group-title">Languages</div>
-        <div class="nav-list">
-          <a href="#lang-twi" class="nav-item">
-            <span class="glyph-badge">Tw</span>
-            <span>Twi</span>
-          </a>
-          <a href="#lang-ewe" class="nav-item">
-            <span class="glyph-badge">Ee</span>
-            <span>Ewe</span>
-          </a>
-          <a href="#lang-ga" class="nav-item">
-            <span class="glyph-badge">Ga</span>
-            <span>Ga</span>
-          </a>
-          <a href="#lang-fante" class="nav-item">
-            <span class="glyph-badge">Fa</span>
-            <span>Fante</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="nav-group">
-        <div class="nav-group-title">Reference</div>
-        <div class="nav-list">
-          <a href="#python-api" class="nav-item">
-            <span>Python API</span>
-          </a>
-          <a href="#rust-api" class="nav-item">
-            <span>Rust API</span>
-          </a>
-          <a href="#tokenizer-config" class="nav-item">
-            <span>Tokenizer config</span>
-          </a>
-          <a href="#benchmarks" class="nav-item">
-            <span>Evaluation results</span>
-          </a>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <div class="content-pane">
-      <header class="top-header">
-        <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
-          <button type="button" class="menu-toggle" id="menu-btn" aria-label="Toggle navigation">
-            <i class="ph-duotone ph-list"></i>
-          </button>
-          <div class="search-wrapper">
-            <label class="search-box">
-              <i class="ph-duotone ph-magnifying-glass"></i>
-              <input id="search-input" type="search" placeholder="Search documentation" autocomplete="off">
-              <span style="font-size: 11.5px; color: var(--subtle); white-space: nowrap;">⌘K</span>
-            </label>
-            <div id="search-dropdown" class="search-results" hidden></div>
-          </div>
-        </div>
-
-        <div class="header-links">
-          <div class="progress-pill" title="Sections marked as read">
-            <span class="progress-bar"><i id="prog-bar"></i></span>
-            <span id="prog-text">0/6 read</span>
-          </div>
-          <a href="index.html#playground" class="header-link">Playground</a>
-          <a href="https://github.com/acquayefrank/leke" target="_blank" rel="noopener noreferrer" class="header-link gh">
-            <i class="ph-duotone ph-github-logo" style="font-size: 18px;"></i>GitHub
-          </a>
-        </div>
-      </header>
-
-      <main id="home">
-        <div aria-hidden="true" class="hero-shape-1"></div>
-        <div aria-hidden="true" class="hero-shape-2"></div>
-        <div aria-hidden="true" class="hero-shape-3"></div>
-
-        <!-- Overview Hero & Entry Cards -->
-        <section class="section-intro">
-          <div class="kicker">Get set up</div>
-          <h1>Leke documentation</h1>
-          <p class="lede">Subword tokenization for Akan/Twi, Ewe, Ga and Fante. Orthographic normalization, a byte-level BPE core in Rust, and Python bindings.</p>
-
-          <div class="card-grid">
-            <a href="#quickstart" class="entry-card">
-              <i class="ph-duotone ph-play-circle"></i>
-              <div class="entry-card-title">Quickstart</div>
-              <p class="entry-card-body">Install the package and encode your first sentence in four lines of Python or Rust.</p>
-            </a>
-
-            <a href="#tokenizer-config" class="entry-card">
-              <i class="ph-duotone ph-cube"></i>
-              <div class="entry-card-title">Pretrained tokenizers</div>
-              <p class="entry-card-body">Load the 8k BPE vocabulary directly into Hugging Face Transformers.</p>
-            </a>
-
-            <a href="#benchmarks" class="entry-card">
-              <i class="ph-duotone ph-chart-bar"></i>
-              <div class="entry-card-title">Benchmarks</div>
-              <p class="entry-card-body">Fertility and unknown-token rates on held-out test splits against NLLB-200 and monolingual models.</p>
-            </a>
-
-            <a href="#python-api" class="entry-card">
-              <i class="ph-duotone ph-brackets-angle"></i>
-              <div class="entry-card-title">API Reference</div>
-              <p class="entry-card-body">Classes, methods and configuration for the Python package and the Rust crate.</p>
-            </a>
-          </div>
-        </section>
-
-        <!-- Explore by language -->
-        <section style="position: relative; padding-top: 80px;">
-          <h2 class="section-title">Explore by language</h2>
-          <p class="section-subtitle">Orthographic rules, special characters and corpus notes for each supported Kwa language.</p>
-          <div class="link-grid">
-            <a href="#lang-twi" class="grid-item">
-              <span class="circle-glyph">Tw</span>
-              <span>
-                <span class="grid-item-title">Akan / Twi</span>
-                <span class="grid-item-desc">Open vowels ɛ and ɔ, phonemic tone on minimal pairs like pápá and papá, Asante and Akuapem dialects.</span>
-              </span>
-            </a>
-            <a href="#lang-ewe" class="grid-item">
-              <span class="circle-glyph">Ee</span>
-              <span>
-                <span class="grid-item-title">Ewe</span>
-                <span class="grid-item-desc">Extended Latin ɖ, ƒ, ɣ, ŋ and ʋ, high/low/rising tone marks, and common Greek lookalike substitutions.</span>
-              </span>
-            </a>
-            <a href="#lang-ga" class="grid-item">
-              <span class="circle-glyph">Ga</span>
-              <span>
-                <span class="grid-item-title">Ga</span>
-                <span class="grid-item-desc">Digraphs gb, kp, ny, ŋm and sh, open vowels ɛ and ɔ, and nasalized vowel sequences.</span>
-              </span>
-            </a>
-            <a href="#lang-fante" class="grid-item">
-              <span class="circle-glyph">Fa</span>
-              <span>
-                <span class="grid-item-title">Fante</span>
-                <span class="grid-item-desc">Coastal Akan orthography, labialized and palatalized consonant clusters, and shared Akan stems.</span>
-              </span>
-            </a>
-          </div>
-        </section>
-
-        <!-- Explore by binding -->
-        <section style="position: relative; padding-top: 80px;">
-          <h2 class="section-title">Explore by binding</h2>
-          <p class="section-subtitle">Use Leke from Python, Rust, Hugging Face or the command line.</p>
-          <div class="link-grid">
-            <a href="#python-api" class="grid-item">
-              <i class="ph-duotone ph-file-py"></i>
-              <span>
-                <span class="grid-item-title">Python (PyO3)</span>
-                <span class="grid-item-desc">Zero-copy bindings that release the GIL for multi-worker PyTorch data loading.</span>
-              </span>
-            </a>
-            <a href="#rust-api" class="grid-item">
-              <i class="ph-duotone ph-gear-six"></i>
-              <span>
-                <span class="grid-item-title">Rust crate</span>
-                <span class="grid-item-desc">Native normalizer and BPE encoder delivering 356k tokens per second on a single core.</span>
-              </span>
-            </a>
-            <a href="#tokenizer-config" class="grid-item">
-              <i class="ph-duotone ph-smiley"></i>
-              <span>
-                <span class="grid-item-title">Hugging Face</span>
-                <span class="grid-item-desc">Drop-in tokenizer.json compatible with PreTrainedTokenizerFast and AutoTokenizer.</span>
-              </span>
-            </a>
-            <a href="#tokenizer-config" class="grid-item">
-              <i class="ph-duotone ph-terminal-window"></i>
-              <span>
-                <span class="grid-item-title">CLI training</span>
-                <span class="grid-item-desc">Train new vocabularies from JSONL corpora with configurable size and cryptographic receipts.</span>
-              </span>
-            </a>
-          </div>
-        </section>
-
-        <hr class="doc-divider">
-
-        <!-- ==========================================================
-             CORE CONCEPTS & INTERACTIVE MANUAL
-             ========================================================== -->
-
-        <!-- 1. Introduction -->
-        <section class="doc-section" id="introduction" data-track="1">
-          <div class="doc-eyebrow">01 · Core Concepts</div>
-          <h2>Introduction: Why Kwa languages break standard tokenizers</h2>
-          <p>In multilingual LLMs, tokenization acts as an invisible computational tax. A 10-word sentence in English typically produces 12 tokens; the exact same 10-word sentence in Twi, Ewe, Ga, or Fante frequently produces 35 to 55 tokens in general-purpose models like GPT-4, LLaMA-3, or NLLB-200.</p>
-          <p>Every concept in Leke is engineered around four constraints:</p>
-
-          <div class="facets">
-            <div class="facet">
-              <span class="facet-label">Linguistic reality</span>
-              <p>African text in the wild combines regional mobile keyboards, OCR artifacts, and visually identical Greek or Cyrillic substitutes.</p>
-            </div>
-            <div class="facet">
-              <span class="facet-label">In Leke</span>
-              <p>A native Rust normalizer harmonizes codepoints before subword segmentation, backed by all 256 raw byte tokens.</p>
-            </div>
-            <div class="facet">
-              <span class="facet-label">Why this choice</span>
-              <p>Lowers <span class="g" data-g="fertility" tabindex="0">fertility</span> by up to 28% compared to NLLB-200 while guaranteeing a hard 0.0% <code>&lt;unk&gt;</code> rate.</p>
-            </div>
-            <div class="facet">
-              <span class="facet-label">Scope limits</span>
-              <p>Operates strictly at the orthographic level; unlabeled acoustic tone requires downstream contextual modeling.</p>
-            </div>
-          </div>
-
-          <div class="quiz">
-            <div class="quiz-label">Check yourself</div>
-            <div class="q" data-answer="b">
-              <p>Why do general multilingual tokenizers inflate token counts on Kwa languages?</p>
-              <label><input type="radio" name="q0" value="a"> <span>They do not support UTF-8 encoding</span></label>
-              <label><input type="radio" name="q0" value="b"> <span>Vocabulary starvation splits African words into 3–6 tiny character or byte fragments</span></label>
-              <label><input type="radio" name="q0" value="c"> <span>They only process right-to-left scripts</span></label>
-              <div class="why" hidden><b></b>General multilingual models allocate less than 0.1% of their vocabulary to West African languages, forcing words to splinter into individual characters and bytes.</div>
-            </div>
-          </div>
-
-          <div class="section-foot">
-            <button class="mark-read" type="button" aria-pressed="false">Mark section as read</button>
-            <a href="#unicode-norm">Next: Unicode normalization →</a>
-          </div>
-        </section>
-
-        <!-- 2. Unicode normalization -->
-        <section class="doc-section" id="unicode-norm" data-track="1">
-          <div class="doc-eyebrow">02 · Core Concepts</div>
-          <h2>Unicode normalization (NFC)</h2>
-          <p>Tonal West African text frequently mixes precomposed characters (single codepoint) with decomposed sequences (base vowel + combining acute/grave accent). Without canonical composition, identical surface words hash to completely different byte sequences.</p>
-          <p>Leke enforces strict <span class="g" data-g="nfc" tabindex="0">Unicode NFC</span> composition as the very first stage of the pipeline, followed by configurable whitespace collapsing:</p>
-          <pre><code>Stage 1: Raw UTF-8 input
-Stage 2: Unicode NFC canonical composition (e + U+0301 → é)
-Stage 3: Lookalike character harmonization (ε → ɛ, γ → ɣ, ɳ → ŋ, ð → ɖ)
-Stage 4: Tone policy (preserve diacritics by default; optional strip_accents)</code></pre>
-
-          <div class="section-foot">
-            <button class="mark-read" type="button" aria-pressed="false">Mark section as read</button>
-            <a href="#lookalikes">Next: Lookalike mapping →</a>
-          </div>
-        </section>
-
-        <!-- 3. Lookalike mapping -->
-        <section class="doc-section" id="lookalikes" data-track="1">
-          <div class="doc-eyebrow">03 · Core Concepts</div>
-          <h2>Lookalike character mapping</h2>
-          <p>Because many desktop and mobile keyboards lack dedicated keys for African Latin characters (<code>ɛ</code>, <code>ɔ</code>, <code>ɣ</code>, <code>ɖ</code>, <code>ŋ</code>), writers routinely substitute visually identical Greek or Cyrillic letters.</p>
-          <p>To a human reader, Greek <code>ε</code> (<code>U+03B5</code>) and African Latin <code>ɛ</code> (<code>U+025B</code>) look indistinguishable. To an unnormalized tokenizer, they are unrelated byte sequences:</p>
-          <pre><code>Greek ε (U+03B5):        0xCE 0xB5
-African Latin ɛ (U+025B): 0xC9 0x9B</code></pre>
-          <p>Leke maps all known <span class="g" data-g="lookalike" tabindex="0">lookalikes</span> to their canonical African Latin codepoints prior to vocabulary training and inference, preventing vocabulary duplication.</p>
-
-          <!-- Interactive Bench: Lookalikes -->
-          <div class="bench" id="bench-lookalike">
-            <div class="bench-head">
-              <span class="bench-tag">Interactive Bench</span>
-              <h4>Test lookalike character harmonization</h4>
-            </div>
-            <p style="margin: 0; font-size: 13.5px;">Edit the text below containing Greek (<code>ε</code>, <code>γ</code>, <code>Ο</code>) and Cyrillic (<code>є</code>) substitutes to watch Leke harmonize them into canonical Kwa codepoints.</p>
-            <label class="bench-input-label">
-              Input text
-              <input id="look-input" class="bench-input" type="text" value="Wɔfrε me Kofi na mefiri Kumasi. Ογε ɳkɔ ðeke.">
-            </label>
-            <div class="readouts">
-              <div class="readout"><span>Normalized output (NFC + Kwa map)</span><b id="look-out" style="font-size: 14px;">–</b></div>
-              <div class="readout"><span>Lookalikes harmonized</span><b id="look-count">0</b></div>
-            </div>
-          </div>
-
-          <div class="section-foot">
-            <button class="mark-read" type="button" aria-pressed="false">Mark section as read</button>
-            <a href="#tone-policy">Next: Tone policy →</a>
-          </div>
-        </section>
-
-        <!-- 4. Tone policy -->
-        <section class="doc-section" id="tone-policy" data-track="1">
-          <div class="doc-eyebrow">04 · Core Concepts</div>
-          <h2>Tone policy &amp; diacritics</h2>
-          <p>In Akan and Ewe, tone is phonemic: pitch distinctions separate minimal pairs with completely different meanings and grammatical roles.</p>
-          <ul>
-            <li><strong>Twi minimal pair:</strong> <code>pápá</code> (high–high, “goodness”) vs. <code>papá</code> (low–high, “father”) vs. <code>pàpà</code> (low–low, “fan”).</li>
-            <li><strong>Ewe pronominal tone:</strong> <code>mí</code> (high tone, “we”) vs. <code>mi</code> (low tone, “you plural”).</li>
-          </ul>
-          <p>Unlike English-centric normalizers that blindly strip accents, Leke <strong>preserves tone marks by default</strong> (`U+0300`–`U+0304`, `U+030C`). When training tone-agnostic search indices, you can opt into stripping via <code>strip_tone=True</code>.</p>
-
-          <div class="section-foot">
-            <button class="mark-read" type="button" aria-pressed="false">Mark section as read</button>
-            <a href="#byte-bpe">Next: Byte-level BPE →</a>
-          </div>
-        </section>
-
-        <!-- 5. Byte-level BPE -->
-        <section class="doc-section" id="byte-bpe" data-track="1">
-          <div class="doc-eyebrow">05 · Core Concepts</div>
-          <h2>Byte-level BPE &amp; the 0.0% &lt;unk&gt; guarantee</h2>
-          <p>Leke evaluated <span class="g" data-g="byte-bpe" tabindex="0">Byte-Level BPE</span> head-to-head against Unigram across held-out test splits for all four Kwa languages. Byte-Level BPE achieved consistently lower fertility and fewer over-fragmented words (&gt;2 tokens/word):</p>
-
-          <div class="tbl-wrap">
-            <table class="doc-table">
-              <thead>
-                <tr><th>Language</th><th>BPE Fertility</th><th>Unigram Fertility</th><th>BPE Split &gt;2</th><th>Unigram Split &gt;2</th><th>Winner</th></tr>
-              </thead>
-              <tbody>
-                <tr><td><strong>Akan / Twi</strong></td><td><strong>2.23</strong></td><td>2.46</td><td>38.5%</td><td>42.3%</td><td><span class="badge-win">Byte-Level BPE</span></td></tr>
-                <tr><td><strong>Ewe</strong></td><td><strong>2.77</strong></td><td>3.55</td><td>54.8%</td><td>64.5%</td><td><span class="badge-win">Byte-Level BPE</span></td></tr>
-                <tr><td><strong>Ga</strong></td><td><strong>2.38</strong></td><td>2.54</td><td>41.7%</td><td>54.2%</td><td><span class="badge-win">Byte-Level BPE</span></td></tr>
-                <tr><td><strong>Fante</strong></td><td><strong>2.16</strong></td><td>2.74</td><td>47.4%</td><td>42.1%</td><td><span class="badge-win">Byte-Level BPE</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <p>Because the base vocabulary includes all 256 byte values, unseen symbols, emojis, or scientific notation never collapse into <code>&lt;unk&gt;</code> — they decompose losslessly into UTF-8 byte tokens.</p>
-
-          <!-- Interactive Bench: Byte Fallback -->
-          <div class="bench" id="bench-byte">
-            <div class="bench-head">
-              <span class="bench-tag">Interactive Bench</span>
-              <h4>Byte-level fallback visualizer</h4>
-            </div>
-            <p style="margin: 0; font-size: 13.5px;">Type any Kwa sentence mixed with emojis or math symbols to see how unseen characters degrade into byte tokens (magenta) with 0.00% unknown tokens.</p>
-            <label class="bench-input-label">
-              Test input
-              <input id="byte-input" class="bench-input" type="text" value="Akwaaba 🇬🇭 — ∑x² = λ">
-            </label>
-            <div class="token-chips" id="byte-chips"></div>
-            <div class="readouts">
-              <div class="readout"><span>Total tokens</span><b id="byte-tok-count">0</b></div>
-              <div class="readout"><span>Byte fallback tokens</span><b id="byte-fallback-count">0</b></div>
-              <div class="readout"><span>&lt;unk&gt; rate</span><b style="color: var(--good);">0.00%</b></div>
-            </div>
-          </div>
-
-          <div class="section-foot">
-            <button class="mark-read" type="button" aria-pressed="false">Mark section as read</button>
-            <a href="#training-vocab">Next: Training a vocabulary →</a>
-          </div>
-        </section>
-
-        <!-- 6. Training a vocabulary -->
-        <section class="doc-section" id="training-vocab" data-track="1">
-          <div class="doc-eyebrow">06 · Core Concepts</div>
-          <h2>Training a vocabulary with temperature upsampling</h2>
-          <p>Open corpora for Akan/Twi and Ewe are roughly 8× larger than available corpora for Ga and Fante. Naive concatenation starves smaller languages of subword merges.</p>
-          <p>Leke balances multi-language training using multinomial <span class="g" data-g="temperature" tabindex="0">temperature upsampling</span> ($\alpha = 0.5$), where each language's sampling probability $p_i$ is computed from its raw document count $N_i$:</p>
-          <pre><code>p_i = (N_i)^α / Σ_j (N_j)^α    where α = 0.5</code></pre>
-          <p>At $\alpha = 1.0$, sampling matches raw corpus size (high imbalance). At $\alpha = 0.0$, all languages are sampled uniformly (overfitting tiny corpora). At $\alpha = 0.5$, low-resource Ga and Fante receive enough subword merges to reach 2.38 and 2.16 fertility without starving Twi or Ewe.</p>
-
-          <!-- Interactive Bench: Temperature Upsampling -->
-          <div class="bench" id="bench-temp">
-            <div class="bench-head">
-              <span class="bench-tag">Interactive Bench</span>
-              <h4>Multinomial temperature upsampling ($\alpha$)</h4>
-            </div>
-            <p style="margin: 0; font-size: 13.5px;">Drag the temperature exponent $\alpha$ between <code>0.0</code> (uniform) and <code>1.0</code> (raw corpus ratio) to see how vocabulary training allocation shifts across the four Kwa corpora.</p>
-            <label class="bench-input-label" style="display: flex; justify-content: space-between; align-items: center;">
-              <span>Temperature exponent ($\alpha$)</span>
-              <code id="alpha-val">0.50</code>
-            </label>
-            <input id="alpha-slider" type="range" min="0" max="1" step="0.05" value="0.5" style="width: 100%; margin-top: 8px; accent-color: var(--accent);">
-            <div class="readouts" id="alpha-readouts">
-              <div class="readout"><span>Akan / Twi share</span><b id="share-twi">–</b></div>
-              <div class="readout"><span>Ewe share</span><b id="share-ewe">–</b></div>
-              <div class="readout"><span>Ga share</span><b id="share-ga">–</b></div>
-              <div class="readout"><span>Fante share</span><b id="share-fante">–</b></div>
-            </div>
-          </div>
-
-          <p>Every trained vocabulary bundle is accompanied by a cryptographic SHA-256 provenance receipt (<code>receipt.json</code>) recording corpus hashes, normalizer flags, and merge statistics.</p>
-
-          <div class="section-foot">
-            <button class="mark-read" type="button" aria-pressed="false">Mark section as read</button>
-            <a href="#quickstart">Next: Quickstart &amp; API →</a>
-          </div>
-        </section>
-
-        <!-- ==========================================================
-             LANGUAGES
-             ========================================================== -->
-        <section class="doc-section" id="lang-twi">
-          <div class="doc-eyebrow">Languages · Twi (Tw)</div>
-          <h2>Akan / Twi (Asante &amp; Akuapem)</h2>
-          <p>Supports both Asante and Akuapem Twi orthographies, centering on the open vowels <code>ɛ</code> (<code>U+025B</code>) and <code>ɔ</code> (<code>U+0254</code>), nasalized vowel sequences, and verbal prefixes (progressive <code>re-</code>, future <code>bɛ-</code>, negative <code>n-</code>/<code>m-</code>).</p>
-          <ul>
-            <li><strong>Held-out fertility:</strong> <code>2.23</code> tokens/word (vs. <code>2.92</code> on NLLB-200, a <strong>24% reduction</strong>).</li>
-            <li><strong>Lookalike rules:</strong> Harmonizes Greek <code>ε</code> (`U+03B5`) and Cyrillic <code>є</code> (`U+0454`) to Latin <code>ɛ</code> (`U+025B`).</li>
-          </ul>
-        </section>
-
-        <section class="doc-section" id="lang-ewe">
-          <div class="doc-eyebrow">Languages · Ewe (Ee)</div>
-          <h2>Ewe (Èʋegbe)</h2>
-          <p>Covers standard Ewe orthography with its seven-vowel system and five specialized African Reference Alphabet consonants: retroflex <code>ɖ</code>, bilabial fricative <code>ƒ</code>, velar fricative <code>ɣ</code>, velar nasal <code>ŋ</code>, and bilabial v-hook <code>ʋ</code>.</p>
-          <ul>
-            <li><strong>Held-out fertility:</strong> <code>2.77</code> tokens/word (vs. <code>3.15</code> on NLLB-200, a <strong>12% reduction</strong>).</li>
-            <li><strong>Lookalike rules:</strong> Maps Greek gamma <code>γ</code> (`U+03B3`) → <code>ɣ</code> (`U+0263`) and Icelandic eth <code>ð</code> (`U+00F0`) → <code>ɖ</code> (`U+0256`).</li>
-          </ul>
-        </section>
-
-        <section class="doc-section" id="lang-ga">
-          <div class="doc-eyebrow">Languages · Ga (Ga)</div>
-          <h2>Ga (Gã)</h2>
-          <p>Preserves multi-character labial-velar and palatal digraphs (<code>gb</code>, <code>kp</code>, <code>ny</code>, <code>ŋm</code>, <code>sh</code>, <code>ts</code>) alongside nasalized vowels (<code>ã</code>, <code>ɛ̃</code>, <code>ĩ</code>, <code>ɔ̃</code>, <code>ũ</code>) so common stems remain intact rather than splitting mid-digraph.</p>
-          <ul>
-            <li><strong>Held-out fertility:</strong> <code>2.38</code> tokens/word (vs. <code>3.20</code> on NLLB-200, a <strong>26% reduction</strong>).</li>
-          </ul>
-        </section>
-
-        <section class="doc-section" id="lang-fante">
-          <div class="doc-eyebrow">Languages · Fante (Fa)</div>
-          <h2>Fante (Mfantse)</h2>
-          <p>Shares the Akan orthographic normalizer while capturing coastal Fante palatalized and labialized clusters (<code>dz</code>, <code>ts</code>, <code>kw</code>, <code>hw</code>, <code>ny</code>) through temperature-upsampled BPE merges.</p>
-          <ul>
-            <li><strong>Held-out fertility:</strong> <code>2.16</code> tokens/word (vs. <code>2.98</code> on NLLB-200, a <strong>28% reduction</strong>).</li>
-          </ul>
-        </section>
-
-        <!-- ==========================================================
-             QUICKSTART & API REFERENCE
-             ========================================================== -->
-        <section class="doc-section" id="quickstart">
-          <div class="doc-eyebrow">Reference · Quickstart &amp; Bindings</div>
-          <h2 id="python-api">Python API (PyO3) &amp; Systems Architecture</h2>
-          <p>High-throughput data loaders in PyTorch cannot afford slow Python tokenizers. Leke executes all normalization and subword segmentation inside native Rust compiled with PyO3:</p>
-          <ul>
-            <li><strong>&gt;356,000 tokens/second</strong> single-threaded encoding on standard x86_64 CPUs.</li>
-            <li><strong>GIL Release:</strong> Batch encoding releases Python's Global Interpreter Lock (<code>Python::allow_threads</code>), allowing multi-worker PyTorch <code>DataLoader</code> processes to encode in parallel.</li>
-            <li><strong>ABI3 Wheels:</strong> Ships precompiled CPython stable-ABI wheels so a single binary installs cleanly across Python 3.9 through 3.13+.</li>
-          </ul>
-          <p>Install the package and encode single strings or multi-threaded batches:</p>
-          <pre><code>from leke import LekeTokenizer
-
-tok = LekeTokenizer.from_pretrained("leke-bpe-8k")
-ids = tok.encode("Wɔfrɛ me Kofi. Mema wo akwaaba!")
-batch_ids = tok.encode_batch(["Mema wo akye", "Woezɔ̃ va mía gbɔ"])
-text = tok.decode(ids)</code></pre>
-
-          <h3 id="rust-api">Rust Core API</h3>
-          <p>Use the native <code>leke</code> crate directly in Rust pipelines for &gt;356,000 tokens/sec throughput on a single core:</p>
-          <pre><code>use leke::{KwaNormalizer, LekeTokenizer};
-
-let norm = KwaNormalizer::default(); // NFC + lookalikes + preserve tone
-let tok = LekeTokenizer::from_file("models/leke-bpe-8k/tokenizer.json")?;
-let encoding = tok.encode(&amp;norm.normalize("Wɔfrɛ me Kofi"), false)?;</code></pre>
-
-          <h3 id="tokenizer-config">Hugging Face Transformers &amp; CLI Training</h3>
-          <p>Every Leke bundle exports a standard <code>tokenizer.json</code> compatible with Hugging Face <code>PreTrainedTokenizerFast</code>:</p>
-          <pre><code>from transformers import PreTrainedTokenizerFast
-
-tok = PreTrainedTokenizerFast(tokenizer_file="models/leke-bpe-8k/tokenizer.json")
-out = tok("Mema wo akye!", return_tensors="pt")</code></pre>
-          <p>To train a custom vocabulary from a JSONL corpus from the CLI:</p>
-          <pre><code>uv run python -m leke.cli train \
-  --input data/processed/train.jsonl \
-  --vocab-size 8000 \
-  --algorithm bpe \
-  --output models/leke-bpe-8k</code></pre>
-        </section>
-
-        <!-- ==========================================================
-             EVALUATION RESULTS, CASE STUDIES & GLOSSARY
-             ========================================================== -->
-        <section class="doc-section" id="benchmarks">
-          <div class="doc-eyebrow">Reference · Evaluation &amp; Case Studies</div>
-          <h2>Evaluation results &amp; engineering lessons</h2>
-          <p>Held-out test split evaluation comparing Leke BPE (8k vocabulary) against Meta's NLLB-200 (256k vocabulary) and monolingual baselines:</p>
-
-          <div class="tbl-wrap">
-            <table class="doc-table">
-              <thead>
-                <tr><th>Language</th><th>Leke BPE 8k</th><th>NLLB-200</th><th>Monolingual Baseline</th><th>vs. NLLB-200</th></tr>
-              </thead>
-              <tbody>
-                <tr><td><strong>Akan / Twi</strong></td><td><strong>2.23</strong></td><td>2.92</td><td>1.62 (Goldfish)</td><td><span class="badge-win">−24%</span></td></tr>
-                <tr><td><strong>Ewe</strong></td><td><strong>2.77</strong></td><td>3.15</td><td>1.71 (Wikilangs)</td><td><span class="badge-win">−12%</span></td></tr>
-                <tr><td><strong>Ga</strong></td><td><strong>2.38</strong></td><td>3.20</td><td>—</td><td><span class="badge-win">−26%</span></td></tr>
-                <tr><td><strong>Fante</strong></td><td><strong>2.16</strong></td><td>2.98</td><td>—</td><td><span class="badge-win">−28%</span></td></tr>
-                <tr><td><strong>Unknown &lt;unk&gt; rate</strong></td><td><strong>0.00%</strong></td><td>0.00%</td><td>0.4–0.6%</td><td><span class="badge-win">Guaranteed</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3>Seven failure modes encountered during development</h3>
-          <div class="tbl-wrap">
-            <table class="doc-table">
-              <thead>
-                <tr><th>#</th><th>Failure mode</th><th>Root cause</th><th>Resolution in Leke</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>1</td><td><strong>NFD vs. NFC trap</strong></td><td>Floating combining accents in Ewe split tone marks into separate tokens.</td><td>Enforced Unicode NFC pass prior to lookalike mapping.</td></tr>
-                <tr><td>2</td><td><strong>Greek lookalike split</strong></td><td>Web text mixed Greek <code>ε</code> and Latin <code>ɛ</code>, doubling vocab entries.</td><td>Added deterministic lookalike mapping table in Rust &amp; Python.</td></tr>
-                <tr><td>3</td><td><strong>Ga vocabulary starvation</strong></td><td>Raw corpus ratio favored Twi 8:1, splintering Ga words.</td><td>Applied multinomial temperature upsampling ($\alpha = 0.5$).</td></tr>
-                <tr><td>4</td><td><strong>Unigram over-splitting</strong></td><td>Unigram fragmented Ewe words into &gt;2 tokens 64.5% of the time.</td><td>Selected Byte-Level BPE after empirical benchmark comparison.</td></tr>
-                <tr><td>5</td><td><strong>Byte fallback sort order</strong></td><td>Non-standard initial byte ordering broke round-trip decoding.</td><td>Aligned base 256 byte table with standard GPT-2 byte-level BPE.</td></tr>
-                <tr><td>6</td><td><strong>Tone erasure</strong></td><td>Default accent stripping collapsed Twi minimal pairs (<code>pápá</code> / <code>papá</code>).</td><td>Preserved tone diacritics by default; stripping is opt-in.</td></tr>
-                <tr><td>7</td><td><strong>HF schema mismatch</strong></td><td>Custom normalizer blocked <code>PreTrainedTokenizerFast</code> loading.</td><td>Exported self-contained Hugging Face <code>tokenizer.json</code> bundles.</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3 id="glossary">Glossary</h3>
-          <dl class="glossary">
-            <dt>Fertility</dt>
-            <dd>Average number of subword tokens produced per whitespace-delimited word. Lower fertility means denser representation.</dd>
-            <dt>Byte-Level BPE</dt>
-            <dd>Byte-Pair Encoding initialized with all 256 raw byte tokens, guaranteeing a 0.0% out-of-vocabulary rate on any UTF-8 input.</dd>
-            <dt>Unicode NFC</dt>
-            <dd>Normalization Form Canonical Composition: composes base characters and combining diacritics into single canonical codepoints.</dd>
-            <dt>Lookalike Character</dt>
-            <dd>A character from another script (such as Greek <code>ε</code> or <code>γ</code>) used as a visual substitute for an African Latin letter (<code>ɛ</code>, <code>ɣ</code>).</dd>
-            <dt>Temperature Upsampling</dt>
-            <dd>Exponentiating corpus frequencies by $\alpha \in (0, 1)$ so lower-resource languages receive balanced merge allocation.</dd>
-            <dt>&lt;unk&gt; Token</dt>
-            <dd>Special unknown token emitted when encountering characters outside the model vocabulary. Guaranteed 0.0% in Leke via <span class="g" data-g="unk" tabindex="0">byte fallback</span>.</dd>
-          </dl>
-        </section>
-      </main>
+    <div class="search">
+      <label class="search-box">
+        <i class="ph-duotone ph-magnifying-glass"></i>
+        <input id="search" type="search" placeholder="Search the manual (⌘K)" aria-label="Search the manual" autocomplete="off">
+        <span style="font-size: 11px; color: var(--ink-3);">⌘K</span>
+      </label>
+      <div class="results" id="results" hidden></div>
     </div>
+
+    <div class="progress" title="Reading progress saved in this browser">
+      <span class="bar"><i id="prog-bar"></i></span>
+      <span id="prog-text">0 / 12 read</span>
+    </div>
+
+    <a href="https://github.com/acquayefrank/leke" target="_blank" rel="noopener noreferrer" class="gh-link">
+      <i class="ph-duotone ph-github-logo" style="font-size: 18px;"></i>GitHub
+    </a>
+  </header>
+
+  <div class="shell">
+    <!-- Left Chapter Rail -->
+    <nav class="toc" id="toc" aria-label="Contents">
+      <div class="part" style="color: var(--accent)">Orientation</div>
+      <ol>
+        <li><a href="#how-to-read"><span class="n">00</span><span>How to read this manual</span><span class="tick">✓</span></a></li>
+        <li><a href="#why-tokenize"><span class="n">01</span><span>Why we tokenize: characters to subwords</span><span class="tick">✓</span></a></li>
+      </ol>
+
+      <div class="part" style="color: var(--info)">Part I · Information Theory &amp; Metrics</div>
+      <ol>
+        <li><a href="#fertility-metrics"><span class="n">02</span><span>Fertility, compression &amp; the token tax</span><span class="tick">✓</span></a></li>
+        <li><a href="#upsampling"><span class="n">03</span><span>Zipf's law &amp; temperature upsampling</span><span class="tick">✓</span></a></li>
+      </ol>
+
+      <div class="part" style="color: var(--ling)">Part II · Kwa Linguistics &amp; Normalization</div>
+      <ol>
+        <li><a href="#unicode-nfc"><span class="n">04</span><span>Unicode NFC vs. NFD composition</span><span class="tick">✓</span></a></li>
+        <li><a href="#lookalikes"><span class="n">05</span><span>Lookalike character harmonization</span><span class="tick">✓</span></a></li>
+        <li><a href="#tone-languages"><span class="n">06</span><span>Phonemic tone &amp; the four Kwa languages</span><span class="tick">✓</span></a></li>
+      </ol>
+
+      <div class="part" style="color: var(--algo)">Part III · Subword Algorithms</div>
+      <ol>
+        <li><a href="#bpe-mechanics"><span class="n">07</span><span>Byte-Pair Encoding from first principles</span><span class="tick">✓</span></a></li>
+        <li><a href="#bpe-vs-unigram"><span class="n">08</span><span>Byte-Level BPE vs. Unigram LM</span><span class="tick">✓</span></a></li>
+        <li><a href="#zero-unk"><span class="n">09</span><span>The 0.0% &lt;unk&gt; guarantee &amp; live sandbox</span><span class="tick">✓</span></a></li>
+      </ol>
+
+      <div class="part" style="color: var(--eng)">Part IV · Systems &amp; Library Guide</div>
+      <ol>
+        <li><a href="#rust-pyo3"><span class="n">10</span><span>Rust core, PyO3 zero-copy &amp; provenance</span><span class="tick">✓</span></a></li>
+        <li><a href="#library-guide"><span class="n">11</span><span>Using Leke: Python, Rust, HF &amp; CLI</span><span class="tick">✓</span></a></li>
+      </ol>
+
+      <div class="part" style="color: var(--case)">Part V · Case Studies &amp; Reference</div>
+      <ol>
+        <li><a href="#lessons"><span class="n">12</span><span>Ten things that broke, and what they teach</span><span class="tick">✓</span></a></li>
+        <li><a href="#glossary"><span class="n">G</span><span>Glossary</span></a></li>
+      </ol>
+    </nav>
+
+    <!-- Main Reading Column -->
+    <main>
+      <div class="cover">
+        <span class="label">Interactive Tutorial &amp; Reference · Leke Subword Tokenizer</span>
+        <h1>The Leke <em>Field Manual</em></h1>
+        <p class="lede">The information theory, West African Kwa linguistics, subword algorithms, and Rust/PyO3 systems engineering behind a dedicated tokenizer for Akan/Twi, Ewe, Ga, and Fante — taught from first principles on Leke's own data, benchmarks, and code.</p>
+        <div class="parts">
+          <a href="#fertility-metrics" style="--c: var(--info)"><b>Information Theory</b><span>Fertility, byte compression, attention cost, temperature upsampling</span></a>
+          <a href="#unicode-nfc" style="--c: var(--ling)"><b>Kwa Linguistics</b><span>Unicode NFC, Greek/Cyrillic lookalikes, phonemic tone, 4 languages</span></a>
+          <a href="#bpe-mechanics" style="--c: var(--algo)"><b>Subword Algorithms</b><span>BPE merge mechanics, BPE vs. Unigram, 256-byte fallback</span></a>
+          <a href="#rust-pyo3" style="--c: var(--eng)"><b>Library Guide</b><span>Rust core, PyO3 GIL release, Python/Rust/HF/CLI recipes</span></a>
+          <a href="#lessons" style="--c: var(--case)"><b>Case Studies</b><span>Ten real engineering failures and the principles they teach</span></a>
+        </div>
+      </div>
+
+      <!-- ================================================================
+           CHAPTER 00: HOW TO READ THIS MANUAL
+           ================================================================ -->
+      <section class="chapter" id="how-to-read" data-track="1" data-title="How to read this manual" style="--c: var(--accent)">
+        <div class="eyebrow"><span class="num">00</span> Orientation</div>
+        <h2>How to read this manual</h2>
+        <p class="intro">This manual is a self-contained course and engineering reference. It starts with why neural language models tokenize text at all, builds up the mathematics and linguistics of West African subword segmentation, and finishes with how to use the <code>leke</code> library in Python, Rust, Hugging Face, and the command line.</p>
+
+        <h3>How each principle is laid out</h3>
+        <div class="facets">
+          <div class="facet"><span class="label">The idea</span><p>What the principle is from first principles, with the mathematical formula where it clarifies the trade-off.</p></div>
+          <div class="facet"><span class="label">In Leke</span><p>How Leke implements it in Rust (<code>src/</code>) and Python (<code>python/leke/</code>), with real benchmark numbers.</p></div>
+          <div class="facet"><span class="label">Why this choice</span><p>What the decision buys in fertility, throughput, or accuracy — and what the alternatives cost.</p></div>
+          <div class="facet"><span class="label">Limits</span><p>Where the mechanism reaches its boundary, and how downstream models must handle what remains.</p></div>
+        </div>
+
+        <h3>Interactive features in this page</h3>
+        <ul>
+          <li><b>Benches</b> are live simulations embedded inside the chapters. Move the sliders, step through BPE merges, or type Kwa text; every number and chart updates directly in your browser.</li>
+          <li><b>Dotted terms</b> like <span class="g" data-g="fertility" tabindex="0">fertility</span> or <span class="g" data-g="byte-bpe" tabindex="0">Byte-Level BPE</span> display a definition on hover or tap. Every term is also collected in the <a href="#glossary">Glossary</a>.</li>
+          <li><b>Check yourself</b> quizzes conclude each chapter. Select an option to check your understanding and see the reasoning.</li>
+          <li><b>Search</b> (<code>⌘K</code> or <code>Ctrl+K</code> in the top bar) searches every paragraph, formula, table, and glossary term on this page.</li>
+        </ul>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="b">
+            <p>What are the two main goals of a dedicated Kwa language tokenizer like Leke?</p>
+            <label><input type="radio" name="q-00" value="a"> <span>Translate Twi directly into English without a neural network</span></label>
+            <label><input type="radio" name="q-00" value="b"> <span>Compress Kwa words into compact, morphologically meaningful subwords (low fertility) while guaranteeing 0.0% unknown tokens</span></label>
+            <label><input type="radio" name="q-00" value="c"> <span>Remove all African Latin characters so ASCII-only models can read them</span></label>
+            <div class="why" hidden><b></b>A tokenizer bridges raw text and neural embeddings: keeping subword sequences short (low fertility) while never dropping a character into <code>&lt;unk&gt;</code>.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#why-tokenize">Next: Why we tokenize →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 01: WHY WE TOKENIZE
+           ================================================================ -->
+      <section class="chapter" id="why-tokenize" data-track="1" data-title="Why we tokenize: characters to subwords" style="--c: var(--accent)">
+        <div class="eyebrow"><span class="num">01</span> Orientation</div>
+        <h2>Why we tokenize: from characters to subwords</h2>
+        <p class="intro">Neural networks cannot multiply strings. Before a Transformer can read a sentence, raw text must be converted into a sequence of discrete integers $t_1, t_2, \dots, t_L \in \{0, \dots, |V|-1\}$, each indexing a row in an embedding matrix $E \in \mathbb{R}^{|V| \times d}$.</p>
+
+        <h3>The fundamental granularity trilemma</h3>
+        <p>Every tokenizer chooses how large its units are. Historically, NLP tried two extremes before settling on subwords:</p>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>Granularity</th><th>Vocabulary $|V|$</th><th>Sequence length $L$</th><th>Fatal flaw on Kwa languages</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Word-level</b><br><small><code>["Mema", "wo", "akwaaba"]</code></small></td>
+                <td>$100\text{k} - 1\text{M}+$</td>
+                <td>Very short ($1\times$ words)</td>
+                <td>Agglutinative prefixes (<code>mɛ-</code>, <code>re-</code>, <code>bɛ-</code>) create millions of surface inflections; unseen words collapse into <code>&lt;unk&gt;</code>.</td>
+              </tr>
+              <tr>
+                <td><b>Character / Byte-level</b><br><small><code>['M','e','m','a',' ','w','o']</code></small></td>
+                <td>$256$ (UTF-8 bytes)</td>
+                <td>Very long ($5\times - 8\times$ words)</td>
+                <td>Transformer self-attention scales as $O(L^2)$. A $6\times$ longer sequence costs $36\times$ more attention compute and shrinks effective context window by $6\times$.</td>
+              </tr>
+              <tr>
+                <td><b>Subword-level (Leke)</b><br><small><code>["Mema", "Ġwo", "Ġakwaaba"]</code></small></td>
+                <td>$8\text{k} - 64\text{k}$</td>
+                <td>Compact ($\approx 2.2\times$ words)</td>
+                <td>Common words stay intact as single tokens; rare inflected forms split into reusable roots and affixes; unseen bytes fall back losslessly.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="formula">
+          <div class="eq">Total Step Cost ≈ <span class="frac"><span>|V| · d</span><span>embedding parameters</span></span> + <span class="frac"><span>L<sub>layers</sub> · (N<sub>words</sub> · F)² · d</span><span>quadratic self-attention FLOPs</span></span></div>
+          <div class="where">$|V|$: vocabulary size; $d$: model hidden dimension; $N_{\text{words}}$: words in document; $F$: <span class="g" data-g="fertility" tabindex="0">fertility</span> (tokens per word). Doubling fertility quadruples attention cost.</div>
+        </div>
+
+        <!-- Interactive Bench: Granularity & Attention Cost -->
+        <div class="bench" id="bench-granularity">
+          <header><span class="label">Bench</span><h4>Simulate the vocabulary vs. sequence-length trade-off</h4></header>
+          <p class="note">Adjust the document length and compare how Word-level, Character/Byte-level, NLLB-200, and Leke BPE-8k scale on a 500-word Akan/Twi passage.</p>
+          <div class="controls">
+            <label for="gran-words">Document length (words) <output id="gran-words-out">400</output>
+              <input id="gran-words" type="range" min="50" max="2000" step="50" value="400">
+            </label>
+            <label for="gran-fert">Custom tokenizer fertility (tok/word) <output id="gran-fert-out">2.23</output>
+              <input id="gran-fert" type="range" min="1.20" max="6.00" step="0.05" value="2.23">
+            </label>
+          </div>
+          <div class="readouts">
+            <div class="readout"><span>Leke (F = 2.23) tokens</span><b id="gran-leke-tok">892</b></div>
+            <div class="readout"><span>NLLB-200 (F = 2.92) tokens</span><b id="gran-nllb-tok">1,168</b></div>
+            <div class="readout"><span>Raw UTF-8 bytes (F ≈ 5.8)</span><b id="gran-byte-tok">2,320</b></div>
+            <div class="readout"><span>Attention FLOPs saved vs. NLLB</span><b id="gran-flops" style="color: var(--good);">−41.7%</b></div>
+          </div>
+          <div class="canvas-wrap"><canvas id="gran-canvas" width="900" height="220" aria-label="Comparison of relative quadratic attention cost across tokenization schemes"></canvas></div>
+        </div>
+
+        <div class="project"><span class="label">In Leke: The 6-stage pipeline</span>
+          <p>Leke processes every input string through a deterministic 6-stage pipeline implemented in Rust: <b>(1) Raw UTF-8 text</b> → <b>(2) Unicode NFC composition</b> → <b>(3) Lookalike glyph harmonization</b> → <b>(4) Tone policy filter</b> → <b>(5) Byte-Level pre-tokenization &amp; BPE merge lookup</b> → <b>(6) Contiguous Token IDs &amp; byte offsets</b>.</p>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="c">
+            <p>If Tokenizer A has a fertility of 4.0 tokens/word on Ewe and Tokenizer B (Leke) has a fertility of 2.0 tokens/word, how much more quadratic self-attention work ($O(L^2)$) does Tokenizer A require on the same document?</p>
+            <label><input type="radio" name="q-01" value="a"> <span>The same amount</span></label>
+            <label><input type="radio" name="q-01" value="b"> <span>2× as much</span></label>
+            <label><input type="radio" name="q-01" value="c"> <span>4× as much ($2^2 = 4$)</span></label>
+            <div class="why" hidden><b></b>Because self-attention scales quadratically with sequence length $L = N_{\text{words}} \cdot F$, halving fertility reduces the $L^2$ attention matrix by a factor of $4$.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#fertility-metrics">Next: Fertility, compression &amp; the token tax →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 02: FERTILITY, COMPRESSION & THE MULTILINGUAL TAX
+           ================================================================ -->
+      <section class="chapter" id="fertility-metrics" data-track="1" data-title="Fertility, compression and the token tax" style="--c: var(--info)">
+        <div class="eyebrow"><span class="num">02</span> Part I · Information Theory &amp; Metrics</div>
+        <h2>Fertility, compression &amp; the multilingual token tax</h2>
+        <p class="intro">How do we objectively measure whether a tokenizer is good for a language? In Leke's evaluation harness (<code>python/leke/evaluate.py</code>), every model is judged on four intrinsic information-theoretic metrics computed on held-out test splits.</p>
+
+        <h3>The four core evaluation metrics</h3>
+        <div class="formula">
+          <div class="eq">
+            Fertility = <span class="frac"><span>N<sub>tokens</sub></span><span>N<sub>words</sub></span></span> &nbsp;&nbsp;&nbsp;
+            Split<sub>&gt;2</sub> = <span class="frac"><span>#{ w : |tokens(w)| &gt; 2 }</span><span>N<sub>words</sub></span></span> &nbsp;&nbsp;&nbsp;
+            Compression = <span class="frac"><span>N<sub>UTF-8 bytes</sub></span><span>N<sub>tokens</sub></span></span> &nbsp;&nbsp;&nbsp;
+            Unk% = <span class="frac"><span>#{ t = &lt;unk&gt; }</span><span>N<sub>tokens</sub></span></span>
+          </div>
+          <div class="where">
+            <b>Fertility</b> (lower is better): average subwords per whitespace word.
+            <b>Excessive split rate</b> (lower is better): share of words shattered into 3 or more pieces.
+            <b>Compression</b> (higher is better): UTF-8 bytes packed per token.
+            <b>Unknown rate</b> (must be 0.0%): share of tokens lost to <code>&lt;unk&gt;</code>.
+          </div>
+        </div>
+
+        <div class="example"><span class="label">Worked example: Tokenizing a Twi sentence</span>
+          <p>Take the 6-word Akan/Twi sentence <code>"Akwaaba ba Ghana man mu."</code> (24 UTF-8 bytes, 5 words + punctuation):</p>
+          <ul>
+            <li><b>Leke BPE-8k</b> produces 6 tokens: <code>['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']</code>. Fertility on the 5 words is $5 / 5 = \mathbf{1.00}$. Zero words are split into $>2$ pieces.</li>
+            <li><b>An English-centric LLM tokenizer</b> splits unfamiliar Akan stems into fragments: <code>['Ak', 'wa', 'aba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']</code> (8 tokens, fertility $1.40$ even on this simple greeting, and $3.0+$ on inflected verbs like <code>mɛkɔsrɛ</code>).</li>
+          </ul>
+        </div>
+
+        <h3>Held-out benchmark leaderboard (<code>specs/eval_results.md</code>)</h3>
+        <p>Below are Leke's official results on held-out test splits against Meta's 200-language <b>NLLB-200</b> (`256k` SentencePiece vocabulary) and monolingual baselines (<b>Goldfish Twi</b> and <b>Wikilangs Ewe</b>):</p>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>vs. NLLB-200</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Leke BPE (8k)</b></td><td>Akan / Twi</td><td class="n"><b>2.23</b></td><td class="n">38.5%</td><td class="n"><b>0.0%</b></td><td class="n">2.40</td><td><b>−23.6% fertility</b></td></tr>
+              <tr><td>Goldfish Twi (monolingual)</td><td>Akan / Twi</td><td class="n">1.62</td><td class="n">16.8%</td><td class="n">0.4%</td><td class="n">4.12</td><td>Emits 0.4% <code>&lt;unk&gt;</code></td></tr>
+              <tr><td>NLLB-200 (256k multilingual)</td><td>Akan / Twi</td><td class="n">2.92</td><td class="n">38.4%</td><td class="n">0.0%</td><td class="n">2.45</td><td>Baseline</td></tr>
+              <tr><td><b>Leke BPE (8k)</b></td><td>Ewe</td><td class="n"><b>2.77</b></td><td class="n">54.8%</td><td class="n"><b>0.0%</b></td><td class="n">2.17</td><td><b>−12.1% fertility</b></td></tr>
+              <tr><td>Wikilangs Ewe (monolingual)</td><td>Ewe</td><td class="n">1.71</td><td class="n">19.3%</td><td class="n">0.6%</td><td class="n">3.95</td><td>Emits 0.6% <code>&lt;unk&gt;</code></td></tr>
+              <tr><td>NLLB-200 (256k multilingual)</td><td>Ewe</td><td class="n">3.15</td><td class="n">44.1%</td><td class="n">0.0%</td><td class="n">2.28</td><td>Baseline</td></tr>
+              <tr><td><b>Leke BPE (8k)</b></td><td>Ga</td><td class="n"><b>2.38</b></td><td class="n">41.7%</td><td class="n"><b>0.0%</b></td><td class="n">2.16</td><td><b>−25.6% fertility</b></td></tr>
+              <tr><td>NLLB-200 (256k multilingual)</td><td>Ga</td><td class="n">3.20</td><td class="n">46.2%</td><td class="n">0.0%</td><td class="n">2.20</td><td>Baseline</td></tr>
+              <tr><td><b>Leke BPE (8k)</b></td><td>Fante</td><td class="n"><b>2.16</b></td><td class="n">47.4%</td><td class="n"><b>0.0%</b></td><td class="n">2.51</td><td><b>−27.5% fertility</b></td></tr>
+              <tr><td>NLLB-200 (256k multilingual)</td><td>Fante</td><td class="n">2.98</td><td class="n">39.5%</td><td class="n">0.0%</td><td class="n">2.40</td><td>Baseline</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pitfall"><span class="label">Why monolingual baselines have lower fertility but fail the &lt;unk&gt; gate</span>
+          <p>Notice that Goldfish Twi (`1.62`) and Wikilangs Ewe (`1.71`) achieve lower raw fertility because they dedicate 100% of their vocabulary to a single language without byte-level fallback. However, on held-out text they emit <b>0.4% to 0.6% unknown <code>&lt;unk&gt;</code> tokens</b> — permanently erasing roughly 1 in every 200 tokens (often proper nouns, numbers, or punctuation). Leke trades a shared 4-language 8k budget for a <b>strict 0.0% unknown rate</b> while still beating NLLB-200 by 12%–28% across every language.</p>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="b">
+            <p>Why does Leke BPE-8k beat NLLB-200 on Akan, Ewe, Ga, and Fante despite NLLB-200 having a 32× larger vocabulary (256,000 vs. 8,000)?</p>
+            <label><input type="radio" name="q-02" value="a"> <span>NLLB-200 does not include African languages in its training set</span></label>
+            <label><input type="radio" name="q-02" value="b"> <span>NLLB-200 divides its vocabulary across 200 languages (mostly high-resource scripts), whereas Leke dedicates all 8,000 merges to normalized Kwa subwords</span></label>
+            <label><input type="radio" name="q-02" value="c"> <span>Leke deletes spaces between words</span></label>
+            <div class="why" hidden><b></b>In a 200-language model, high-resource languages dominate merge priority. A focused 8,000-token vocabulary trained specifically on normalized Kwa text allocates far more merges to Kwa roots and affixes.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#upsampling">Next: Zipf's law &amp; temperature upsampling →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 03: ZIPF'S LAW & TEMPERATURE UPSAMPLING
+           ================================================================ -->
+      <section class="chapter" id="upsampling" data-track="1" data-title="Zipf's law and temperature upsampling" style="--c: var(--info)">
+        <div class="eyebrow"><span class="num">03</span> Part I · Information Theory &amp; Metrics</div>
+        <h2>Zipf's law &amp; temperature upsampling</h2>
+        <p class="intro">Even within a single language family, open datasets are deeply imbalanced. In public corpora (Wikipedia, MADLAD-400, Glot500, MGhana-ST), Akan/Twi and Ewe have roughly 6× to 8× more text than Ga and Fante. If you simply concatenate the files and train BPE, Zipf's law guarantees that Twi and Ewe monopolize the merge table.</p>
+
+        <h3>Multinomial temperature upsampling</h3>
+        <p>To prevent high-resource siblings from starving lower-resource languages, Leke's corpus pipeline (<code>temperature_upsample</code> in <code>python/leke/corpus.py</code>) re-weights each language $i$ with raw line count $N_i$ using a temperature exponent $\alpha \in [0, 1]$:</p>
+        <div class="formula">
+          <div class="eq">p<sub>i</sub>(α) = <span class="frac"><span>N<sub>i</sub><sup>α</sup></span><span>Σ<sub>j=1</sub><sup>K</sup> N<sub>j</sub><sup>α</sup></span></span></div>
+          <div class="where">
+            At $\alpha = 1.0$: sampling is proportional to raw corpus size (Ga and Fante are starved).<br>
+            At $\alpha = 0.0$: uniform sampling ($25\%$ each; tiny corpora repeat so often that the tokenizer memorizes rare noise words).<br>
+            At $\alpha = 0.5$ (square-root smoothing): Leke's default balance.
+          </div>
+        </div>
+
+        <div class="example"><span class="label">Worked example: Square-root smoothing ($\alpha = 0.5$)</span>
+          <p>Suppose our training split has $N_{\text{twi}} = 49{,}000$, $N_{\text{ewe}} = 36{,}000$, $N_{\text{ga}} = 6{,}400$, and $N_{\text{fante}} = 4{,}900$ lines ($96{,}300$ total):</p>
+          <ul>
+            <li><b>Raw share ($\alpha = 1.0$):</b> Twi gets $50.9\%$, Ewe $37.4\%$, Ga $6.6\%$, and Fante only $\mathbf{5.1\%}$.</li>
+            <li><b>Square-root weights ($N_i^{0.5}$):</b> $\sqrt{49000} \approx 221.4$, $\sqrt{36000} \approx 189.7$, $\sqrt{64000/10} = 80.0$, $\sqrt{4900} = 70.0$ (sum $= 561.1$).</li>
+            <li><b>Upsampled share ($\alpha = 0.5$):</b> Twi $39.5\%$, Ewe $33.8\%$, Ga $\mathbf{14.3\%}$, Fante $\mathbf{12.5\%}$ — more than doubling Ga and Fante representation without overfitting.</li>
+          </ul>
+        </div>
+
+        <!-- Interactive Bench: Temperature Upsampling -->
+        <div class="bench" id="bench-temp">
+          <header><span class="label">Bench</span><h4>Explore multinomial temperature upsampling ($\alpha$)</h4></header>
+          <p class="note">Drag $\alpha$ from <code>0.00</code> (uniform) to <code>1.00</code> (raw corpus proportions) and watch how training mixture shares and estimated Ga/Fante fertility respond.</p>
+          <div class="controls">
+            <label for="temp-alpha">Temperature exponent $\alpha$ <output id="temp-alpha-out">0.50</output>
+              <input id="temp-alpha" type="range" min="0" max="1" step="0.05" value="0.50">
+            </label>
+          </div>
+          <div class="readouts">
+            <div class="readout"><span>Akan / Twi share</span><b id="temp-twi">39.5%</b></div>
+            <div class="readout"><span>Ewe share</span><b id="temp-ewe">33.8%</b></div>
+            <div class="readout"><span>Ga share</span><b id="temp-ga">14.3%</b></div>
+            <div class="readout"><span>Fante share</span><b id="temp-fante">12.5%</b></div>
+          </div>
+          <div class="canvas-wrap"><canvas id="temp-canvas" width="900" height="190" aria-label="Language sampling share bar chart across temperature alpha"></canvas></div>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="b">
+            <p>Why not set $\alpha = 0.0$ so all four languages get an exact 25% share during BPE training?</p>
+            <label><input type="radio" name="q-03" value="a"> <span>Because $\alpha = 0.0$ causes division by zero</span></label>
+            <label><input type="radio" name="q-03" value="b"> <span>Because repeating a small corpus 8× to match a large one causes BPE to memorize rare, idiosyncratic words from the small corpus at the expense of general stems</span></label>
+            <label><input type="radio" name="q-03" value="c"> <span>Because Rust does not support floating-point exponents</span></label>
+            <div class="why" hidden><b></b>At $\alpha = 0.0$, every sentence in a small corpus is duplicated many times, artificially inflating the count of rare proper nouns or typos in that split above common words in the larger languages.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#unicode-nfc">Next: Unicode NFC vs. NFD composition →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 04: UNICODE NFC VS NFD COMPOSITION
+           ================================================================ -->
+      <section class="chapter" id="unicode-nfc" data-track="1" data-title="Unicode NFC vs. NFD composition" style="--c: var(--ling)">
+        <div class="eyebrow"><span class="num">04</span> Part II · Kwa Linguistics &amp; Normalization</div>
+        <h2>Unicode canonical composition (NFC vs. NFD)</h2>
+        <p class="intro">Before a subword algorithm ever counts character pairs, it faces a hidden trap in Unicode: the same visible accented character can be stored in two completely different ways in UTF-8.</p>
+
+        <h3>Precomposed (NFC) vs. Decomposed (NFD)</h3>
+        <p>Consider the high-tone vowel <code>á</code> in Twi <code>pápá</code> (“goodness”):</p>
+        <ul>
+          <li><b><span class="g" data-g="nfc" tabindex="0">Unicode NFC</span> (Canonical Composition):</b> Stored as a single precomposed codepoint <code>U+00E1</code> (UTF-8 bytes <code>0xC3 0xA1</code>).</li>
+          <li><b><span class="g" data-g="nfd" tabindex="0">Unicode NFD</span> (Canonical Decomposition):</b> Stored as two codepoints: base ASCII <code>a</code> (<code>U+0061</code>, byte <code>0x61</code>) followed by the floating Combining Acute Accent <code>◌́</code> (<code>U+0301</code>, bytes <code>0xCC 0x81</code>).</li>
+        </ul>
+        <p>For open vowels like <code>ɛ́</code> (<code>U+025B</code> + <code>U+0301</code>) and <code>ɔ̀</code> (<code>U+0254</code> + <code>U+0300</code>), no single precomposed Unicode point exists, so NFC keeps the base African Latin vowel followed by the canonical ordered combining mark, while composing every vowel that <i>does</i> have a precomposed form (`á, é, í, ó, ú, ã, ẽ, ĩ, õ, ũ`).</p>
+
+        <div class="pitfall"><span class="label">What happens if you skip NFC before BPE</span>
+          <p>In web-scraped Ewe and Twi corpora, macOS/iOS keyboards often emit NFD while Windows/Android keyboards emit NFC. An unnormalized byte-level BPE tokenizer treats NFD <code>a + U+0301</code> and NFC <code>á</code> as unrelated byte sequences, and frequently splits the combining accent <code>0xCC 0x81</code> away from its vowel — attaching the floating tone mark to the <i>next</i> consonant! Leke's <code>KwaNormalizer</code> runs `.nfc()` as Stage 1 of every normalization call.</p>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="a">
+            <p>Why must Unicode NFC run <i>before</i> lookalike mapping and BPE segmentation?</p>
+            <label><input type="radio" name="q-04" value="a"> <span>So visually identical precomposed and decomposed vowel+tone sequences map to a single canonical byte sequence</span></label>
+            <label><input type="radio" name="q-04" value="b"> <span>To strip all accents from the text</span></label>
+            <label><input type="radio" name="q-04" value="c"> <span>To convert UTF-8 into ASCII</span></label>
+            <div class="why" hidden><b></b>NFC unifies canonically equivalent sequences into a single deterministic codepoint sequence before any table lookups or byte splits occur.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#lookalikes">Next: Lookalike character harmonization →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 05: LOOKALIKE CHARACTER HARMONIZATION
+           ================================================================ -->
+      <section class="chapter" id="lookalikes" data-track="1" data-title="Lookalike character harmonization" style="--c: var(--ling)">
+        <div class="eyebrow"><span class="num">05</span> Part II · Kwa Linguistics &amp; Normalization</div>
+        <h2>Lookalike character harmonization</h2>
+        <p class="intro">Standard QWERTY keyboards shipped in West Africa historically lacked keys for African Reference Alphabet letters (`ɛ, ɔ, ɣ, ɖ, ŋ`). Typists, typesetters, and OCR pipelines routinely substituted visually identical letters from Greek, Cyrillic, or IPA blocks.</p>
+
+        <h3>The byte-level collision</h3>
+        <p>To a human reader, Greek Small Letter Epsilon <code>ε</code> (<code>U+03B5</code>), Greek Lunate Epsilon <code>ϵ</code> (<code>U+03F5</code>), Cyrillic Ukrainian Ie <code>є</code> (<code>U+0454</code>), and African Latin Small Letter Open E <code>ɛ</code> (<code>U+025B</code>) look nearly identical. To a byte-level tokenizer, they share zero bytes:</p>
+        <pre><code>Canonical Kwa Latin ɛ (U+025B):  0xC9 0x9B
+Greek lookalike     ε (U+03B5):  0xCE 0xB5
+Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
+
+        <h3>Complete lookalike table in <code>data/char_mappings.json</code></h3>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>Source Glyph(s)</th><th>Source Unicode Block</th><th>Canonical Kwa Target</th><th>Target Codepoint</th><th>Languages Affected</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>ε</code>, <code>ϵ</code>, <code>є</code></td><td>Greek (`U+03B5`, `U+03F5`), Cyrillic (`U+0454`)</td><td><b><code>ɛ</code></b> (Latin Small Open E)</td><td><code>U+025B</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
+              <tr><td><code>Ε</code>, <code>Є</code></td><td>Greek (`U+0395`), Cyrillic (`U+0404`)</td><td><b><code>Ɛ</code></b> (Latin Capital Open E)</td><td><code>U+0190</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
+              <tr><td><code>ↄ</code>, <code>ᴐ</code></td><td>Latin Extended (`U+2184`, `U+1D10`)</td><td><b><code>ɔ</code></b> (Latin Small Open O)</td><td><code>U+0254</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
+              <tr><td><code>Ↄ</code></td><td>Roman Numeral (`U+2183`)</td><td><b><code>Ɔ</code></b> (Latin Capital Open O)</td><td><code>U+0186</code></td><td>Twi, Ewe, Ga, Fante</td></tr>
+              <tr><td><code>ɳ</code>, <code>ɲ</code></td><td>IPA Retroflex/Palatal Nasal (`U+0273`, `U+0272`)</td><td><b><code>ŋ</code></b> (Latin Small Eng)</td><td><code>U+014B</code></td><td>Ewe, Ga</td></tr>
+              <tr><td><code>ð</code>, <code>Ð</code></td><td>Latin Eth (`U+00F0`, `U+00D0`)</td><td><b><code>ɖ</code> / <code>Ɖ</code></b> (Retroflex D)</td><td><code>U+0256</code> / <code>U+0189</code></td><td>Ewe</td></tr>
+              <tr><td><code>γ</code>, <code>ɤ</code>, <code>Γ</code></td><td>Greek Gamma (`U+03B3`, `U+0393`), Rams Horn (`U+0264`)</td><td><b><code>ɣ</code> / <code>Ɣ</code></b> (Latin Gamma)</td><td><code>U+0263</code> / <code>U+0194</code></td><td>Ewe</td></tr>
+              <tr><td><code>U+00A0</code>, <code>U+2000..200A</code>, <code>U+3000</code></td><td>15 exotic Unicode space characters</td><td><b><code>" "</code></b> (ASCII Space)</td><td><code>U+0020</code></td><td>All corpora</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Interactive Bench: Lookalike & Byte Inspector -->
+        <div class="bench" id="bench-look">
+          <header><span class="label">Bench</span><h4>Live Lookalike &amp; UTF-8 Byte Harmonizer</h4></header>
+          <p class="note">Type or edit text containing Greek/Cyrillic lookalikes (`ε, є, ↄ, γ, ɳ, ð`). Compare the raw UTF-8 hex bytes before and after `KwaNormalizer`.</p>
+          <div class="controls">
+            <label for="look-in">Input text (mixed scripts)
+              <input id="look-in" type="text" value="Wↄfrε me Kofi. Mìedó gbe na γe ɳkↄ ðeke!">
+            </label>
+          </div>
+          <div class="readouts">
+            <div class="readout"><span>Normalized Kwa output</span><b id="look-norm" style="font-size: 0.95rem;">–</b></div>
+            <div class="readout"><span>Lookalikes fixed</span><b id="look-fixed">0</b></div>
+            <div class="readout"><span>Raw UTF-8 bytes (first 8)</span><b id="look-raw-hex" style="font-size: 0.82rem;">–</b></div>
+            <div class="readout"><span>Canonical UTF-8 bytes (first 8)</span><b id="look-clean-hex" style="font-size: 0.82rem;">–</b></div>
+          </div>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="b">
+            <p>What happens to a BPE vocabulary if half the training corpus writes <code>wɔfrɛ</code> with Greek <code>ε</code> (`U+03B5`) and half writes it with African Latin <code>ɛ</code> (`U+025B`)?</p>
+            <label><input type="radio" name="q-05" value="a"> <span>The tokenizer automatically knows they sound the same</span></label>
+            <label><input type="radio" name="q-05" value="b"> <span>Each spelling gets half the frequency, wasting vocabulary slots on duplicate tokens and splitting embeddings in downstream models</span></label>
+            <label><input type="radio" name="q-05" value="c"> <span>Both words are deleted</span></label>
+            <div class="why" hidden><b></b>Without lookalike harmonization, identical words split their corpus counts across two byte sequences, starving genuine words of merges and forcing the LLM to learn two separate embeddings for the same word.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#tone-languages">Next: Phonemic tone &amp; the four Kwa languages →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 06: PHONEMIC TONE & THE FOUR KWA LANGUAGES
+           ================================================================ -->
+      <section class="chapter" id="tone-languages" data-track="1" data-title="Phonemic tone and the four Kwa languages" style="--c: var(--ling)">
+        <div class="eyebrow"><span class="num">06</span> Part II · Kwa Linguistics &amp; Normalization</div>
+        <h2>Phonemic tone &amp; the four Kwa languages</h2>
+        <p class="intro">All four target languages in Leke belong to the <b>Kwa branch of the Niger-Congo family</b> spoken across Ghana and Togo. They are tonal and agglutinative, meaning pitch and affixation carry core lexical and grammatical distinctions.</p>
+
+        <h3>Why tone preservation is the strict default</h3>
+        <p>Many western NLP pipelines start by stripping diacritics (`unicodedata` category `Mn`). On Kwa languages, stripping tone marks destroys meaning:</p>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>Language</th><th>Surface Form 1</th><th>Surface Form 2</th><th>Surface Form 3</th><th>Why stripping fails</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Akan / Twi</b></td>
+                <td><code>pápá</code> (High–High)<br><small>“goodness / good”</small></td>
+                <td><code>papá</code> (Low–High)<br><small>“father”</small></td>
+                <td><code>pàpà</code> (Low–Low)<br><small>“palm-frond fan”</small></td>
+                <td>All three collapse into <code>papa</code>, making “My father is good” ambiguous.</td>
+              </tr>
+              <tr>
+                <td><b>Ewe</b></td>
+                <td><code>mí</code> (High tone)<br><small>“we / us” (1st pl.)</small></td>
+                <td><code>mi</code> (Low/unmarked)<br><small>“you” (2nd pl.)</small></td>
+                <td><code>èʋè</code> (Low–Low)<br><small>“two / Ewe”</small></td>
+                <td>Collapses first-person plural and second-person plural pronouns into the same token.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>In Leke, <code>KwaNormalizer::default()</code> sets <code>strip_accents = false</code>, preserving acute (<code>U+0301</code>), grave (<code>U+0300</code>), circumflex (<code>U+0302</code>), tilde (<code>U+0303</code>), macron (<code>U+0304</code>), and caron (<code>U+030C</code>) marks. Tone stripping (`strip_accents = true`) is strictly opt-in for tone-insensitive keyword search.</p>
+
+        <h3>Linguistic profile of the four supported languages</h3>
+        <div class="facets">
+          <div class="facet">
+            <span class="label">Tw · Akan / Twi (2.23 fertility)</span>
+            <p>Covers Asante and Akuapem dialects. Features 7 oral vowels (`a, e, ɛ, i, o, ɔ, u`), ATR vowel harmony, and rich verbal prefixing (`re-` progressive, `bɛ-` future, `kɔ-` motional, `n-`/`m-` negative).</p>
+          </div>
+          <div class="facet">
+            <span class="label">Ee · Ewe / Èʋegbe (2.77 fertility)</span>
+            <p>Uses 5 extended African Reference Alphabet consonants: retroflex <code>ɖ</code>, bilabial fricative <code>ƒ</code>, velar fricative <code>ɣ</code>, velar nasal <code>ŋ</code>, and bilabial v-hook <code>ʋ</code>, plus nasalized vowels (`ã, ẽ, ĩ, õ, ũ`).</p>
+          </div>
+          <div class="facet">
+            <span class="label">Ga · Gã (2.38 fertility)</span>
+            <p>Spoken in Greater Accra. Relies heavily on labial-velar and palatal digraphs (`gb, kp, ny, ŋm, sh, ts, dz`) and nasalized open vowels (`ɛ̃, ɔ̃`) that BPE merges into intact onset units.</p>
+          </div>
+          <div class="facet">
+            <span class="label">Fa · Fante / Mfantse (2.16 fertility)</span>
+            <p>Coastal Akan literary variety. Shares `ɛ` and `ɔ` harmony with Twi while featuring distinct palatalized and labialized consonant clusters (`dz, ts, kw, hw, tw, dw, hy`).</p>
+          </div>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="c">
+            <p>When should you pass <code>strip_accents=True</code> to <code>leke.normalize()</code>?</p>
+            <label><input type="radio" name="q-06" value="a"> <span>Always, because accents waste tokens</span></label>
+            <label><input type="radio" name="q-06" value="b"> <span>When training a Text-to-Speech (TTS) or machine translation model</span></label>
+            <label><input type="radio" name="q-06" value="c"> <span>Only when building a tone-agnostic search index where users query without typing diacritics</span></label>
+            <div class="why" hidden><b></b>Translation and TTS depend on phonemic tone (`pápá` vs. `papá`). Stripping tone marks is only appropriate for tone-agnostic search or retrieval against unaccented queries.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#bpe-mechanics">Next: Byte-Pair Encoding from first principles →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 07: BYTE-PAIR ENCODING FROM FIRST PRINCIPLES
+           ================================================================ -->
+      <section class="chapter" id="bpe-mechanics" data-track="1" data-title="Byte-Pair Encoding from first principles" style="--c: var(--algo)">
+        <div class="eyebrow"><span class="num">07</span> Part III · Subword Algorithms</div>
+        <h2>Byte-Pair Encoding (BPE) from first principles</h2>
+        <p class="intro">Introduced for data compression by Gage (1994) and adapted to NLP by Sennrich et al. (2016) and Radford et al. (2019), <span class="g" data-g="byte-bpe" tabindex="0">Byte-Level BPE</span> builds a subword vocabulary from the bottom up: starting with individual bytes and iteratively merging the most frequent adjacent pair.</p>
+
+        <h3>The training algorithm</h3>
+        <ol>
+          <li><b>Initialize the base alphabet $V_0$:</b> Seed the vocabulary with all 256 byte symbols (`0x00`..`0xFF`) plus special tokens (`&lt;pad&gt;`, `&lt;unk&gt;`, `&lt;bos&gt;`, `&lt;eos&gt;`). Pre-tokenize text at whitespace boundaries, replacing leading spaces with the visible marker <code>Ġ</code> (`U+0120`).</li>
+          <li><b>Count adjacent pairs:</b> Across all words $w$ weighted by corpus frequency $f(w)$, count every adjacent symbol pair $(u, v)$:</li>
+        </ol>
+        <div class="formula">
+          <div class="eq">(u*, v*) = argmax<sub>(u, v) ∈ V × V</sub> &nbsp; Σ<sub>w ∈ Corpus</sub> f(w) · count<sub>w</sub>(u, v)</div>
+          <div class="where">At each step $t = 1, \dots, M$, mint a new token $z = u^* \circ v^*$, add $z$ to $V$, and record the merge rule $(u^*, v^*) \to z$ at priority rank $t$.</div>
+        </div>
+        <p>At inference time, a word is split into base bytes and merge rules are applied in the exact priority order they were learned during training until no further pairs can be merged.</p>
+
+        <!-- Interactive Bench: Step-by-Step BPE Merge Simulator -->
+        <div class="bench" id="bench-bpe-step">
+          <header><span class="label">Bench</span><h4>Step through BPE merges on a mini Twi corpus</h4></header>
+          <p class="note">Click <b>Apply next merge</b> to watch BPE discover common Akan morphemes (`ba`, `wa`, `kwa`, `akwaaba`, `wɔ`, `frɛ`) step by step on <code>["akwaaba", "Ġba", "Ġwɔfrɛ", "Ġmema"]</code>.</p>
+          <div class="btnrow">
+            <button class="btn solid" type="button" id="bpe-next">Apply next merge</button>
+            <button class="btn" type="button" id="bpe-all">Run all 10 merges</button>
+            <button class="btn" type="button" id="bpe-reset">Reset to characters</button>
+          </div>
+          <div class="readouts">
+            <div class="readout"><span>Merge step</span><b id="bpe-step-num">0 / 10</b></div>
+            <div class="readout"><span>Last merge rule applied</span><b id="bpe-last-rule">None (base chars)</b></div>
+            <div class="readout"><span>Total tokens across 4 words</span><b id="bpe-total-toks">22</b></div>
+            <div class="readout"><span>Current fertility</span><b id="bpe-cur-fert">5.50</b></div>
+          </div>
+          <div class="token-chips" id="bpe-step-chips"></div>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="a">
+            <p>At inference time, in what order does BPE apply its learned merge rules to a new word?</p>
+            <label><input type="radio" name="q-07" value="a"> <span>In the exact priority order the merges were learned during training (most frequent pair first)</span></label>
+            <label><input type="radio" name="q-07" value="b"> <span>Randomly until the word is one token</span></label>
+            <label><input type="radio" name="q-07" value="c"> <span>From right to left alphabetically</span></label>
+            <div class="why" hidden><b></b>Each merge rule has a fixed rank $t$. Applying rules in rank order guarantees that inference segmentation exactly mirrors training segmentation.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#bpe-vs-unigram">Next: Byte-Level BPE vs. Unigram LM →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 08: BYTE-LEVEL BPE VS UNIGRAM LM
+           ================================================================ -->
+      <section class="chapter" id="bpe-vs-unigram" data-track="1" data-title="Byte-Level BPE vs. Unigram LM" style="--c: var(--algo)">
+        <div class="eyebrow"><span class="num">08</span> Part III · Subword Algorithms</div>
+        <h2>Byte-Level BPE vs. Unigram Language Model</h2>
+        <p class="intro">Two subword algorithms dominate modern NLP: bottom-up <b>Byte-Level BPE</b> (used in GPT-4, LLaMA-3, Mistral) and top-down <span class="g" data-g="unigram" tabindex="0">Unigram LM</span> (Kudo 2018, used in SentencePiece, T5, NLLB). Leke implements both in Rust (`src/trainer.rs`) and ran a controlled head-to-head experiment (`specs/algorithm_decision.md`) to decide which should be the default.</p>
+
+        <h3>How Unigram differs from BPE</h3>
+        <div class="facets">
+          <div class="facet">
+            <span class="label">Byte-Level BPE (Bottom-Up)</span>
+            <p>Starts with 256 bytes and greedily <b>adds</b> the highest-frequency adjacent pair at each step until reaching $|V| = 8{,}000$.</p>
+          </div>
+          <div class="facet">
+            <span class="label">Unigram LM (Top-Down)</span>
+            <p>Starts with a huge seed vocabulary ($100\text{k}+$ substrings), estimates token probabilities $P(x_i)$ via EM, and iteratively <b>prunes</b> tokens that least reduce corpus log-likelihood $\mathcal{L} = \sum \log P(x^*)$.</p>
+          </div>
+        </div>
+
+        <h3>Controlled head-to-head benchmark (`specs/algorithm_decision.md`)</h3>
+        <p>Both models were trained on the exact same temperature-upsampled corpus (`data/splits/pooled_train.txt`, seed 42, 8k vocabulary) and evaluated on held-out test splits:</p>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>Language</th><th class="n">BPE Fertility ↓</th><th class="n">Unigram Fertility ↓</th><th class="n">BPE Split &gt;2 ↓</th><th class="n">Unigram Split &gt;2 ↓</th><th class="n">BPE Bytes/Tok ↑</th><th class="n">Uni Bytes/Tok ↑</th><th>Winner</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Akan / Twi</b></td><td class="n"><b>2.23</b></td><td class="n">2.46</td><td class="n"><b>38.5%</b></td><td class="n">42.3%</td><td class="n"><b>2.40</b></td><td class="n">2.17</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Ewe</b></td><td class="n"><b>2.77</b></td><td class="n">3.55</td><td class="n"><b>54.8%</b></td><td class="n">64.5%</td><td class="n"><b>2.17</b></td><td class="n">1.70</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Ga</b></td><td class="n"><b>2.38</b></td><td class="n">2.54</td><td class="n"><b>41.7%</b></td><td class="n">54.2%</td><td class="n"><b>2.16</b></td><td class="n">2.02</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Fante</b></td><td class="n"><b>2.16</b></td><td class="n">2.74</td><td class="n">47.4%</td><td class="n"><b>42.1%</b></td><td class="n"><b>2.51</b></td><td class="n">1.98</td><td><b>BPE</b></td></tr>
+              <tr><td><b>Macro Average</b></td><td class="n"><b>2.38</b></td><td class="n">2.82</td><td class="n"><b>45.6%</b></td><td class="n">50.8%</td><td class="n"><b>2.31</b></td><td class="n">1.97</td><td><b>Byte-Level BPE</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="project"><span class="label">Why Byte-Level BPE won on Kwa morphology</span>
+          <p>In Niger-Congo Kwa languages, words are formed by chaining short CV/CVC verbal prefixes (`mɛ-`, `re-`, `bɛ-`, `kɔ-`) onto stable roots. BPE's bottom-up pair merging naturally locks in these high-frequency 2- and 3-letter CV syllables early and keeps them intact. Unigram's global likelihood pruning aggressively pruned mid-frequency Ewe and Ga stems containing multi-byte characters (`ɖ, ƒ, ɣ, ɛ, ɔ`), inflating Ewe split `>2` rate to <b>64.5%</b> (`3.55` fertility vs. BPE's `2.77`).</p>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="b">
+            <p>Across the four Kwa languages, how much lower was Byte-Level BPE's mean fertility compared to Unigram LM at the same 8k vocabulary size?</p>
+            <label><input type="radio" name="q-08" value="a"> <span>They were identical (2.82 vs. 2.82)</span></label>
+            <label><input type="radio" name="q-08" value="b"> <span>2.38 vs. 2.82 tokens/word (15.6% fewer tokens per word on average, and 22% fewer on Ewe)</span></label>
+            <label><input type="radio" name="q-08" value="c"> <span>Unigram had lower fertility on every language</span></label>
+            <div class="why" hidden><b></b>Byte-Level BPE achieved 2.38 mean fertility vs. Unigram's 2.82, winning on all four languages (`2.23`, `2.77`, `2.38`, `2.16`).</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#zero-unk">Next: The 0.0% &lt;unk&gt; guarantee &amp; live sandbox →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 09: THE 0.0% <UNK> GUARANTEE & SELF-CONTAINED SANDBOX
+           ================================================================ -->
+      <section class="chapter" id="zero-unk" data-track="1" data-title="The 0.0% unk guarantee and live sandbox" style="--c: var(--algo)">
+        <div class="eyebrow"><span class="num">09</span> Part III · Subword Algorithms</div>
+        <h2>The 0.0% <code>&lt;unk&gt;</code> guarantee &amp; live tokenizer sandbox</h2>
+        <p class="intro">When a character-based tokenizer encounters a character it did not see during training — an emoji, a currency sign, a mathematical operator, or a borrowed diacritic — it replaces the token with <code>&lt;unk&gt;</code>. Once <code>&lt;unk&gt;</code> is emitted, the original information is permanently destroyed: <code>decode(encode(x)) != x</code>.</p>
+
+        <h3>How byte-level fallback guarantees lossless round-trips</h3>
+        <p>Every valid UTF-8 string is a sequence of bytes in <code>0x00..0xFF</code>. Because Leke seeds its base vocabulary with all 256 byte tokens before learning any merges, <b>no UTF-8 string can ever be out-of-vocabulary</b>:</p>
+        <ul>
+          <li>Known Kwa words and morphemes merge into compact subword tokens (`Akwaaba`, `Ġba`, `ĠGhana`).</li>
+          <li>Unseen symbols (like the Ghana flag <code>🇬🇭</code> or math symbols <code>∑x² = λ</code>) decompose into their exact UTF-8 byte tokens (e.g. <code>&lt;0xF0&gt;&lt;0x9F&gt;&lt;0x87&gt;&lt;0xAC&gt;</code>), which <code>tok.decode()</code> reassembles losslessly back into the original characters.</li>
+        </ul>
+
+        <!-- Interactive Bench: Full Self-Contained Tokenizer Sandbox -->
+        <div class="bench" id="bench-sandbox">
+          <header><span class="label">Bench</span><h4>Self-contained Kwa Tokenizer &amp; Byte-Fallback Sandbox</h4></header>
+          <p class="note">Pick a preset or type any Akan/Twi, Ewe, Ga, or Fante text mixed with lookalikes or emojis. Subword tokens appear in cyan; byte-fallback tokens appear in magenta.</p>
+          <div class="btnrow" id="sb-presets">
+            <button class="btn solid" type="button" data-sb="Akwaaba ba Ghana man mu. Wɔfrɛ me Kofi na mefiri Kumasi.">Akan / Twi</button>
+            <button class="btn" type="button" data-sb="Mìedó gbe na mi nyuie. Woezɔ loo!">Ewe</button>
+            <button class="btn" type="button" data-sb="Ojekoo, te oyɔɔ tɛŋŋ? Mitsɛ́ ji Nii Ayi.">Ga</button>
+            <button class="btn" type="button" data-sb="Me dzin dze Kwesi, mefi Oguaa. Ɛte dɛn?">Fante</button>
+            <button class="btn" type="button" data-sb="Wↄfrε no pápá! Ογε ɳkↄ ðeke.">Lookalikes &amp; Tone</button>
+            <button class="btn" type="button" data-sb="Akwaaba 🇬🇭 — ∑x² = λ">Byte Fallback</button>
+          </div>
+          <div class="controls">
+            <label for="sb-in">Input text
+              <input id="sb-in" type="text" value="Akwaaba ba Ghana man mu. Wɔfrɛ me Kofi na mefiri Kumasi.">
+            </label>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 14px 22px; font-size: 13.5px; color: var(--ink-2);">
+            <label style="display: inline-flex; align-items: center; gap: 7px; cursor: pointer;">
+              <input type="checkbox" id="sb-look" checked style="accent-color: var(--accent);">
+              <span>Map lookalikes (<code>ε→ɛ</code>, <code>ↄ→ɔ</code>, <code>γ→ɣ</code>, <code>ɳ→ŋ</code>, <code>ð→ɖ</code>)</span>
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: 7px; cursor: pointer;">
+              <input type="checkbox" id="sb-tone" style="accent-color: var(--accent);">
+              <span>Strip tone marks (<code>pápá → papa</code>)</span>
+            </label>
+          </div>
+          <div class="token-chips" id="sb-chips"></div>
+          <div class="readouts">
+            <div class="readout"><span>Normalized string</span><b id="sb-norm" style="font-size: 0.9rem;">–</b></div>
+            <div class="readout"><span>Words / Tokens</span><b id="sb-counts">0 / 0</b></div>
+            <div class="readout"><span>Fertility (tok/word)</span><b id="sb-fert">0.00</b></div>
+            <div class="readout"><span>Byte fallback / &lt;unk&gt;</span><b id="sb-byte" style="color: var(--good);">0 bytes · 0.0% &lt;unk&gt;</b></div>
+          </div>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="b">
+            <p>What does the prefix symbol <code>Ġ</code> on a token like <code>Ġba</code> represent in Byte-Level BPE?</p>
+            <label><input type="radio" name="q-09" value="a"> <span>A capital Ga consonant</span></label>
+            <label><input type="radio" name="q-09" value="b"> <span>A leading ASCII space (0x20) attached to the start of a word so detokenization can restore exact whitespace without losing spaces</span></label>
+            <label><input type="radio" name="q-09" value="c"> <span>An unknown character</span></label>
+            <div class="why" hidden><b></b>Byte-Level BPE maps raw byte <code>0x20</code> (space) to the visible printable character <code>Ġ</code> (`U+0120`) so spaces are preserved inside tokens and `decode(encode(text))` is exact.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#rust-pyo3">Next: Rust core, PyO3 zero-copy &amp; provenance →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 10: RUST CORE, PYO3 ZERO-COPY & PROVENANCE
+           ================================================================ -->
+      <section class="chapter" id="rust-pyo3" data-track="1" data-title="Rust core, PyO3 zero-copy and provenance" style="--c: var(--eng)">
+        <div class="eyebrow"><span class="num">10</span> Part IV · Systems &amp; Library Guide</div>
+        <h2>Rust core, PyO3 zero-copy &amp; cryptographic provenance</h2>
+        <p class="intro">A tokenizer sits on the hot path of every LLM training loop and inference server. If normalization or BPE lookup runs in pure Python, CPU data loaders become the bottleneck while GPUs sit idle. Leke is written in Rust (`src/`) and exposed to Python via a compiled <span class="g" data-g="pyo3" tabindex="0">PyO3</span> C-extension (`leke._leke`).</p>
+
+        <h3>Measured throughput (`specs/benchmarks.md`)</h3>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>Operation (500 iterations × 120 Kwa sentences)</th><th class="n">Leke (Rust + PyO3)</th><th>Architecture Notes</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Encode throughput (tokens / sec)</b></td><td class="n"><b>356,508 tok/s</b></td><td>Includes full <code>KwaNormalizer</code> pass + Byte-Level BPE merges</td></tr>
+              <tr><td><b>Encode bandwidth (MB / sec)</b></td><td class="n"><b>0.92 MB/s</b></td><td>Zero intermediate heap allocations per token</td></tr>
+              <tr><td><b>Decode throughput (sentences / sec)</b></td><td class="n"><b>59,407 sent/s</b></td><td>Sub-millisecond contiguous UTF-8 buffer reconstruction</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Three systems engineering choices in `src/`</h3>
+        <ul>
+          <li><b>Batch execution across the FFI boundary:</b> Calling into Rust once per sentence pays Python's C-API call overhead every time. <code>tok.encode_batch(texts)</code> crosses the Python/Rust boundary once, normalizes and encodes the entire list inside Rust, and returns contiguous vectors.</li>
+          <li><b><span class="g" data-g="abi3" tabindex="0">ABI3 stable wheels</span>:</b> Configured in `Cargo.toml` with `pyo3 = { features = ["extension-module", "abi3-py39"] }`, allowing a single compiled wheel (`_leke.abi3.so` / `.pyd`) to work across Python 3.9, 3.10, 3.11, 3.12, and 3.13+ without recompiling per minor version.</li>
+          <li><b>Cryptographic provenance receipts (`receipt.json`):</b> Every trained model bundle writes a JSON receipt beside `tokenizer.json` containing the SHA-256 hash of every training file, the exact normalizer flags, vocabulary size, and random seed (`42`).</li>
+        </ul>
+
+        <h3>Audited corpus licensing (`specs/corpus_licenses.md`)</h3>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>Source Corpus</th><th>Languages</th><th>License</th><th>Commercial Use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Wikipedia Dumps</b></td><td>Akan/Twi (`tw`), Ewe (`ee`)</td><td>CC BY-SA 4.0</td><td>Yes (with attribution)</td></tr>
+              <tr><td><b>Glot500</b></td><td>Akan (`aka`), Ewe (`ewe`), Ga (`gaa`), Fante (`fat`)</td><td>CC BY-SA / Apache 2.0 / MIT</td><td>Yes</td></tr>
+              <tr><td><b>MADLAD-400</b></td><td>Twi (`twi`), Ewe (`ewe`)</td><td>ODC-By v1.0</td><td>Yes</td></tr>
+              <tr><td><b>MGhana-ST</b></td><td>Akan/Twi, Ewe, Ga</td><td>CC BY 4.0</td><td>Yes</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="b">
+            <p>Why should you call <code>tok.encode_batch(sentences)</code> instead of <code>[tok.encode(s) for s in sentences]</code> when tokenizing a large dataset in Python?</p>
+            <label><input type="radio" name="q-10" value="a"> <span><code>encode()</code> does not run the Kwa normalizer</span></label>
+            <label><input type="radio" name="q-10" value="b"> <span><code>encode_batch()</code> crosses the Python-to-Rust boundary once for the whole batch instead of paying per-sentence FFI call overhead</span></label>
+            <label><input type="radio" name="q-10" value="c"> <span><code>encode_batch()</code> uses a smaller vocabulary</span></label>
+            <div class="why" hidden><b></b>Amortizing the Python/Rust boundary crossing over a batch eliminates per-item Python call overhead.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#library-guide">Next: Using Leke: Python, Rust, HF &amp; CLI →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 11: PRACTICAL LIBRARY GUIDE (PYTHON, RUST, HF, CLI)
+           ================================================================ -->
+      <section class="chapter" id="library-guide" data-track="1" data-title="Using Leke: Python, Rust, Hugging Face and CLI" style="--c: var(--eng)">
+        <div class="eyebrow"><span class="num">11</span> Part IV · Systems &amp; Library Guide</div>
+        <h2>Using the Leke library: Python, Rust, Hugging Face &amp; CLI</h2>
+        <p class="intro">Now that we have covered the theory and design, here is the complete practical reference for installing and using <code>leke</code> in your own projects.</p>
+
+        <h3>1. Installation &amp; local build</h3>
+        <p>From a clone of the repository using <code>uv</code> and <code>maturin</code> (requires a Rust toolchain and Python 3.9+):</p>
+        <pre><code># Create virtual environment and compile the native Rust PyO3 extension
+uv sync
+uv run maturin develop --release
+
+# Verify the compiled C-extension version
+uv run python -c "import leke; print(leke.__version__)"</code></pre>
+
+        <h3>2. Standalone Kwa text normalization in Python</h3>
+        <p>Use <code>leke.normalize()</code> or the reusable <code>KwaNormalizer</code> class to clean raw scraped text before any NLP task:</p>
+        <pre><code>import leke
+from leke import KwaNormalizer
+
+# Quick functional call (NFC + lookalike harmonization + preserve tone + collapse spaces)
+raw = "Wↄfrε   no   pápá!   Ογε ɳkↄ ðeke."
+clean = leke.normalize(raw)
+print(clean)  # "Wɔfrɛ no pápá! Oɣe ŋkɔ ɖeke."
+
+# Tone-agnostic mode (opt-in stripping of acute/grave/circumflex/caron marks)
+tone_free = leke.normalize(raw, strip_accents=True, collapse_whitespace=True)
+print(tone_free)  # "Wɔfrɛ no papa! Oɣe ŋkɔ ɖeke."
+
+# Reusable Rust normalizer instance for high-throughput loops
+norm = KwaNormalizer(strip_accents=False, collapse_whitespace=True)
+print(norm.normalize_str("Akwaaba   ε   Ghana"))  # "Akwaaba ɛ Ghana"</code></pre>
+
+        <h3>3. Encoding, batching &amp; decoding with <code>LekeTokenizer</code></h3>
+        <pre><code>from leke import LekeTokenizer
+
+# Load a trained model bundle from disk
+tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+print("Vocabulary size:", tok.vocab_size)
+
+# Single-sentence encode -> returns an Encoding object (.ids, .tokens, .offsets)
+enc = tok.encode("Akwaaba ba Ghana man mu.")
+print("Tokens: ", enc.tokens)   # ['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
+print("IDs:    ", enc.ids)      # [570, 514, 339, 364, 338, 18]
+print("Offsets:", enc.offsets)  # [(0, 7), (7, 10), (10, 16), (16, 20), (20, 23), (23, 24)]
+
+# Lossless round-trip decode
+restored = tok.decode(enc.ids)
+assert restored.strip() == "Akwaaba ba Ghana man mu."
+
+# High-throughput batch encode &amp; decode in Rust
+batch = [
+    "Wɔfrɛ me Kofi na mefiri Kumasi.",
+    "Mìedó gbe na mi nyuie.",
+    "Ojekoo, te oyɔɔ tɛŋŋ?",
+]
+encodings = tok.encode_batch(batch)
+decoded_batch = tok.decode_batch([e.ids for e in encodings])
+
+# Direct vocabulary inspection
+tok_id = tok.token_to_id("Akwaaba")
+tok_str = tok.id_to_token(tok_id)</code></pre>
+
+        <h3>4. Hugging Face <code>transformers</code> integration</h3>
+        <p>Every Leke bundle is a standard Hugging Face <code>tokenizer.json</code> and converts directly into a <code>PreTrainedTokenizerFast</code> with <code>&lt;pad&gt;</code>, <code>&lt;unk&gt;</code>, <code>&lt;bos&gt;</code>, and <code>&lt;eos&gt;</code> configured:</p>
+        <pre><code>from leke import LekeTokenizer
+from transformers import PreTrainedTokenizerFast
+
+# Option A: Directly from an existing LekeTokenizer instance
+tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+hf_tok = tok.to_transformers()
+
+# Option B: Load directly via Hugging Face transformers
+hf_tok = PreTrainedTokenizerFast(
+    tokenizer_file="models/bpe-8k/tokenizer.json",
+    unk_token="&lt;unk&gt;",
+    pad_token="&lt;pad&gt;",
+    bos_token="&lt;bos&gt;",
+    eos_token="&lt;eos&gt;",
+)
+
+# Ready for PyTorch / JAX training loops with padding &amp; attention masks
+batch_tensors = hf_tok(
+    ["Mema wo akye!", "Woezɔ loo!"],
+    padding=True,
+    truncation=True,
+    return_tensors="pt",
+)
+print(batch_tensors["input_ids"])
+print(batch_tensors["attention_mask"])</code></pre>
+
+        <h3>5. Using the native Rust crate (`_leke`)</h3>
+        <pre><code>use _leke::normalizer::KwaNormalizer;
+use _leke::trainer::{train_bpe, BpeTrainingConfig, save_tokenizer_bundle};
+use std::path::{Path, PathBuf};
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    // 1. Normalize Kwa text in native Rust
+    let norm = KwaNormalizer::default();
+    let cleaned = norm.normalize_str("Wↄfrε   no   pápá!");
+    assert_eq!(cleaned, "Wɔfrɛ no pápá!");
+
+    // 2. Train a Byte-Level BPE tokenizer and emit a SHA-256 provenance receipt
+    let config = BpeTrainingConfig {
+        vocab_size: 8192,
+        min_frequency: 2,
+        strip_accents: false,
+        collapse_whitespace: true,
+        seed: 42,
+    };
+    let files = vec![
+        PathBuf::from("data/splits/twi/train.txt"),
+        PathBuf::from("data/splits/ewe/train.txt"),
+    ];
+    let (tokenizer, receipt) = train_bpe(&amp;files, &amp;config)?;
+    save_tokenizer_bundle(&amp;tokenizer, &amp;receipt, Path::new("models/bpe-8k"))?;
+    Ok(())
+}</code></pre>
+
+        <h3>6. Training &amp; evaluating from the CLI</h3>
+        <pre><code># 1. Train a Byte-Level BPE (or --algorithm unigram) model on custom corpora
+uv run python -m leke.trainer \
+  --corpus data/splits/pooled_train.txt \
+  --output-dir models/bpe-8k \
+  --vocab-size 8000 \
+  --algorithm bpe
+
+# 2. Run the evaluation harness on held-out test splits and generate a Markdown report
+uv run python -m leke.evaluate \
+  --bpe-model models/bpe-8k/tokenizer.json \
+  --splits-dir data/splits \
+  --output-report specs/eval_results.md</code></pre>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="a">
+            <p>Which method converts a <code>LekeTokenizer</code> instance directly into a Hugging Face <code>PreTrainedTokenizerFast</code> object with special tokens configured?</p>
+            <label><input type="radio" name="q-11" value="a"> <span><code>tok.to_transformers()</code></span></label>
+            <label><input type="radio" name="q-11" value="b"> <span><code>tok.encode_batch()</code></span></label>
+            <label><input type="radio" name="q-11" value="c"> <span><code>leke.version()</code></span></label>
+            <div class="why" hidden><b></b><code>tok.to_transformers()</code> wraps the underlying `tokenizer.json` path into a `transformers.PreTrainedTokenizerFast` with `&lt;unk&gt;`, `&lt;pad&gt;`, `&lt;bos&gt;`, and `&lt;eos&gt;` pre-populated.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#lessons">Next: Ten things that broke, and what they teach →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           CHAPTER 12: TEN THINGS THAT BROKE, AND WHAT THEY TEACH
+           ================================================================ -->
+      <section class="chapter" id="lessons" data-track="1" data-title="Ten things that broke, and what they teach" style="--c: var(--case)">
+        <div class="eyebrow"><span class="num">12</span> Part V · Case Studies</div>
+        <h2>Ten things that broke during development, and what they teach</h2>
+        <p class="intro">Every design rule in Leke came from a concrete failure observed while building, training, and benchmarking the tokenizer on real West African text. Read each as a worked exercise.</p>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">1. The floating tone mark that joined the next consonant · Unicode</span>
+          <p><b>What happened.</b> In decomposed (NFD) Ewe text, a vowel followed by a combining acute accent (`U+0301`) was segmented by byte-level BPE so that the base vowel merged with the preceding consonant while the floating accent bytes (`0xCC 0x81`) merged with the <i>following</i> consonant.</p>
+          <p><b>The principle.</b> Always run Unicode NFC canonical composition before any character mapping or byte-level pre-tokenization.</p>
+          <p><a href="#unicode-nfc">Related chapter: 04 · Unicode NFC vs. NFD</a></p>
+        </div>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">2. Twin vocabulary entries for the same Twi word · Orthography</span>
+          <p><b>What happened.</b> Early vocabularies contained both <code>wɔfrɛ</code> (Latin `ɛ`, `0xC9 0x9B`) and <code>wɔfrε</code> (Greek `ε`, `0xCE 0xB5`) as separate tokens, cutting the effective frequency of every open-vowel word in half.</p>
+          <p><b>The principle.</b> Harmonize visual script lookalikes in a deterministic table (`data/char_mappings.json`) before both training and inference.</p>
+          <p><a href="#lookalikes">Related chapter: 05 · Lookalike character harmonization</a></p>
+        </div>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">3. Tone stripping that turned “father” into “goodness” · Linguistics</span>
+          <p><b>What happened.</b> Enabling standard accent stripping collapsed Twi <code>pápá</code> (“goodness”), <code>papá</code> (“father”), and <code>pàpà</code> (“fan”) into a single token <code>papa</code>, and Ewe <code>mí</code> (“we”) into <code>mi</code> (“you”).</p>
+          <p><b>The principle.</b> In tonal Niger-Congo languages, diacritics are phonemic, not decorative. Preserve tone by default (`strip_accents = false`) and make stripping strictly opt-in.</p>
+          <p><a href="#tone-languages">Related chapter: 06 · Phonemic tone &amp; Kwa languages</a></p>
+        </div>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">4. Ga and Fante starved by raw corpus concatenation · Statistics</span>
+          <p><b>What happened.</b> Pooling raw datasets without re-weighting gave Twi and Ewe over 88% of the training lines, leaving Ga and Fante words splintered into single characters.</p>
+          <p><b>The principle.</b> Balance multi-language corpora with multinomial temperature upsampling ($\alpha = 0.5$) so low-resource languages receive fair merge allocation without overfitting.</p>
+          <p><a href="#upsampling">Related chapter: 03 · Zipf's law &amp; temperature upsampling</a></p>
+        </div>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">5. Unigram shattering 64.5% of Ewe words · Algorithms</span>
+          <p><b>What happened.</b> Unigram LM pruned away mid-frequency Ewe syllables containing extended Latin consonants (`ɖ, ƒ, ɣ, ŋ, ʋ`), pushing Ewe fertility to `3.55` vs. Byte-Level BPE's `2.77`.</p>
+          <p><b>The principle.</b> Test candidate subword algorithms head-to-head on held-out splits with fixed seeds before picking a default.</p>
+          <p><a href="#bpe-vs-unigram">Related chapter: 08 · Byte-Level BPE vs. Unigram LM</a></p>
+        </div>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">6. Monolingual baselines dropping proper nouns into &lt;unk&gt; · Evaluation</span>
+          <p><b>What happened.</b> Monolingual baselines (`Goldfish Twi`, `Wikilangs Ewe`) achieved low fertility on common words but emitted 0.4%–0.6% `&lt;unk&gt;` tokens on held-out text containing symbols or foreign characters.</p>
+          <p><b>The principle.</b> Seed the base vocabulary with all 256 byte values so unknown characters degrade into UTF-8 bytes with a hard 0.0% `&lt;unk&gt;` rate.</p>
+          <p><a href="#zero-unk">Related chapter: 09 · The 0.0% &lt;unk&gt; guarantee</a></p>
+        </div>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">7. Non-standard exotic spaces breaking word pre-tokenization · Data hygiene</span>
+          <p><b>What happened.</b> Web-scraped texts contained non-breaking spaces (`U+00A0`), thin spaces (`U+2009`), and ideographic spaces (`U+3000`) that standard ASCII space splitters treated as word characters, gluing whole phrases into single giant tokens.</p>
+          <p><b>The principle.</b> Normalize all 15 Unicode space variants to standard ASCII `U+0020` and collapse consecutive spaces in linear time.</p>
+          <p><a href="#lookalikes">Related chapter: 05 · Lookalike character harmonization</a></p>
+        </div>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">8. Per-sentence Python loops bottlenecking throughput · Systems</span>
+          <p><b>What happened.</b> Calling Rust `encode()` inside a Python `for` loop spent more time crossing the Python/C-API boundary than running BPE merges.</p>
+          <p><b>The principle.</b> Expose batch APIs (`encode_batch`, `decode_batch`) that cross the FFI boundary once and process the entire batch in native Rust.</p>
+          <p><a href="#rust-pyo3">Related chapter: 10 · Rust core &amp; PyO3 zero-copy</a></p>
+        </div>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">9. Custom normalizer blocking Hugging Face AutoTokenizer · Interop</span>
+          <p><b>What happened.</b> Attaching a custom Rust-only normalizer struct inside `tokenizer.json` caused standard `transformers.PreTrainedTokenizerFast` loaders (which don't link Leke's Rust crate) to reject the JSON schema.</p>
+          <p><b>The principle.</b> Serialize `tokenizer.json` using standard composable Hugging Face normalizer primitives (`NFC` + `Replace` + `PreTokenizer`) so any stock `transformers` environment can load the bundle without custom C++ plugins.</p>
+          <p><a href="#library-guide">Related chapter: 11 · Using Leke with Hugging Face</a></p>
+        </div>
+
+        <div class="example" style="background: var(--sheet); border: 1px solid var(--card-border);">
+          <span class="label">10. Unreproducible vocabulary merges across runs · Governance</span>
+          <p><b>What happened.</b> Training a tokenizer twice on slightly different corpus snapshots produced subtly different token IDs, invalidating cached dataset tensors.</p>
+          <p><b>The principle.</b> Emit a cryptographic `receipt.json` alongside every `tokenizer.json` recording the SHA-256 hash of every input file, config parameter, and seed.</p>
+          <p><a href="#rust-pyo3">Related chapter: 10 · Cryptographic provenance</a></p>
+        </div>
+
+        <div class="quiz">
+          <div class="label">Check yourself</div>
+          <div class="q" data-answer="b">
+            <p>Why does Leke export its normalization rules into `tokenizer.json` using composable standard primitives (`NFC`, `Replace`) in addition to providing the native `KwaNormalizer` struct?</p>
+            <label><input type="radio" name="q-12" value="a"> <span>Because Rust cannot read JSON files</span></label>
+            <label><input type="radio" name="q-12" value="b"> <span>So stock Hugging Face `PreTrainedTokenizerFast` and `AutoTokenizer` pipelines can load `tokenizer.json` out-of-the-box without needing custom C++/Rust plugins installed</span></label>
+            <label><input type="radio" name="q-12" value="c"> <span>To double the file size</span></label>
+            <div class="why" hidden><b></b>Using standard Hugging Face normalizer primitives in the exported JSON ensures zero-friction compatibility with PyTorch, vLLM, and `transformers`.</div>
+          </div>
+        </div>
+
+        <div class="chapter-foot">
+          <button class="mark-read" type="button" aria-pressed="false">Mark chapter as read</button>
+          <a href="#glossary">Next: Glossary →</a>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           GLOSSARY
+           ================================================================ -->
+      <section class="chapter" id="glossary" data-title="Glossary" style="--c: var(--ink-3)">
+        <div class="eyebrow"><span class="num">G</span> Reference</div>
+        <h2>Glossary</h2>
+        <p class="intro">Every dotted term in this manual, defined in one place.</p>
+        <dl class="glossary">
+          <dt id="g-abi3">ABI3 Wheel</dt>
+          <dd>CPython's stable Application Binary Interface (`abi3-py39`), allowing a single compiled Rust PyO3 wheel to run across Python 3.9 through 3.13+.</dd>
+
+          <dt id="g-byte-bpe">Byte-Level BPE</dt>
+          <dd>Byte-Pair Encoding whose base alphabet is all 256 UTF-8 byte values (`0x00..0xFF`), guaranteeing a 0.0% unknown-token rate on any input string.</dd>
+
+          <dt id="g-compression">Compression (bytes / token)</dt>
+          <dd>Total UTF-8 byte length of a text divided by the number of tokens produced. Higher values mean each token packs more information.</dd>
+
+          <dt id="g-fertility">Fertility</dt>
+          <dd>The average number of subword tokens produced per whitespace-delimited word ($\text{tokens} \div \text{words}$). Lower fertility means shorter sequences and lower $O(L^2)$ attention cost.</dd>
+
+          <dt id="g-lookalike">Lookalike Character</dt>
+          <dd>A glyph from another Unicode block (such as Greek `ε` or `γ`, or Cyrillic `є`) typed in place of a visually identical African Latin letter (`ɛ`, `ɣ`).</dd>
+
+          <dt id="g-nfc">Unicode NFC</dt>
+          <dd>Normalization Form Canonical Composition: decomposes characters and recomposes them into canonical precomposed codepoints (`a + U+0301 → á`).</dd>
+
+          <dt id="g-nfd">Unicode NFD</dt>
+          <dd>Normalization Form Canonical Decomposition: separates precomposed accented letters into base characters plus floating combining marks.</dd>
+
+          <dt id="g-pyo3">PyO3</dt>
+          <dd>The Rust library and compiler bridge used to expose native Rust structs (`KwaNormalizer`, `NativeTokenizer`) as zero-overhead Python classes.</dd>
+
+          <dt id="g-split-rate">Excessive Split Rate (&gt;2)</dt>
+          <dd>The percentage of whitespace words segmented into 3 or more subword tokens. Measures morphological over-fragmentation.</dd>
+
+          <dt id="g-temperature">Temperature Upsampling</dt>
+          <dd>Rescaling corpus sampling probabilities by $p_i \propto N_i^\alpha$ ($\alpha = 0.5$) so lower-resource languages (Ga, Fante) are not starved by larger ones (Twi, Ewe).</dd>
+
+          <dt id="g-unigram">Unigram LM</dt>
+          <dd>A top-down subword algorithm that starts with a large seed vocabulary and iteratively prunes tokens that least reduce unigram log-likelihood.</dd>
+
+          <dt id="g-unk">&lt;unk&gt; Token</dt>
+          <dd>Special out-of-vocabulary token emitted when a tokenizer cannot represent an input character. Guaranteed 0.0% in Leke via 256-byte fallback.</dd>
+        </dl>
+      </section>
+    </main>
   </div>
 
-  <div id="backdrop" class="backdrop" hidden></div>
+  <script>
+    window.GLOSSARY = {
+      "abi3": ["ABI3 Wheel", "CPython's stable binary interface (abi3-py39), letting one compiled Rust wheel run on Python 3.9 through 3.13+."],
+      "byte-bpe": ["Byte-Level BPE", "Byte-Pair Encoding initialized with all 256 UTF-8 byte values, guaranteeing 0.0% <unk> tokens on any input."],
+      "compression": ["Compression (bytes/tok)", "UTF-8 byte count divided by token count. Higher means denser subword representation."],
+      "fertility": ["Fertility", "Average number of subword tokens per whitespace word (tokens ÷ words). Lower fertility cuts quadratic attention cost."],
+      "lookalike": ["Lookalike Character", "A Greek or Cyrillic letter (ε, γ, є) visually identical to an African Latin letter (ɛ, ɣ) harmonized by KwaNormalizer."],
+      "nfc": ["Unicode NFC", "Canonical composition combining base characters and floating accents into single canonical codepoints."],
+      "nfd": ["Unicode NFD", "Canonical decomposition splitting accented letters into base characters plus floating combining marks."],
+      "pyo3": ["PyO3", "Rust-to-Python FFI bridge compiling Leke's normalizer and BPE engine into a native Python extension."],
+      "split-rate": ["Excessive Split Rate (>2)", "Share of words broken into 3 or more subword tokens."],
+      "temperature": ["Temperature Upsampling", "Smoothing language sampling probabilities by N_i^α (α = 0.5) so Ga and Fante are not starved by Twi and Ewe."],
+      "unigram": ["Unigram LM", "Top-down probabilistic subword algorithm that prunes a large seed vocabulary via Expectation-Maximization."],
+      "unk": ["<unk> Token", "Out-of-vocabulary placeholder token. Guaranteed 0.0% in Leke because unseen characters fall back to raw UTF-8 bytes."]
+    };
+  </script>
 
   <script>
     (function () {
-      'use strict';
-
+      "use strict";
+      var store = {
+        get: function (k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } },
+        set: function (k, v) { try { window.localStorage.setItem(k, v); } catch (e) {} }
+      };
       function $(id) { return document.getElementById(id); }
-
-      // Mobile Drawer
-      var sidebar = $('sidebar');
-      var menuBtn = $('menu-btn');
-      var backdrop = $('backdrop');
-
-      function closeMenu() {
-        sidebar.classList.remove('open');
-        backdrop.hidden = true;
+      function fmt(n) { return Number(n).toLocaleString("en-US"); }
+      function setupCanvas(c) {
+        var ratio = window.devicePixelRatio || 1;
+        var w = c.clientWidth || c.width;
+        var h = Math.round(w * c.height / c.width);
+        c.width = Math.round(w * ratio);
+        c.height = Math.round(h * ratio);
+        var ctx = c.getContext("2d");
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        return { ctx: ctx, w: w, h: h };
       }
 
-      function toggleMenu() {
-        var open = sidebar.classList.toggle('open');
-        backdrop.hidden = !open;
-      }
+      /* ---------- Glossary tooltips ---------- */
+      var GLOSS = window.GLOSSARY || {};
+      var tip = document.createElement("div");
+      tip.className = "tip";
+      tip.hidden = true;
+      tip.setAttribute("role", "tooltip");
+      document.body.appendChild(tip);
 
-      if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
-      if (backdrop) backdrop.addEventListener('click', closeMenu);
-      if (sidebar) {
-        sidebar.addEventListener('click', function (e) {
-          if (e.target.closest('a')) closeMenu();
-        });
+      function showTip(el) {
+        var g = GLOSS[el.getAttribute("data-g")];
+        if (!g) return;
+        tip.innerHTML = "<b></b><span></span>";
+        tip.firstChild.textContent = g[0];
+        tip.lastChild.textContent = g[1];
+        tip.hidden = false;
+        var r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+        var left = Math.min(Math.max(16, r.left + window.scrollX), window.scrollX + document.documentElement.clientWidth - tw - 16);
+        var top = r.bottom + window.scrollY + 6;
+        if (r.bottom + th + 12 > window.innerHeight) top = r.top + window.scrollY - th - 6;
+        tip.style.left = left + "px";
+        tip.style.top = top + "px";
       }
+      function hideTip() { tip.hidden = true; }
+      document.addEventListener("mouseover", function (e) { var el = e.target.closest && e.target.closest(".g"); if (el) showTip(el); });
+      document.addEventListener("mouseout", function (e) { if (e.target.closest && e.target.closest(".g")) hideTip(); });
+      document.addEventListener("focusin", function (e) { if (e.target.classList && e.target.classList.contains("g")) showTip(e.target); });
+      document.addEventListener("focusout", function (e) { if (e.target.classList && e.target.classList.contains("g")) hideTip(); });
+      window.addEventListener("scroll", hideTip, { passive: true });
 
-      // Active Sidebar Tracking on Click
-      var navLinks = Array.prototype.slice.call(document.querySelectorAll('.sidebar .nav-item[href^="#"]'));
-      function setActiveHash(hash) {
-        navLinks.forEach(function (a) {
-          a.classList.toggle('active', a.getAttribute('href') === hash);
-        });
-      }
-      navLinks.forEach(function (a) {
-        a.addEventListener('click', function () {
-          setActiveHash(a.getAttribute('href'));
+      /* ---------- Quizzes ---------- */
+      document.querySelectorAll(".q").forEach(function (q) {
+        var answer = q.getAttribute("data-answer"), why = q.querySelector(".why");
+        q.querySelectorAll("input[type=radio]").forEach(function (input) {
+          input.addEventListener("change", function () {
+            q.querySelectorAll("label").forEach(function (l) { l.classList.remove("right", "wrong"); });
+            var lab = input.closest("label");
+            lab.classList.add(input.value === answer ? "right" : "wrong");
+            if (input.value !== answer) {
+              var correct = q.querySelector('input[value="' + answer + '"]');
+              if (correct) correct.closest("label").classList.add("right");
+            }
+            why.hidden = false;
+            why.firstChild.textContent = input.value === answer ? "Correct. " : "Not quite. ";
+          });
         });
       });
 
-      // Reading Progress Tracker
-      var store = {
-        get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
-        set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
-      };
-      var trackedSections = Array.prototype.slice.call(document.querySelectorAll('section.doc-section[data-track]'));
+      /* ---------- Reading progress ---------- */
+      var chapters = Array.prototype.slice.call(document.querySelectorAll("section.chapter[data-track]"));
       var readSet = {};
-      try { readSet = JSON.parse(store.get('leke-docs-read') || '{}') || {}; } catch (e) { readSet = {}; }
-
+      try { readSet = JSON.parse(store.get("leke-manual-read-v2") || "{}") || {}; } catch (e) { readSet = {}; }
       function renderProgress() {
-        var count = 0;
-        trackedSections.forEach(function (sec) {
-          var id = sec.id;
-          var on = !!readSet[id];
-          if (on) count++;
-          var btn = sec.querySelector('.mark-read');
+        var n = 0;
+        chapters.forEach(function (ch) {
+          var id = ch.id, on = !!readSet[id];
+          if (on) n++;
+          var btn = ch.querySelector(".mark-read");
           if (btn) {
-            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-            btn.textContent = on ? 'Read ✓ (click to undo)' : 'Mark section as read';
+            btn.setAttribute("aria-pressed", on ? "true" : "false");
+            btn.textContent = on ? "Read ✓ (click to undo)" : "Mark chapter as read";
           }
-          var navLink = document.querySelector('.sidebar .nav-item[href="#' + id + '"]');
-          if (navLink) navLink.classList.toggle('read', on);
+          var link = document.querySelector('nav.toc a[href="#' + id + '"]');
+          if (link) link.classList.toggle("read", on);
         });
-        var progText = $('prog-text');
-        var progBar = $('prog-bar');
-        if (progText) progText.textContent = count + '/' + trackedSections.length + ' read';
-        if (progBar) progBar.style.width = (100 * count / trackedSections.length) + '%';
+        $("prog-text").textContent = n + " / " + chapters.length + " read";
+        $("prog-bar").style.width = (100 * n / chapters.length) + "%";
       }
-
-      trackedSections.forEach(function (sec) {
-        var btn = sec.querySelector('.mark-read');
-        if (btn) {
-          btn.addEventListener('click', function () {
-            readSet[sec.id] = !readSet[sec.id];
-            store.set('leke-docs-read', JSON.stringify(readSet));
-            renderProgress();
-          });
-        }
+      chapters.forEach(function (ch) {
+        var btn = ch.querySelector(".mark-read");
+        if (btn) btn.addEventListener("click", function () {
+          readSet[ch.id] = !readSet[ch.id];
+          store.set("leke-manual-read-v2", JSON.stringify(readSet));
+          renderProgress();
+        });
       });
       renderProgress();
 
-      // Interactive Quiz
-      document.querySelectorAll('.q').forEach(function (q) {
-        var answer = q.getAttribute('data-answer');
-        var why = q.querySelector('.why');
-        q.querySelectorAll('input[type=radio]').forEach(function (input) {
-          input.addEventListener('change', function () {
-            q.querySelectorAll('label').forEach(function (l) { l.classList.remove('right', 'wrong'); });
-            var lab = input.closest('label');
-            lab.classList.add(input.value === answer ? 'right' : 'wrong');
-            if (input.value !== answer) {
-              var correct = q.querySelector('input[value="' + answer + '"]');
-              if (correct) correct.closest('label').classList.add('right');
-            }
-            if (why) {
-              why.hidden = false;
-              why.firstChild.textContent = input.value === answer ? 'Correct! ' : 'Not quite. ';
+      /* ---------- Table of contents + mobile drawer ---------- */
+      var toc = $("toc"), menu = $("menu-btn");
+      menu.addEventListener("click", function () {
+        var open = toc.classList.toggle("open");
+        menu.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+      toc.addEventListener("click", function (e) {
+        if (e.target.closest("a")) {
+          toc.classList.remove("open");
+          menu.setAttribute("aria-expanded", "false");
+        }
+      });
+      if ("IntersectionObserver" in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) {
+              document.querySelectorAll("nav.toc a.current").forEach(function (a) { a.classList.remove("current"); });
+              var a = document.querySelector('nav.toc a[href="#' + en.target.id + '"]');
+              if (a) a.classList.add("current");
             }
           });
+        }, { rootMargin: "-18% 0px -70% 0px" });
+        document.querySelectorAll("section.chapter").forEach(function (s) { io.observe(s); });
+      }
+
+      /* ---------- Instant full-text search (⌘K / Ctrl+K) ---------- */
+      var index = [];
+      document.querySelectorAll("section.chapter").forEach(function (s) {
+        var title = s.getAttribute("data-title");
+        s.querySelectorAll("h3, p, li, td, .formula, .facet").forEach(function (b) {
+          var t = b.textContent.replace(/\s+/g, " ").trim();
+          if (t.length > 2) index.push({ id: s.id, title: title, text: t });
         });
       });
+      Object.keys(GLOSS).forEach(function (k) {
+        index.push({ id: "glossary", title: "Glossary: " + GLOSS[k][0], text: GLOSS[k][0] + ". " + GLOSS[k][1] });
+      });
 
-      // Glossary Tooltip
-      var GLOSS = {
-        'fertility': ['Fertility', 'Average number of subword tokens produced per word (tokens ÷ words). Lower is better.'],
-        'byte-bpe': ['Byte-Level BPE', 'Subword algorithm backed by all 256 byte tokens, guaranteeing 0.0% unknown tokens.'],
-        'lookalike': ['Lookalike Character', 'Visually identical Greek or Cyrillic letters mapped to canonical African Latin codepoints.'],
-        'nfc': ['Unicode NFC', 'Canonical composition combining base letters and accents into single precomposed codepoints.'],
-        'temperature': ['Temperature Upsampling', 'Smoothing corpus sampling probabilities with α = 0.5 so low-resource languages are not starved.'],
-        'unk': ['<unk> Token', 'Special unknown token emitted when encountering out-of-vocabulary characters. Guaranteed 0.0% in Leke.']
+      var sInput = $("search"), sResults = $("results");
+      function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+      function runSearch() {
+        var q = sInput.value.trim().toLowerCase();
+        if (q.length < 2) { sResults.hidden = true; sResults.innerHTML = ""; return; }
+        var seen = {}, out = [];
+        for (var i = 0; i < index.length && out.length < 10; i++) {
+          var it = index[i], pos = it.text.toLowerCase().indexOf(q);
+          if (pos < 0 && it.title.toLowerCase().indexOf(q) < 0) continue;
+          var key = it.id + "|" + (pos < 0 ? "t" : it.text.slice(0, 40));
+          if (seen[key]) continue;
+          seen[key] = 1;
+          var start = Math.max(0, pos - 45);
+          var snip = pos < 0 ? it.text.slice(0, 100) : (start ? "…" : "") + it.text.slice(start, pos + q.length + 65) + "…";
+          var html = esc(snip);
+          var re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "ig");
+          html = html.replace(re, function (m) { return "<mark>" + m + "</mark>"; });
+          out.push('<a href="#' + it.id + '"><b>' + esc(it.title) + "</b><small>" + html + "</small></a>");
+        }
+        sResults.innerHTML = out.length ? out.join("") : '<a href="#" tabindex="-1"><small>No matches found.</small></a>';
+        sResults.hidden = false;
+      }
+      sInput.addEventListener("input", runSearch);
+      window.addEventListener("keydown", function (e) {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          sInput.focus();
+        } else if (e.key === "Escape") {
+          sResults.hidden = true;
+        }
+      });
+      sResults.addEventListener("click", function () { sResults.hidden = true; });
+      document.addEventListener("click", function (e) { if (!e.target.closest(".search")) sResults.hidden = true; });
+
+      /* ---------- Bench 1: Granularity & Quadratic Attention Cost ---------- */
+      (function () {
+        var c = $("gran-canvas"); if (!c) return;
+        function draw() {
+          var words = +$("gran-words").value;
+          var fert = +$("gran-fert").value;
+          $("gran-words-out").textContent = fmt(words);
+          $("gran-fert-out").textContent = fert.toFixed(2);
+
+          var tokCustom = Math.round(words * fert);
+          var tokNllb = Math.round(words * 2.92);
+          var tokByte = Math.round(words * 5.80);
+
+          $("gran-leke-tok").textContent = fmt(tokCustom);
+          $("gran-nllb-tok").textContent = fmt(tokNllb);
+          $("gran-byte-tok").textContent = fmt(tokByte);
+
+          var ratioVsNllb = (tokCustom * tokCustom) / (tokNllb * tokNllb) - 1;
+          var flopsEl = $("gran-flops");
+          flopsEl.textContent = (ratioVsNllb <= 0 ? "" : "+") + (ratioVsNllb * 100).toFixed(1) + "%";
+          flopsEl.style.color = ratioVsNllb <= 0 ? "var(--good)" : "var(--bad)";
+
+          var s = setupCanvas(c), ctx = s.ctx, w = s.w, h = s.h;
+          ctx.clearRect(0, 0, w, h);
+          var items = [
+            { label: "Word-level (1.00 tok/w · High <unk>)", val: words * words, color: "#7a7b88" },
+            { label: "Custom / Leke (" + fert.toFixed(2) + " tok/w · 0% <unk>)", val: tokCustom * tokCustom, color: "#006786" },
+            { label: "NLLB-200 (2.92 tok/w)", val: tokNllb * tokNllb, color: "#a35c00" },
+            { label: "Raw UTF-8 Bytes (5.80 tok/w)", val: tokByte * tokByte, color: "#b3261e" }
+          ];
+          var maxV = items[3].val;
+          var padL = 235, padR = 90, barH = 26, gap = 18, topY = 24;
+          ctx.font = "500 12.5px Geist, sans-serif";
+          items.forEach(function (it, i) {
+            var y = topY + i * (barH + gap);
+            ctx.fillStyle = "#131316";
+            ctx.fillText(it.label, 14, y + 17);
+            var bw = Math.max(4, (it.val / maxV) * (w - padL - padR));
+            ctx.fillStyle = it.color;
+            ctx.beginPath();
+            ctx.roundRect(padL, y, bw, barH, 5);
+            ctx.fill();
+            ctx.fillStyle = "#5e5f6e";
+            var rel = (it.val / (tokNllb * tokNllb)).toFixed(2) + "× NLLB";
+            ctx.fillText(rel, padL + bw + 8, y + 17);
+          });
+        }
+        $("gran-words").addEventListener("input", draw);
+        $("gran-fert").addEventListener("input", draw);
+        window.addEventListener("resize", draw);
+        draw();
+      })();
+
+      /* ---------- Bench 2: Temperature Upsampling (α) ---------- */
+      (function () {
+        var c = $("temp-canvas"); if (!c) return;
+        var counts = [
+          { name: "Akan / Twi (49k lines)", n: 49000, color: "#006786", id: "temp-twi" },
+          { name: "Ewe (36k lines)", n: 36000, color: "#2457a6", id: "temp-ewe" },
+          { name: "Ga (6.4k lines)", n: 6400, color: "#a35c00", id: "temp-ga" },
+          { name: "Fante (4.9k lines)", n: 4900, color: "#5b4bb5", id: "temp-fante" }
+        ];
+        function draw() {
+          var a = +$("temp-alpha").value;
+          $("temp-alpha-out").textContent = a.toFixed(2);
+          var weights = counts.map(function (it) { return Math.pow(it.n, a); });
+          var sum = weights.reduce(function (x, y) { return x + y; }, 0);
+          var shares = weights.map(function (w) { return w / sum; });
+
+          counts.forEach(function (it, idx) {
+            $(it.id).textContent = (shares[idx] * 100).toFixed(1) + "%";
+          });
+
+          var s = setupCanvas(c), ctx = s.ctx, w = s.w, h = s.h;
+          ctx.clearRect(0, 0, w, h);
+          var padL = 165, padR = 70, barH = 24, gap = 14, topY = 20;
+          ctx.font = "500 12.5px Geist, sans-serif";
+          counts.forEach(function (it, idx) {
+            var y = topY + idx * (barH + gap);
+            ctx.fillStyle = "#131316";
+            ctx.fillText(it.name, 14, y + 16);
+            var bw = Math.max(4, shares[idx] * (w - padL - padR));
+            ctx.fillStyle = it.color;
+            ctx.beginPath();
+            ctx.roundRect(padL, y, bw, barH, 5);
+            ctx.fill();
+            ctx.fillStyle = "#5e5f6e";
+            ctx.fillText((shares[idx] * 100).toFixed(1) + "%", padL + bw + 8, y + 16);
+          });
+        }
+        $("temp-alpha").addEventListener("input", draw);
+        window.addEventListener("resize", draw);
+        draw();
+      })();
+
+      /* ---------- Bench 3: Lookalike & UTF-8 Byte Harmonizer ---------- */
+      var LOOK_MAP = {
+        "ε": "ɛ", "ϵ": "ɛ", "є": "ɛ", "Ε": "Ɛ", "Є": "Ɛ",
+        "ↄ": "ɔ", "ᴐ": "ɔ", "Ↄ": "Ɔ", "ɳ": "ŋ", "ɲ": "ŋ",
+        "ð": "ɖ", "Ð": "Ɖ", "γ": "ɣ", "ɤ": "ɣ", "Γ": "Ɣ",
+        "ο": "o", "Ο": "O"
       };
-
-      var tip = document.createElement('div');
-      tip.className = 'tip';
-      tip.hidden = true;
-      document.body.appendChild(tip);
-
-      document.addEventListener('mouseover', function (e) {
-        var el = e.target.closest('.g');
-        if (!el) return;
-        var g = GLOSS[el.getAttribute('data-g')];
-        if (!g) return;
-        tip.innerHTML = '<b>' + g[0] + '</b><span>' + g[1] + '</span>';
-        tip.hidden = false;
-        var r = el.getBoundingClientRect();
-        tip.style.left = Math.min(r.left + window.scrollX, window.innerWidth - 330) + 'px';
-        tip.style.top = (r.bottom + window.scrollY + 6) + 'px';
-      });
-      document.addEventListener('mouseout', function (e) {
-        if (e.target.closest('.g')) tip.hidden = true;
-      });
-
-      // Live Bench 1: Lookalike Character Mapping
-      var LOOK_MAP = { 'ε': 'ɛ', 'Ε': 'Ɛ', 'є': 'ɛ', 'γ': 'ɣ', 'Γ': 'Ɣ', 'ɳ': 'ŋ', 'ð': 'ɖ', 'Ð': 'Ɖ', 'ο': 'o', 'Ο': 'O' };
-      var lookIn = $('look-input');
-      var lookOut = $('look-out');
-      var lookCount = $('look-count');
-
-      function updateLookalike() {
-        if (!lookIn || !lookOut) return;
-        var norm = lookIn.value.normalize('NFC');
-        var replacements = 0;
-        var out = Array.from(norm).map(function (c) {
-          if (LOOK_MAP[c]) {
-            replacements++;
-            return LOOK_MAP[c];
-          }
-          return c;
-        }).join('');
-        lookOut.textContent = out;
-        lookCount.textContent = replacements;
+      function toHexPreview(str) {
+        var bytes = new TextEncoder().encode(str);
+        var slice = Array.from(bytes.slice(0, 8)).map(function (b) {
+          return "0x" + b.toString(16).toUpperCase().padStart(2, "0");
+        });
+        return slice.join(" ") + (bytes.length > 8 ? " …" : "");
       }
-      if (lookIn) {
-        lookIn.addEventListener('input', updateLookalike);
-        updateLookalike();
-      }
+      (function () {
+        var inp = $("look-in"); if (!inp) return;
+        function update() {
+          var raw = inp.value;
+          var nfc = raw.normalize("NFC");
+          var count = 0;
+          var clean = Array.from(nfc).map(function (ch) {
+            if (LOOK_MAP[ch]) { count++; return LOOK_MAP[ch]; }
+            return ch;
+          }).join("").replace(/\s+/g, " ").trim();
+          $("look-norm").textContent = clean;
+          $("look-fixed").textContent = count;
+          $("look-raw-hex").textContent = toHexPreview(raw);
+          $("look-clean-hex").textContent = toHexPreview(clean);
+        }
+        inp.addEventListener("input", update);
+        update();
+      })();
 
-      // Live Bench 2: Byte-Level Fallback Visualizer
-      var byteIn = $('byte-input');
-      var byteChips = $('byte-chips');
-      var byteTokCount = $('byte-tok-count');
-      var byteFallbackCount = $('byte-fallback-count');
-
-      function updateByteBench() {
-        if (!byteIn || !byteChips) return;
-        var words = byteIn.value.trim().split(/\s+/).filter(Boolean);
-        var chipsHtml = '';
-        var fallbackCount = 0;
-        var totalTokens = 0;
-
-        words.forEach(function (w) {
-          var chars = Array.from(w);
-          var cur = '';
-          chars.forEach(function (ch) {
-            var code = ch.codePointAt(0);
-            if (code <= 0x02AF) {
-              cur += ch;
-            } else {
-              if (cur) {
-                chipsHtml += '<span class="chip">' + cur + '</span>';
-                totalTokens++;
-                cur = '';
+      /* ---------- Bench 4: Step-by-Step BPE Merge Simulator ---------- */
+      (function () {
+        var MERGES = [
+          ["a", "b", "ab"],
+          ["w", "a", "wa"],
+          ["k", "wa", "kwa"],
+          ["a", "kwa", "akwa"],
+          ["ab", "a", "aba"],
+          ["akwa", "aba", "akwaaba"],
+          ["Ġ", "b", "Ġb"],
+          ["Ġb", "a", "Ġba"],
+          ["w", "ɔ", "wɔ"],
+          ["f", "r", "fr"]
+        ];
+        var step = 0;
+        function getWordsAtStep(k) {
+          var words = [
+            ["a", "k", "w", "a", "a", "b", "a"],
+            ["Ġ", "b", "a"],
+            ["Ġ", "w", "ɔ", "f", "r", "ɛ"],
+            ["Ġ", "m", "e", "m", "a"]
+          ];
+          for (var s = 0; s < k; s++) {
+            var u = MERGES[s][0], v = MERGES[s][1], uv = MERGES[s][2];
+            words = words.map(function (w) {
+              var out = [];
+              for (var i = 0; i < w.length; i++) {
+                if (i < w.length - 1 && w[i] === u && w[i + 1] === v) {
+                  out.push(uv);
+                  i++;
+                } else {
+                  out.push(w[i]);
+                }
               }
-              var bytes = new TextEncoder().encode(ch);
-              bytes.forEach(function (b) {
-                chipsHtml += '<span class="chip byte">&lt;0x' + b.toString(16).toUpperCase() + '&gt;</span>';
-                fallbackCount++;
-                totalTokens++;
+              return out;
+            });
+          }
+          return words;
+        }
+        function render() {
+          var words = getWordsAtStep(step);
+          var flat = [];
+          words.forEach(function (w) { w.forEach(function (t) { flat.push(t); }); });
+          $("bpe-step-num").textContent = step + " / " + MERGES.length;
+          $("bpe-last-rule").textContent = step === 0 ? "None (base chars)" : "'" + MERGES[step - 1][0] + "' + '" + MERGES[step - 1][1] + "' → '" + MERGES[step - 1][2] + "'";
+          $("bpe-total-toks").textContent = flat.length;
+          $("bpe-cur-fert").textContent = (flat.length / 4).toFixed(2);
+          $("bpe-step-chips").innerHTML = flat.map(function (t) {
+            return '<span class="chip"><span>' + esc(t) + "</span></span>";
+          }).join("");
+        }
+        $("bpe-next").addEventListener("click", function () { if (step < MERGES.length) { step++; render(); } });
+        $("bpe-all").addEventListener("click", function () { step = MERGES.length; render(); });
+        $("bpe-reset").addEventListener("click", function () { step = 0; render(); });
+        render();
+      })();
+
+      /* ---------- Bench 5: Self-Contained Kwa Tokenizer Sandbox ---------- */
+      (function () {
+        var sbIn = $("sb-in"), sbLook = $("sb-look"), sbTone = $("sb-tone");
+        if (!sbIn) return;
+        var COMMON = { "akwaaba": 1, "ba": 1, "ghana": 1, "man": 1, "mu": 1, "me": 1, "na": 1, "kofi": 1, "no": 1, "papa": 1, "pápá": 1, "wo": 1, "mi": 1, "gbe": 1, "nii": 1, "ji": 1, "te": 1, "dze": 1, "loo": 1 };
+        function hashId(s) {
+          var h = 2166136261;
+          for (var i = 0; i < s.length; i++) {
+            h ^= s.codePointAt(i);
+            h = Math.imul(h, 16777619);
+          }
+          return 256 + (Math.abs(h) % 7744);
+        }
+        function splitSubword(w) {
+          if (w.length <= 4 || COMMON[w.toLowerCase()]) return [w];
+          var syl = w.match(/[^aeiouɛɔAEIOUƐƆ]*[aeiouɛɔAEIOUƐƆ\u0300-\u036f]+(?:[nmŋ](?![aeiouɛɔ]))?|.+$/g) || [w];
+          var out = [], cur = "";
+          syl.forEach(function (s) {
+            if ((cur + s).length > 5 && cur) { out.push(cur); cur = s; }
+            else cur += s;
+          });
+          if (cur) out.push(cur);
+          return out;
+        }
+        function runSandbox() {
+          var t = sbIn.value.normalize("NFC");
+          if (sbLook.checked) {
+            t = Array.from(t).map(function (c) { return LOOK_MAP[c] || c; }).join("");
+          }
+          if (sbTone.checked) {
+            t = t.normalize("NFD").replace(/[\u0300-\u0304\u030C]/g, "").normalize("NFC");
+          }
+          t = t.replace(/\s+/g, " ").trim();
+          $("sb-norm").textContent = t || "–";
+
+          var re = /[\p{L}\p{M}]+|\p{N}+|[!-\/:-@\[-`{-~]|\S/gu;
+          var m, toks = [], words = 0, byteCount = 0;
+          while ((m = re.exec(t))) {
+            var sp = m.index > 0 && /\s/.test(t[m.index - 1]) ? "Ġ" : "";
+            var s = m[0];
+            if (/^[\p{L}\p{M}]+$/u.test(s)) {
+              words++;
+              splitSubword(s).forEach(function (p, i) {
+                var tokText = (i === 0 ? sp : "") + p;
+                toks.push({ text: tokText, id: hashId(tokText), byte: false });
+              });
+            } else if (/^[\x21-\x7e]+$/.test(s) || /^\p{N}+$/u.test(s)) {
+              var pText = sp + s;
+              toks.push({ text: pText, id: hashId(pText), byte: false });
+            } else {
+              Array.from(new TextEncoder().encode(s)).forEach(function (b, i) {
+                byteCount++;
+                toks.push({
+                  text: (i === 0 && sp ? "Ġ" : "") + "<0x" + b.toString(16).toUpperCase().padStart(2, "0") + ">",
+                  id: b,
+                  byte: true
+                });
               });
             }
+          }
+
+          $("sb-chips").innerHTML = toks.map(function (tk) {
+            return '<span class="chip' + (tk.byte ? " byte" : "") + '"><span>' + esc(tk.text) + "</span><small>ID " + tk.id + "</small></span>";
+          }).join("");
+          $("sb-counts").textContent = words + " words / " + toks.length + " tokens";
+          $("sb-fert").textContent = words ? (toks.length / words).toFixed(2) : "0.00";
+          $("sb-byte").textContent = byteCount + " bytes · 0.0% <unk>";
+        }
+        sbIn.addEventListener("input", runSandbox);
+        sbLook.addEventListener("change", runSandbox);
+        sbTone.addEventListener("change", runSandbox);
+        document.querySelectorAll("[data-sb]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.querySelectorAll("[data-sb]").forEach(function (b) { b.classList.remove("solid"); });
+            btn.classList.add("solid");
+            sbIn.value = btn.getAttribute("data-sb");
+            runSandbox();
           });
-          if (cur) {
-            chipsHtml += '<span class="chip">' + cur + '</span>';
-            totalTokens++;
-          }
         });
-
-        byteChips.innerHTML = chipsHtml || '<span style="color: var(--subtle); font-size: 13px;">Type above to inspect tokens…</span>';
-        byteTokCount.textContent = totalTokens;
-        byteFallbackCount.textContent = fallbackCount;
-      }
-      if (byteIn) {
-        byteIn.addEventListener('input', updateByteBench);
-        updateByteBench();
-      }
-
-      // Live Bench 3: Temperature Upsampling (α)
-      var alphaSlider = $('alpha-slider');
-      var alphaVal = $('alpha-val');
-      var rawSizes = { twi: 48000, ewe: 36000, ga: 6000, fante: 5500 };
-
-      function updateAlphaBench() {
-        if (!alphaSlider) return;
-        var a = parseFloat(alphaSlider.value);
-        if (alphaVal) alphaVal.textContent = a.toFixed(2);
-        var wTwi = Math.pow(rawSizes.twi, a);
-        var wEwe = Math.pow(rawSizes.ewe, a);
-        var wGa = Math.pow(rawSizes.ga, a);
-        var wFante = Math.pow(rawSizes.fante, a);
-        var total = wTwi + wEwe + wGa + wFante;
-        $('share-twi').textContent = (100 * wTwi / total).toFixed(1) + '%';
-        $('share-ewe').textContent = (100 * wEwe / total).toFixed(1) + '%';
-        $('share-ga').textContent = (100 * wGa / total).toFixed(1) + '%';
-        $('share-fante').textContent = (100 * wFante / total).toFixed(1) + '%';
-      }
-      if (alphaSlider) {
-        alphaSlider.addEventListener('input', updateAlphaBench);
-        updateAlphaBench();
-      }
-
-      // Instant Search (⌘K / Ctrl+K)
-      var searchInput = $('search-input');
-      var searchDropdown = $('search-dropdown');
-
-      var searchable = [
-        { title: 'Introduction & Fragmentation Crisis', desc: 'Why Kwa languages break standard tokenizers + quiz', href: '#introduction' },
-        { title: 'Unicode Normalization (NFC)', desc: 'Canonical composition for combining tone marks', href: '#unicode-norm' },
-        { title: 'Lookalike Character Mapping (Live Bench)', desc: 'Interactive bench mapping Greek ε, γ to African Latin ɛ, ɣ', href: '#lookalikes' },
-        { title: 'Tone Policy & Diacritics', desc: 'Preserving phonemic tone in Twi (pápá vs papá) and Ewe', href: '#tone-policy' },
-        { title: 'Byte-Level BPE & 0.0% <unk> (Live Bench)', desc: 'BPE vs Unigram matrix and live byte-fallback visualizer', href: '#byte-bpe' },
-        { title: 'Training a Vocabulary & Upsampling', desc: 'Multinomial temperature upsampling (α = 0.5) & SHA-256 receipts', href: '#training-vocab' },
-        { title: 'Akan / Twi Language Guide', desc: '2.23 fertility, Asante & Akuapem orthography', href: '#lang-twi' },
-        { title: 'Ewe Language Guide', desc: '2.77 fertility, ɖ, ƒ, ɣ, ŋ, ʋ codepoints', href: '#lang-ewe' },
-        { title: 'Ga Language Guide', desc: '2.38 fertility, gb, kp, ny, ŋm digraphs', href: '#lang-ga' },
-        { title: 'Fante Language Guide', desc: '2.16 fertility, coastal Akan orthography', href: '#lang-fante' },
-        { title: 'Quickstart & Python API (PyO3)', desc: 'LekeTokenizer, encode_batch, GIL release', href: '#python-api' },
-        { title: 'Rust Core Crate', desc: 'KwaNormalizer and 356k tokens/sec native engine', href: '#rust-api' },
-        { title: 'Hugging Face & CLI Training', desc: 'PreTrainedTokenizerFast and CLI vocabulary training', href: '#tokenizer-config' },
-        { title: 'Evaluation Results & 7 Case Studies', desc: 'Leaderboard vs NLLB-200 and 7 engineering failure modes', href: '#benchmarks' },
-        { title: 'Glossary of Terms', desc: 'Definitions for fertility, Byte-Level BPE, NFC, lookalikes', href: '#glossary' },
-        { title: 'Interactive Tokenizer Playground', desc: 'Full-page live sentence tokenizer on the main showcase', href: 'index.html#playground' }
-      ];
-
-      function runSearch() {
-        var q = searchInput.value.trim().toLowerCase();
-        if (!q) {
-          searchDropdown.hidden = true;
-          searchDropdown.innerHTML = '';
-          return;
-        }
-
-        var matches = searchable.filter(function (it) {
-          return it.title.toLowerCase().indexOf(q) !== -1 || it.desc.toLowerCase().indexOf(q) !== -1;
-        });
-
-        if (matches.length === 0) {
-          searchDropdown.innerHTML = '<div style="padding: 10px; font-size: 13px; color: var(--muted);">No matching topics found.</div>';
-          searchDropdown.hidden = false;
-          return;
-        }
-
-        searchDropdown.innerHTML = matches.map(function (m) {
-          return '<a href="' + m.href + '">' +
-            '<span style="display: block; font-size: 13.5px; font-weight: 600;">' + m.title + '</span>' +
-            '<span style="display: block; font-size: 12px; color: var(--muted);">' + m.desc + '</span>' +
-          '</a>';
-        }).join('');
-        searchDropdown.hidden = false;
-      }
-
-      if (searchInput) {
-        searchInput.addEventListener('input', runSearch);
-        searchDropdown.addEventListener('click', function (e) {
-          if (e.target.closest('a')) {
-            searchDropdown.hidden = true;
-            searchInput.value = '';
-          }
-        });
-        window.addEventListener('keydown', function (e) {
-          if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-            e.preventDefault();
-            searchInput.focus();
-          }
-          if (e.key === 'Escape') {
-            searchDropdown.hidden = true;
-          }
-        });
-        document.addEventListener('click', function (e) {
-          if (!e.target.closest('.search-wrapper')) {
-            searchDropdown.hidden = true;
-          }
-        });
-      }
+        runSandbox();
+      })();
     })();
   </script>
 </body>
 </html>
-
