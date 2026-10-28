@@ -122,7 +122,7 @@ a:hover { color: #0088b0; }
 
       <section data-screen-label="Bindings" style="position: relative; max-width: 1040px; padding-top: 80px;">
         <h2 style="margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.02em;">Explore by binding & ecosystem</h2>
-        <p style="margin: 10px 0 0; font-size: 15px; color: #5e5f6e;">High-performance Rust core with zero-copy Python bindings and Hugging Face integration.</p>
+        <p style="margin: 10px 0 0; font-size: 15px; color: #5e5f6e;">High-performance Rust core with Python bindings and Hugging Face integration.</p>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 34px 40px; margin-top: 36px;">
           <sc-for list="{{ bindings }}" as="b" hint-placeholder-count="4">
             <a href="{{ b.href }}" style="display: flex; gap: 16px; align-items: flex-start; color: #131316; text-decoration: none;" style-hover="color: #006786;">
@@ -233,7 +233,7 @@ class Component extends DCLogic {
       {
         icon: 'ph-duotone ph-brackets-angle',
         title: 'API Reference',
-        body: 'Complete Python (PyO3) and Rust documentation with zero-copy buffer examples.',
+        body: 'Complete Python (PyO3) and Rust documentation with batch encoding examples.',
         href: 'https://github.com/acquayefrank/leke#quickstart'
       },
     ];
@@ -247,7 +247,7 @@ class Component extends DCLogic {
 
     const bindings = [
       { icon: 'ph-duotone ph-file-py', name: 'Python API', body: 'pip install leke. High-level PyO3 wrapper with NumPy-friendly IDs and tokens.', href: 'https://github.com/acquayefrank/leke#python' },
-      { icon: 'ph-duotone ph-gear-six', name: 'Rust Core', body: 'leke crate with KwaNormalizer trait and >170,000 tokens/sec throughput.', href: 'https://github.com/acquayefrank/leke#rust' },
+      { icon: 'ph-duotone ph-gear-six', name: 'Rust Core', body: 'leke crate with KwaNormalizer trait and ~450,000 tokens/sec per thread.', href: 'https://github.com/acquayefrank/leke#rust' },
       { icon: 'ph-duotone ph-cube', name: 'Hugging Face', body: 'Load directly into transformers via PreTrainedTokenizerFast.from_file().', href: 'https://github.com/acquayefrank/leke#quickstart' },
       { icon: 'ph-duotone ph-terminal-window', name: 'CLI Training', body: 'Train Byte-Level BPE or Unigram tokenizers on custom corpora in one command.', href: 'https://github.com/acquayefrank/leke#quick-build' },
     ];

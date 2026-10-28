@@ -1,120 +1,160 @@
-"""Performance benchmark measuring encode/decode throughput in sentences/sec, MB/sec, and tokens/sec."""
+"""Measures encode/decode throughput of Leke against the raw Hugging Face `tokenizers` library.
 
+Both sides load the same `models/bpe-8k/tokenizer.json`, so they run the identical
+normalizer + Byte-Level BPE pipeline; the difference is Leke's PyO3 wrapper overhead.
+The input is every line of the held-out test splits (`data/splits/*/test.txt`).
+
+Each configuration is run in a fresh subprocess so the Rayon thread pool size can be
+set via `RAYON_NUM_THREADS` (1 thread, and all available cores). Every measurement is
+the median of several timed runs.
+
+Build the extension in release mode first, or the numbers will reflect a debug build:
+    uv run maturin develop --release
+    uv run python scripts/benchmark_throughput.py
+"""
+
+import json
+import os
+import platform
+import statistics
+import subprocess
+import sys
 import time
 from pathlib import Path
 
-from leke import LekeTokenizer
-from tabulate import tabulate
-from tokenizers import Tokenizer as HFTokenizer
+ROOT = Path(__file__).resolve().parent.parent
+MODEL_PATH = ROOT / "models" / "bpe-8k" / "tokenizer.json"
+SPLITS_DIR = ROOT / "data" / "splits"
+OUTPUT_FILE = ROOT / "specs" / "benchmarks.md"
 
-TEST_TEXTS = [
-    "Wɔfrɛ me Kofi na mefiri Kumasi wɔ Ghana man mu.",
-    "Akanfoɔ wɔ amammerɛ ne amanne pa pii a ɛyɛ fɛ yie.",
-    "Ŋkɔnye enye Yao eye metso Kpalime le Togo kple Volta nutome.",
-    "Evegbe nye gbe nyui aɖe si amewo dona le Ghana kple Togo kple Benin.",
-    "Atsɛɔ mi Nii Kwei ni mitsɔɔ Ga kɛ mɛi pii le Nkran maŋ mli.",
-    "Wɔfrɛ me Kwesi na mifi Oguaa wɔ Mfantseman mu asomdwee kɛse.",
-] * 20  # 120 sentences
-
-ITERATIONS = 500
+LANGUAGES = ["twi", "ewe", "gaa", "fat"]
+PASSES_PER_RUN = 20
+RUNS = 7
 
 
-def benchmark():
-    model_path = "models/bpe-8k/tokenizer.json"
-    if not Path(model_path).exists():
-        print("Model file not found. Skipping benchmark.")
-        return
+def load_texts():
+    texts = []
+    for lang in LANGUAGES:
+        lines = (SPLITS_DIR / lang / "test.txt").read_text(encoding="utf-8").splitlines()
+        texts.extend(line for line in lines if line.strip())
+    return texts
 
-    leke_tok = LekeTokenizer.from_file(model_path)
-    hf_tok = HFTokenizer.from_file(model_path)
 
-    total_bytes = sum(len(t.encode("utf-8")) for t in TEST_TEXTS) * ITERATIONS
-    total_sentences = len(TEST_TEXTS) * ITERATIONS
+def median_seconds(fn):
+    timings = []
+    for _ in range(RUNS):
+        t0 = time.perf_counter()
+        for _ in range(PASSES_PER_RUN):
+            fn()
+        timings.append(time.perf_counter() - t0)
+    return statistics.median(timings)
 
-    # 1. Benchmark Leke Encode
-    t0 = time.perf_counter()
-    leke_tokens = 0
-    for _ in range(ITERATIONS):
-        encs = leke_tok.encode_batch(TEST_TEXTS)
-        leke_tokens += sum(len(e.ids) for e in encs)
-    t_leke_enc = time.perf_counter() - t0
 
-    # 2. Benchmark HF Encode
-    t0 = time.perf_counter()
-    hf_tokens = 0
-    for _ in range(ITERATIONS):
-        encs = hf_tok.encode_batch(TEST_TEXTS)
-        hf_tokens += sum(len(e.ids) for e in encs)
-    t_hf_enc = time.perf_counter() - t0
+def worker():
+    """Times one thread configuration and prints the results as JSON."""
+    from leke import LekeTokenizer
+    from tokenizers import Tokenizer
 
-    # 3. Benchmark Leke Decode
-    sample_ids = [e.ids for e in leke_tok.encode_batch(TEST_TEXTS)]
-    t0 = time.perf_counter()
-    for _ in range(ITERATIONS):
-        _ = leke_tok.decode_batch(sample_ids)
-    t_leke_dec = time.perf_counter() - t0
+    texts = load_texts()
+    leke_tok = LekeTokenizer.from_file(MODEL_PATH)
+    hf_tok = Tokenizer.from_file(str(MODEL_PATH))
 
-    # 4. Benchmark HF Decode
-    t0 = time.perf_counter()
-    for _ in range(ITERATIONS):
-        _ = hf_tok.decode_batch(sample_ids)
-    t_hf_dec = time.perf_counter() - t0
+    ids = [e.ids for e in hf_tok.encode_batch(texts, add_special_tokens=False)]
+    n_tokens = sum(len(i) for i in ids) * PASSES_PER_RUN
+    n_bytes = sum(len(t.encode("utf-8")) for t in texts) * PASSES_PER_RUN
+    n_sentences = len(texts) * PASSES_PER_RUN
 
-    leke_enc_tok_sec = int(leke_tokens / t_leke_enc)
-    hf_enc_tok_sec = int(hf_tokens / t_hf_enc)
+    timings = {
+        "leke_encode": median_seconds(lambda: leke_tok.encode_batch(texts, False)),
+        "hf_encode": median_seconds(lambda: hf_tok.encode_batch(texts, add_special_tokens=False)),
+        "leke_decode": median_seconds(lambda: leke_tok.decode_batch(ids)),
+        "hf_decode": median_seconds(lambda: hf_tok.decode_batch(ids)),
+    }
+    print(
+        json.dumps(
+            {
+                "sentences": len(texts),
+                "n_tokens": n_tokens,
+                "n_bytes": n_bytes,
+                "n_sentences": n_sentences,
+                "timings": timings,
+            }
+        )
+    )
 
-    leke_enc_mb_sec = round((total_bytes / (1024 * 1024)) / t_leke_enc, 2)
-    hf_enc_mb_sec = round((total_bytes / (1024 * 1024)) / t_hf_enc, 2)
 
-    leke_dec_sent_sec = int(total_sentences / t_leke_dec)
-    hf_dec_sent_sec = int(total_sentences / t_hf_dec)
+def run_config(threads):
+    env = dict(os.environ, RAYON_NUM_THREADS=str(threads))
+    out = subprocess.run(
+        [sys.executable, __file__, "--worker"],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    return json.loads(out.strip().splitlines()[-1])
 
-    table = [
-        [
-            "Encode Throughput (tokens/sec)",
-            f"**{leke_enc_tok_sec:,}**",
-            f"{hf_enc_tok_sec:,}",
-            "✅ Parity / High Speed",
-        ],
-        [
-            "Encode Throughput (MB/sec)",
-            f"**{leke_enc_mb_sec} MB/s**",
-            f"{hf_enc_mb_sec} MB/s",
-            "✅ Zero Overhead",
-        ],
-        [
-            "Decode Throughput (sentences/sec)",
-            f"**{leke_dec_sent_sec:,}**",
-            f"{hf_dec_sent_sec:,}",
-            "✅ Sub-millisecond",
-        ],
-    ]
 
-    headers = ["Metric", "Leke (Rust + PyO3)", "Hugging Face Python", "Status"]
-    table_str = tabulate(table, headers=headers, tablefmt="github")
+def main():
+    import tokenizers
 
+    cores = os.cpu_count() or 1
+    configs = [(1, run_config(1)), (cores, run_config(cores))]
+
+    rows = []
+    for threads, r in configs:
+        t = r["timings"]
+        metrics = [
+            ("Encode (tokens/sec)", r["n_tokens"], t["leke_encode"], t["hf_encode"], "{:,.0f}"),
+            (
+                "Encode (MB/sec)",
+                r["n_bytes"] / (1024 * 1024),
+                t["leke_encode"],
+                t["hf_encode"],
+                "{:.2f}",
+            ),
+            (
+                "Decode (sentences/sec)",
+                r["n_sentences"],
+                t["leke_decode"],
+                t["hf_decode"],
+                "{:,.0f}",
+            ),
+        ]
+        for name, amount, t_leke, t_hf, fmt in metrics:
+            rows.append(
+                f"| {name} | {threads} | {fmt.format(amount / t_leke)} | "
+                f"{fmt.format(amount / t_hf)} | {t_hf / t_leke:.2f}× |"
+            )
+
+    sentences = configs[0][1]["sentences"]
     doc = f"""# Leke Subword Tokenizer — Performance Benchmarks
 
-Performance analysis measuring encoding and decoding throughput in Rust and Python on multi-sentence Kwa texts across Akan/Twi, Ewe, Ga, and Fante.
+Encode/decode throughput of Leke (Rust + PyO3) against the raw Hugging Face `tokenizers` library, both loading `models/bpe-8k/tokenizer.json`. Because both run the identical normalizer + Byte-Level BPE pipeline, the ratio column measures Leke's wrapper overhead.
 
-## Throughput Benchmark (500 iterations over 120-sentence batches)
+Generated by `scripts/benchmark_throughput.py`.
 
-{table_str}
+## Setup
 
-## Profiling Observations
+- **Input**: all {sentences:,} sentences of the held-out test splits (`data/splits/{{twi,ewe,gaa,fat}}/test.txt`), special tokens disabled.
+- **Method**: median of {RUNS} runs, each {PASSES_PER_RUN} passes over the input via `encode_batch` / `decode_batch`.
+- **Threads**: Rayon pool pinned with `RAYON_NUM_THREADS` (1 thread, and all {cores} logical cores).
+- **Environment**: {platform.system()} {platform.machine()}, Python {platform.python_version()}, `tokenizers` {tokenizers.__version__}, extension built with `maturin develop --release`.
 
-1. **Rust Core Efficiency**:
-   - The integrated `KwaNormalizer` runs before byte segmentation with zero intermediate heap allocations per token.
-   - Character replacement tables use static ASCII/Unicode codepoint lookups.
-2. **PyO3 Zero-Overhead Bridge**:
-   - Batch operations (`encode_batch` and `decode_batch`) execute directly inside the Rust runtime, avoiding per-sentence Python interpreter overhead.
-   - Token ID representations are returned as lightweight contiguous vectors.
-3. **Hardware Utilization**:
-   - Pure CPU processing with single-thread throughput exceeding 150,000+ tokens per second, easily saturated across multi-core data loaders.
+## Results
+
+| Metric | Threads | Leke (Rust + PyO3) | HF `tokenizers` | Leke / HF |
+| :--- | ---: | ---: | ---: | ---: |
+{chr(10).join(rows)}
+
+Throughput depends on hardware and load; compare ratios rather than absolute numbers across machines. Consecutive runs on the same machine have varied by up to ~30%, so ratios between roughly 0.75× and 1.35× indicate parity.
 """
-    Path("specs/benchmarks.md").write_text(doc, encoding="utf-8")
+    OUTPUT_FILE.write_text(doc, encoding="utf-8")
     print(doc)
 
 
 if __name__ == "__main__":
-    benchmark()
+    if "--worker" in sys.argv:
+        worker()
+    else:
+        main()

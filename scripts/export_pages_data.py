@@ -115,10 +115,10 @@ for lang_code, lang_name, description in LANGUAGE_INFO:
         {"lang": lang_name, "code": lang_code, "description": description, "models": models}
     )
 
-# 5. Throughput Benchmarks (from specs/benchmarks.md)
+# 5. Throughput Benchmarks (single thread, from specs/benchmarks.md)
 benchmarks = {
-    "encode_speed": "173,866 tokens/sec",
-    "decode_speed": "51,044 sentences/sec",
+    "encode_speed": "~450,000 tokens/sec",
+    "decode_speed": "~100,000 sentences/sec",
     "vocab_size": "8,192",
     "unk_rate": "0.00%",
     "languages": ["Akan / Twi", "Ewe", "Ga", "Fante"],

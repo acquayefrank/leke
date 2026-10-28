@@ -39,7 +39,7 @@ Leke solves this with:
 │                           Rust Core (leke crate)                       │
 │  - Custom Normalizer trait (Unicode NFC, canonical character mapping)  │
 │  - Byte-Level BPE & Unigram training engines                           │
-│  - High-throughput batch encode/decode (170,000+ tokens/sec)           │
+│  - Batch encode/decode (~450k tokens/sec per thread, release build)    │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -59,7 +59,7 @@ cd leke
 
 # Set up environment and compile extension
 uv sync
-uv run maturin develop
+uv run maturin develop --release
 ```
 
 ### Reproducing the Corpus & Training from Raw PDFs
@@ -143,9 +143,12 @@ Leke beats NLLB-200 on all four languages and same-size monolingual tokenizers o
 
 ### 2. Throughput Benchmarks
 
-- **Single-Core Encode**: **173,000+ tokens/sec** in Python.
-- **Single-Core Decode**: **51,000+ sentences/sec**.
-- *See Criterion statistical profiles in [`specs/benchmarks.md`](specs/benchmarks.md).*
+Measured from Python on the 1,151 held-out test sentences (median of 7 runs, release build, 8-core x86_64 Linux):
+
+- **Encode**: ~430,000–460,000 tokens/sec on 1 thread; ~1.6 million tokens/sec on 8 threads.
+- **Decode**: ~100,000–135,000 sentences/sec on 1 thread; ~300,000 sentences/sec on 8 threads.
+- **Overhead**: on par with the raw Hugging Face `tokenizers` library running the same `tokenizer.json` (0.75×–1.35× across runs, within run-to-run noise).
+- Build with `maturin develop --release`; a debug build is roughly 7–10× slower. Reproduce with `uv run python scripts/benchmark_throughput.py` (results in [`specs/benchmarks.md`](specs/benchmarks.md)).
 
 ---
 

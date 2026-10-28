@@ -1026,8 +1026,8 @@ window.LEKE_DATA = {
     }
   ],
   "benchmarks": {
-    "encode_speed": "173,866 tokens/sec",
-    "decode_speed": "51,044 sentences/sec",
+    "encode_speed": "~450,000 tokens/sec",
+    "decode_speed": "~100,000 sentences/sec",
     "vocab_size": "8,192",
     "unk_rate": "0.00%",
     "languages": [
