@@ -1,228 +1,219 @@
 /**
- * Leke Documentation & Interactive Showcase Engine
- * High-performance Niger-Congo Kwa Subword Tokenization
+ * Leke — Broadsheet Showcase Engine
+ * Recreates the newsprint design reference from context/design/
  */
 
 (function () {
   'use strict';
 
-  // Ensure LEKE_DATA is available
-  const DATA = window.LEKE_DATA || {
-    charMappings: {},
-    byteAlphabet: [],
-    samples: [],
-    leaderboard: [],
-    benchmarks: {},
-    vocab: {},
-    merges: []
-  };
-
-  // Build reverse vocab lookup: id -> token string
-  const idToToken = {};
-  for (const [token, id] of Object.entries(DATA.vocab)) {
-    idToToken[id] = token;
-  }
-
-  // Build merge rank map for fast BPE merge lookup: "tokenA tokenB" -> rank
-  const bpeRanks = new Map();
-  DATA.merges.forEach((merge, rank) => {
-    bpeRanks.set(merge, rank);
-  });
-
-  // Byte level encoder mapping
-  const byteToChar = DATA.byteAlphabet;
-  const charToByte = {};
-  byteToChar.forEach((ch, byteVal) => {
-    charToByte[ch] = byteVal;
-  });
-
-  // ---------------------------------------------------------------------------
-  // 1. Linguistic Normalization Engine
-  // ---------------------------------------------------------------------------
-  function normalizeText(text, options = {}) {
-    const stripAccents = options.stripAccents || false;
-    const collapseWhitespace = options.collapseWhitespace !== false;
-
-    // Step 1: Unicode NFC
-    let normalized = text.normalize('NFC');
-
-    // Step 2: Canonical character lookalike mapping
-    let mapped = '';
-    for (const char of normalized) {
-      mapped += DATA.charMappings[char] || char;
-    }
-
-    // Step 3: Optional tone mark / diacritic stripping
-    if (stripAccents) {
-      mapped = mapped
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f\u1ab0-\u1aff\u1dc0-\u1dff]/g, '')
-        .normalize('NFC');
-    }
-
-    // Step 4: Whitespace collapsing & trimming
-    if (collapseWhitespace) {
-      mapped = mapped.trim().replace(/\s+/g, ' ');
-    }
-
-    return mapped;
-  }
-
-  // ---------------------------------------------------------------------------
-  // 2. In-Browser Byte-Level BPE Tokenizer
-  // ---------------------------------------------------------------------------
-  function getPairs(wordPieces) {
-    const pairs = new Set();
-    for (let i = 0; i < wordPieces.length - 1; i++) {
-      pairs.add(`${wordPieces[i]} ${wordPieces[i + 1]}`);
-    }
-    return pairs;
-  }
-
-  function bpeSegmentWord(wordPiece) {
-    if (wordPiece.length <= 1) return [wordPiece];
-
-    let pieces = Array.from(wordPiece);
-    while (true) {
-      const pairs = getPairs(pieces);
-      if (pairs.size === 0) break;
-
-      let minPair = null;
-      let minRank = Infinity;
-
-      for (const pair of pairs) {
-        if (bpeRanks.has(pair)) {
-          const rank = bpeRanks.get(pair);
-          if (rank < minRank) {
-            minRank = rank;
-            minPair = pair;
-          }
-        }
-      }
-
-      if (minPair === null) break;
-
-      const [first, second] = minPair.split(' ');
-      const newPieces = [];
-      let i = 0;
-
-      while (i < pieces.length) {
-        if (i < pieces.length - 1 && pieces[i] === first && pieces[i + 1] === second) {
-          newPieces.push(first + second);
-          i += 2;
-        } else {
-          newPieces.push(pieces[i]);
-          i += 1;
-        }
-      }
-
-      pieces = newPieces;
-    }
-
-    return pieces;
-  }
-
-  function tokenizeText(inputText, options = {}) {
-    const normalized = normalizeText(inputText, options);
-    if (!normalized.trim()) {
-      return {
-        raw: inputText,
-        normalized: normalized,
-        tokens: [],
-        ids: [],
-        fertility: 0,
-        wordCount: 0,
-        tokenCount: 0,
-        unkCount: 0
-      };
-    }
-
-    // Split text into words while keeping whitespace tokens
-    const textEncoder = new TextEncoder();
-    const rawTokens = [];
-    const tokenIds = [];
-
-    // GPT-2 byte-level pre-tokenization split
-    const words = normalized.match(/[\p{L}]+|[\p{N}]+|[^\s\p{L}\p{N}]+|\s+/gu) || [normalized];
-
-    words.forEach((chunk, index) => {
-      if (!chunk) return;
-
-      // Handle space prefix simulation (ByteLevel adds Ġ for leading spaces)
-      let byteStr = '';
-      const utf8Bytes = textEncoder.encode(chunk);
-      for (let b of utf8Bytes) {
-        // If it's a space (0x20), ByteLevel represents it as 'Ġ' (0x120 or byte alphabet index 32)
-        byteStr += byteToChar[b] || String.fromCharCode(b);
-      }
-
-      const subwords = bpeSegmentWord(byteStr);
-      for (const sub of subwords) {
-        rawTokens.push(sub);
-        const id = DATA.vocab[sub] !== undefined ? DATA.vocab[sub] : DATA.vocab['<unk>'] || 0;
-        tokenIds.push(id);
-      }
-    });
-
-    const wordsOnly = normalized.trim().split(/\s+/).filter(Boolean);
-    const wordCount = wordsOnly.length;
-    const tokenCount = rawTokens.length;
-    const fertility = wordCount > 0 ? (tokenCount / wordCount).toFixed(2) : 0;
-    const unkCount = tokenIds.filter(id => id === DATA.vocab['<unk>']).length;
-
-    return {
-      raw: inputText,
-      normalized: normalized,
-      tokens: rawTokens,
-      ids: tokenIds,
-      fertility: fertility,
-      wordCount: wordCount,
-      tokenCount: tokenCount,
-      unkCount: unkCount
-    };
-  }
-
-  // ---------------------------------------------------------------------------
-  // 3. UI Token Palette Generator
-  // ---------------------------------------------------------------------------
-  const CHIP_PALETTES = [
-    { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.4)', text: '#fbbf24', glow: 'rgba(245, 158, 11, 0.2)' },
-    { bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.4)', text: '#34d399', glow: 'rgba(16, 185, 129, 0.2)' },
-    { bg: 'rgba(6, 182, 212, 0.15)', border: 'rgba(6, 182, 212, 0.4)', text: '#38bdf8', glow: 'rgba(6, 182, 212, 0.2)' },
-    { bg: 'rgba(139, 92, 246, 0.15)', border: 'rgba(139, 92, 246, 0.4)', text: '#a78bfa', glow: 'rgba(139, 92, 246, 0.2)' },
-    { bg: 'rgba(236, 72, 153, 0.15)', border: 'rgba(236, 72, 153, 0.4)', text: '#f472b6', glow: 'rgba(236, 72, 153, 0.2)' }
+  const PRESETS = [
+    ['Akan / Twi', 'Akwaaba ba Ghana man mu. Wɔfrɛ me Kofi na mefiri Kumasi.'],
+    ['Ewe', 'Mìedó gbe na mi nyuie. Woezɔ loo!'],
+    ['Ga', 'Ojekoo, te oyɔɔ tɛŋŋ? Mitsɛ́ ji Nii Ayi.'],
+    ['Fante', 'Me dzin dze Kwesi, mefi Oguaa. Ɛte dɛn?'],
+    ['Lookalikes & tone', 'Wɔfrε no pápá! Ογε ɳkɔ ðeke.'],
+    ['Byte fallback', 'Akwaaba 🇬🇭 — ∑x² = λ, {code}']
   ];
 
-  function renderTokenChips(result, container) {
-    container.innerHTML = '';
+  const LOOK = {
+    'ε': 'ɛ', 'Ε': 'Ɛ', 'є': 'ɛ', 'γ': 'ɣ', 'Γ': 'Ɣ', 'ɳ': 'ŋ', 'ð': 'ɖ', 'Ð': 'Ɖ', 'ο': 'o', 'Ο': 'O'
+  };
 
-    if (!result.tokens || result.tokens.length === 0) {
-      container.innerHTML = `<div class="empty-state">Start typing above or select a language preset to see live subword segmentation.</div>`;
-      return;
+  const COMMON = new Set([
+    'akwaaba', 'ba', 'ghana', 'man', 'mu', 'me', 'na', 'kofi', 'no',
+    'papa', 'pápá', 'wo', 'mi', 'gbe', 'nii', 'ji', 'te', 'dze', 'loo', 'de', 'fi'
+  ]);
+
+  const CODE = {
+    python: `import leke
+
+raw = "Wɔfrε no pápá!"
+clean = leke.normalize(raw)        # 'Wɔfrɛ no pápá!'  (Greek ε → Latin ɛ)
+
+tok = leke.LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+enc = tok.encode("Akwaaba ba Ghana man mu.")
+print(enc.tokens)  # ['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
+print(enc.ids)     # [570, 514, 339, 364, 338, 18]
+print(tok.decode(enc.ids))`,
+
+    rust: `use _leke::normalizer::KwaNormalizer;
+use _leke::trainer::{train_bpe, BpeTrainingConfig, save_tokenizer_bundle};
+use std::path::{Path, PathBuf};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let norm = KwaNormalizer::default();
+    println!("{}", norm.normalize_str("Akwaaba   ε   Ghana"));
+
+    let config = BpeTrainingConfig::default();
+    let files = vec![PathBuf::from("data/splits/twi/train.txt")];
+    let (tokenizer, receipt) = train_bpe(&files, &config)?;
+    save_tokenizer_bundle(&tokenizer, &receipt, Path::new("models/bpe-8k"))?;
+    Ok(())
+}`,
+
+    hf: `from transformers import PreTrainedTokenizerFast
+
+tokenizer = PreTrainedTokenizerFast.from_pretrained("models/bpe-8k")
+inputs = tokenizer("Akwaaba ba Ghana man mu.", return_tensors="pt")
+print(inputs.input_ids)  # tensor([[570, 514, 339, 364, 338, 18]])`,
+
+    cli: `python -m leke.trainer \\
+  --corpus data/splits/twi/train.txt data/splits/ewe/train.txt \\
+  --output-dir models/bpe-8k \\
+  --vocab-size 8192 \\
+  --algorithm bpe
+
+python -m leke.evaluate \\
+  --model-path models/bpe-8k/tokenizer.json \\
+  --splits-dir data/splits \\
+  --output-report specs/eval_results.md`
+  };
+
+  const vocab = (window.LEKE_DATA && window.LEKE_DATA.vocab) ? window.LEKE_DATA.vocab : {};
+
+  function hashId(s) {
+    if (vocab[s] !== undefined) return vocab[s];
+    let h = 2166136261;
+    for (const c of s) {
+      h ^= c.codePointAt(0);
+      h = Math.imul(h, 16777619);
+    }
+    return 256 + (Math.abs(h) % 7936);
+  }
+
+  function normalize(text, o) {
+    let t = text.normalize('NFC');
+    if (o.look) t = [...t].map(c => LOOK[c] || c).join('');
+    if (o.tone) t = t.normalize('NFD').replace(/[\u0300-\u0304\u030C]/g, '').normalize('NFC');
+    if (o.ws) t = t.replace(/\s+/g, ' ').trim();
+    return t;
+  }
+
+  function splitWord(w) {
+    if (w.length <= 4 || COMMON.has(w.toLowerCase())) return [w];
+    const syl = w.match(/[^aeiouɛɔAEIOUƐƆ]*[aeiouɛɔAEIOUƐƆ\u0300-\u036f]+(?:[nmŋ](?![aeiouɛɔ]))?|.+$/g) || [w];
+    const out = [];
+    let cur = '';
+    for (const s of syl) {
+      if ((cur + s).length > 5 && cur) {
+        out.push(cur);
+        cur = s;
+      } else {
+        cur += s;
+      }
+    }
+    if (cur) out.push(cur);
+    return out;
+  }
+
+  function tokenize(t) {
+    const toks = [];
+    let words = 0;
+    const re = /[\p{L}\p{M}]+|\p{N}+|[!-\/:-@\[-`{-~]|\S/gu;
+    let m;
+    while ((m = re.exec(t))) {
+      const sp = m.index > 0 && /\s/.test(t[m.index - 1]) ? 'Ġ' : '';
+      const s = m[0];
+      if (/^[\p{L}\p{M}]+$/u.test(s)) {
+        words++;
+        splitWord(s).forEach((p, i) => toks.push({ text: (i === 0 ? sp : '') + p, kind: 'sub' }));
+      } else if (/^[\x21-\x7e]+$/.test(s) || /^\p{N}+$/u.test(s)) {
+        toks.push({ text: sp + s, kind: 'sub' });
+      } else {
+        [...new TextEncoder().encode(s)].forEach((b, i) => toks.push({
+          text: (i === 0 && sp ? 'Ġ' : '') + '<0x' + b.toString(16).toUpperCase().padStart(2, '0') + '>',
+          kind: 'byte',
+          id: b
+        }));
+      }
+    }
+    return { toks, words };
+  }
+
+  // Application State
+  const state = {
+    text: PRESETS[0][1],
+    preset: 0,
+    look: true,
+    tone: false,
+    ws: true,
+    tab: 'python',
+    copied: false
+  };
+
+  // DOM Elements
+  const elPresets = document.getElementById('playground-presets');
+  const elInput = document.getElementById('playground-input');
+  const elToggleLook = document.getElementById('toggle-look');
+  const elToggleTone = document.getElementById('toggle-tone');
+  const elToggleWs = document.getElementById('toggle-ws');
+  const elNormalized = document.getElementById('playground-normalized');
+  const elTokens = document.getElementById('playground-tokens');
+  const elStatWords = document.getElementById('stat-words');
+  const elStatTokens = document.getElementById('stat-tokens');
+  const elStatFertility = document.getElementById('stat-fertility');
+  const elStatUnk = document.getElementById('stat-unk');
+  const elQuickstartCode = document.getElementById('quickstart-code');
+  const elCopyBtn = document.getElementById('copy-btn');
+  const elSegOpts = document.querySelectorAll('.seg-opt');
+
+  function renderPresets() {
+    if (!elPresets) return;
+    elPresets.innerHTML = `<span style="font-size: 13px; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-right: 6px;">Samples</span>`;
+    PRESETS.forEach(([name, txt], idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-secondary';
+      btn.style.minHeight = '32px';
+      btn.style.padding = '4px 12px';
+      btn.style.fontSize = '14px';
+      btn.style.background = state.preset === idx ? 'var(--color-accent-100)' : 'transparent';
+      btn.textContent = name;
+      btn.addEventListener('click', () => {
+        state.text = txt;
+        state.preset = idx;
+        elInput.value = txt;
+        updatePlayground();
+        renderPresets();
+      });
+      elPresets.appendChild(btn);
+    });
+  }
+
+  function updatePlayground() {
+    const norm = normalize(state.text, state);
+    if (elNormalized) elNormalized.textContent = norm;
+
+    const { toks, words } = tokenize(norm);
+
+    if (elTokens) {
+      elTokens.innerHTML = '';
+      toks.forEach((t, i) => {
+        const alt = i % 2 === 0;
+        const isByte = t.kind === 'byte';
+        const bg = isByte ? 'var(--color-accent-2-100)' : (alt ? 'var(--color-accent-100)' : 'var(--color-accent-200)');
+        const fg = isByte ? 'var(--color-accent-2-800)' : 'var(--color-accent-900)';
+        const id = isByte ? t.id : hashId(t.text);
+        const title = isByte ? 'Byte-level fallback' : 'Subword';
+
+        const chip = document.createElement('span');
+        chip.className = 'token-chip-broadsheet';
+        chip.title = title;
+        chip.style.background = bg;
+        chip.style.color = fg;
+        chip.innerHTML = `
+          <span style="font-size: 18px; line-height: 1.3; white-space: pre;">${escapeHtml(t.text)}</span>
+          <span style="font-size: 11px; line-height: 1.3; opacity: 0.8; font-feature-settings: 'tnum' 1;">${id}</span>
+        `;
+        elTokens.appendChild(chip);
+      });
     }
 
-    result.tokens.forEach((tok, i) => {
-      const id = result.ids[i];
-      const palette = CHIP_PALETTES[i % CHIP_PALETTES.length];
-
-      const chip = document.createElement('div');
-      chip.className = 'token-chip';
-      chip.style.backgroundColor = palette.bg;
-      chip.style.borderColor = palette.border;
-      chip.style.boxShadow = `0 2px 8px ${palette.glow}`;
-
-      // Convert visual 'Ġ' prefix to stylized space indicator
-      const hasPrefix = tok.startsWith('Ġ');
-      const cleanTok = hasPrefix ? tok.slice(1) : tok;
-
-      chip.innerHTML = `
-        ${hasPrefix ? '<span class="token-prefix" title="Leading Space">␣</span>' : ''}
-        <span class="token-text" style="color: ${palette.text};">${escapeHtml(cleanTok || '␣')}</span>
-        <span class="token-id" title="Vocabulary Token ID">#${id}</span>
-      `;
-
-      container.appendChild(chip);
-    });
+    const fert = words ? (toks.length / words).toFixed(2) : '0.00';
+    if (elStatWords) elStatWords.textContent = String(words);
+    if (elStatTokens) elStatTokens.textContent = String(toks.length);
+    if (elStatFertility) elStatFertility.textContent = fert;
+    if (elStatUnk) elStatUnk.textContent = '0.00%';
   }
 
   function escapeHtml(str) {
@@ -234,218 +225,80 @@
       .replace(/'/g, '&#039;');
   }
 
-  // ---------------------------------------------------------------------------
-  // 4. Playground DOM Wiring
-  // ---------------------------------------------------------------------------
-  function initPlayground() {
-    const textInput = document.getElementById('playground-input');
-    const chipContainer = document.getElementById('token-chips');
-    const statWordCount = document.getElementById('stat-words');
-    const statTokenCount = document.getElementById('stat-tokens');
-    const statFertility = document.getElementById('stat-fertility');
-    const statUnk = document.getElementById('stat-unk');
-    const normDiffContainer = document.getElementById('norm-diff');
-
-    const optStripAccents = document.getElementById('opt-strip-accents');
-    const optCollapseWhitespace = document.getElementById('opt-collapse-whitespace');
-
-    if (!textInput || !chipContainer) return;
-
-    function runUpdate() {
-      const rawText = textInput.value;
-      const options = {
-        stripAccents: optStripAccents ? optStripAccents.checked : false,
-        collapseWhitespace: optCollapseWhitespace ? optCollapseWhitespace.checked : true
-      };
-
-      const result = tokenizeText(rawText, options);
-
-      // Update stats
-      if (statWordCount) statWordCount.textContent = result.wordCount;
-      if (statTokenCount) statTokenCount.textContent = result.tokenCount;
-      if (statFertility) statFertility.textContent = result.fertility;
-      if (statUnk) {
-        statUnk.textContent = result.unkCount === 0 ? '0.00% (0 <unk>)' : `${result.unkCount} <unk>`;
-        statUnk.className = result.unkCount === 0 ? 'stat-value stat-success' : 'stat-value stat-warning';
-      }
-
-      // Normalization diff
-      if (normDiffContainer) {
-        if (rawText !== result.normalized && result.normalized.length > 0) {
-          normDiffContainer.innerHTML = `
-            <div class="diff-banner">
-              <span class="diff-label">Normalized:</span>
-              <span class="diff-content">${escapeHtml(result.normalized)}</span>
-            </div>
-          `;
-          normDiffContainer.style.display = 'block';
-        } else {
-          normDiffContainer.style.display = 'none';
-        }
-      }
-
-      renderTokenChips(result, chipContainer);
+  function updateCode() {
+    if (elQuickstartCode) {
+      elQuickstartCode.textContent = CODE[state.tab] || CODE.python;
     }
-
-    // Event listeners
-    textInput.addEventListener('input', runUpdate);
-    if (optStripAccents) optStripAccents.addEventListener('change', runUpdate);
-    if (optCollapseWhitespace) optCollapseWhitespace.addEventListener('change', runUpdate);
-
-    // Preset buttons
-    const presetButtons = document.querySelectorAll('.preset-btn');
-    presetButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        presetButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        const sampleKey = btn.dataset.sample;
-        const found = DATA.samples.find(s => s.lang === sampleKey);
-        if (found) {
-          textInput.value = found.raw;
-          runUpdate();
-        }
-      });
-    });
-
-    // Run initial on page load with first sample
-    if (DATA.samples.length > 0) {
-      textInput.value = DATA.samples[0].raw;
-      runUpdate();
+    if (elCopyBtn) {
+      elCopyBtn.textContent = state.copied ? 'Copied' : 'Copy code';
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // 5. Leaderboard Rendering
-  // ---------------------------------------------------------------------------
-  function initLeaderboard() {
-    const tabsContainer = document.getElementById('leaderboard-tabs');
-    const tableContainer = document.getElementById('leaderboard-table-container');
-
-    if (!tabsContainer || !tableContainer || !DATA.leaderboard.length) return;
-
-    function renderLanguage(langData) {
-      let html = `
-        <div class="leaderboard-header-info">
-          <h3>${langData.lang} <span class="lang-code">${langData.code}</span></h3>
-          <p class="lang-desc">${langData.description}</p>
-        </div>
-        <div class="table-responsive">
-          <table class="leaderboard-table">
-            <thead>
-              <tr>
-                <th>Model</th>
-                <th>Fertility (tok/word)</th>
-                <th>Word Split >2</th>
-                <th>Unknown Rate</th>
-                <th>Compression (B/tok)</th>
-                <th>Release Status</th>
-              </tr>
-            </thead>
-            <tbody>
-      `;
-
-      langData.models.forEach(model => {
-        const rowClass = model.isLeke ? 'leke-row' : '';
-        const badgeClass = model.isLeke ? 'badge-success' : 'badge-neutral';
-        const unkBadge = model.unkRate === 0 ? 'badge-pill-success' : 'badge-pill-warning';
-
-        html += `
-          <tr class="${rowClass}">
-            <td class="model-name">
-              <strong>${model.name}</strong>
-              ${model.isLeke ? '<span class="pill-chip">Target Model</span>' : ''}
-            </td>
-            <td>
-              <div class="metric-bar-group">
-                <span class="metric-val ${model.isLeke ? 'metric-highlight' : ''}">${model.fertility}</span>
-                <div class="progress-bar-bg">
-                  <div class="progress-bar-fill ${model.isLeke ? 'fill-leke' : ''}" style="width: ${Math.min(100, (model.fertility / 3.5) * 100)}%;"></div>
-                </div>
-              </div>
-            </td>
-            <td>${model.splitRate}%</td>
-            <td><span class="badge-pill ${unkBadge}">${model.unkRate}%</span></td>
-            <td>${model.compression} bytes/tok</td>
-            <td><span class="badge ${badgeClass}">${model.status}</span></td>
-          </tr>
-        `;
-      });
-
-      html += `
-            </tbody>
-          </table>
-        </div>
-      `;
-
-      tableContainer.innerHTML = html;
-    }
-
-    // Render tabs
-    tabsContainer.innerHTML = '';
-    DATA.leaderboard.forEach((lang, idx) => {
-      const btn = document.createElement('button');
-      btn.className = `tab-btn ${idx === 0 ? 'active' : ''}`;
-      btn.textContent = lang.lang;
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#leaderboard-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderLanguage(lang);
-      });
-      tabsContainer.appendChild(btn);
-    });
-
-    // Initial render
-    renderLanguage(DATA.leaderboard[0]);
-  }
-
-  // ---------------------------------------------------------------------------
-  // 6. Code Tabs & Copy Tool
-  // ---------------------------------------------------------------------------
-  function initCodeTabs() {
-    const tabButtons = document.querySelectorAll('.code-tab-btn');
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const parent = btn.closest('.code-showcase');
-        if (!parent) return;
-
-        parent.querySelectorAll('.code-tab-btn').forEach(b => b.classList.remove('active'));
-        parent.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
-
-        btn.classList.add('active');
-        const targetId = btn.dataset.target;
-        const panel = document.getElementById(targetId);
-        if (panel) panel.classList.add('active');
-      });
-    });
-
-    // Copy to clipboard
-    const copyButtons = document.querySelectorAll('.copy-btn');
-    copyButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetId = btn.dataset.code;
-        const codeElement = document.getElementById(targetId);
-        if (!codeElement) return;
-
-        navigator.clipboard.writeText(codeElement.innerText).then(() => {
-          const originalText = btn.innerHTML;
-          btn.innerHTML = `✓ Copied!`;
-          btn.classList.add('copied');
-          setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.classList.remove('copied');
-          }, 2000);
-        });
-      });
+  // Initialize Event Listeners
+  if (elInput) {
+    elInput.value = state.text;
+    elInput.addEventListener('input', (e) => {
+      state.text = e.target.value;
+      state.preset = -1;
+      updatePlayground();
+      renderPresets();
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // 7. Initialize Application
-  // ---------------------------------------------------------------------------
-  document.addEventListener('DOMContentLoaded', () => {
-    initPlayground();
-    initLeaderboard();
-    initCodeTabs();
+  if (elToggleLook) {
+    elToggleLook.checked = state.look;
+    elToggleLook.addEventListener('change', (e) => {
+      state.look = e.target.checked;
+      updatePlayground();
+    });
+  }
+
+  if (elToggleTone) {
+    elToggleTone.checked = state.tone;
+    elToggleTone.addEventListener('change', (e) => {
+      state.tone = e.target.checked;
+      updatePlayground();
+    });
+  }
+
+  if (elToggleWs) {
+    elToggleWs.checked = state.ws;
+    elToggleWs.addEventListener('change', (e) => {
+      state.ws = e.target.checked;
+      updatePlayground();
+    });
+  }
+
+  elSegOpts.forEach((opt) => {
+    opt.addEventListener('click', () => {
+      const tab = opt.dataset.tab;
+      if (!tab) return;
+      state.tab = tab;
+      state.copied = false;
+      elSegOpts.forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      const radio = opt.querySelector('input');
+      if (radio) radio.checked = true;
+      updateCode();
+    });
   });
+
+  if (elCopyBtn) {
+    elCopyBtn.addEventListener('click', () => {
+      const codeText = CODE[state.tab] || CODE.python;
+      navigator.clipboard?.writeText(codeText).then(() => {
+        state.copied = true;
+        updateCode();
+        setTimeout(() => {
+          state.copied = false;
+          updateCode();
+        }, 2000);
+      });
+    });
+  }
+
+  // Initial Run
+  renderPresets();
+  updatePlayground();
+  updateCode();
 })();

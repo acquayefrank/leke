@@ -1,380 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leke — High-Performance Subword Tokenizer for Niger-Congo Kwa Languages</title>
-  <meta name="description" content="Production-grade subword tokenizer for Akan/Twi, Ewe, Ga, and Fante. Engineered in Rust with PyO3 bindings. Features 0.00% unknown rate byte-level fallback and 1.83x lower fertility than NLLB-200.">
-  <meta name="keywords" content="Leke, tokenizer, subword tokenization, BPE, Unigram, Kwa languages, Akan, Twi, Ewe, Ga, Fante, NLP, African NLP, PyO3, Rust">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leke — Subword Tokenization for Kwa Languages</title>
+  <meta name="description" content="A subword tokenizer built for Akan/Twi, Ewe, Ga and Fante. Orthographic normalization and byte-level BPE, written in Rust with Python bindings.">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
 </head>
 <body>
 
-  <!-- Site Navigation -->
-  <header class="site-header">
-    <div class="container nav-container">
-      <a href="#" class="logo-group">
-        <div class="logo-icon">L</div>
-        <div class="logo-text">Leke<span>.</span></div>
-      </a>
-      <nav aria-label="Main Navigation">
-        <ul class="nav-links">
-          <li><a href="#playground">Playground</a></li>
-          <li><a href="#leaderboard">Leaderboard</a></li>
-          <li><a href="#architecture">Architecture</a></li>
-          <li><a href="#docs">Documentation</a></li>
-        </ul>
-      </nav>
-      <div class="nav-cta">
-        <a href="https://github.com/acquayefrank/leke" target="_blank" rel="noopener noreferrer" class="btn-github">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-          </svg>
-          GitHub
-        </a>
-      </div>
-    </div>
-  </header>
+  <!-- Navigation -->
+  <nav class="nav" aria-label="Main Navigation">
+    <a href="#top" class="nav-brand">Leke.</a>
+    <a href="#playground">Playground</a>
+    <a href="#leaderboard">Leaderboard</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#docs">Documentation</a>
+    <a class="btn btn-primary" href="https://github.com/acquayefrank/leke" style="color: var(--color-bg); white-space: nowrap; flex-shrink: 0;" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </nav>
 
-  <main>
+  <main id="top" style="max-width: 1200px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 72px);">
+
     <!-- Hero Section -->
-    <section class="hero" id="hero">
-      <div class="container">
-        <div class="badge-hero">
-          ⚡ 0.00% Unknown Rate • Byte-Level Fallback • Apache 2.0
-        </div>
-        <h1>
-          High-Performance Subword Tokenization<br>
-          for <span class="hero-highlight">Kwa Languages</span>
-        </h1>
-        <p class="lead">
-          Optimized tokenization engine tailored for Akan/Twi, Ewe, Ga, and Fante. 
-          Combines phonemic orthographic normalization with Byte-Level BPE in Rust 
-          for ultra-compact representations and zero vocabulary fragmentation.
+    <section style="padding: 112px 0 84px;">
+      <h1 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(42px, 6.4vw, 88px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 0 -0.035em;">
+        <span style="display: block;">Subword tokenization</span>
+        <span style="display: block;">for Kwa languages.</span>
+      </h1>
+      <p style="font-size: 19px; line-height: 1.6; max-width: 58ch; margin: 36px 0 0;">A tokenizer built for Akan/Twi, Ewe, Ga and Fante. Orthographic normalization and byte-level BPE, written in Rust with Python bindings — so text stays short and no character is ever lost.</p>
+      <div style="display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: 32px;">
+        <a class="btn btn-primary" href="#playground" style="color: var(--color-bg); white-space: nowrap; flex-shrink: 0;">Try the playground</a>
+        <a class="btn btn-secondary" href="#leaderboard" style="color: var(--color-text); white-space: nowrap; flex-shrink: 0;">View benchmarks</a>
+        <a class="btn btn-ghost" href="#docs" style="white-space: nowrap; flex-shrink: 0;">Read the docs</a>
+      </div>
+    </section>
+
+    <!-- Numbers Index Section -->
+    <section aria-label="Leke by the numbers" style="padding-bottom: 84px;">
+      <div style="height: 5px; border-top: 2px solid var(--color-text); border-bottom: 1px solid var(--color-text);"></div>
+      <p style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px 28px; margin: 0; padding: 14px 0; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent);">
+        <span>Byte-level fallback</span><span>Rust core · PyO3</span><span>Hugging Face ready</span><span>Apache 2.0</span>
+      </p>
+      <div style="border-top: 1px solid var(--color-text);"></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 14px 70px; padding: 14px 0 28px;">
+        <p style="display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 16px; line-height: 28px;">
+          <span>Kwa languages supported</span>
+          <span style="flex: 1; min-width: 28px; border-bottom: 1px dotted color-mix(in srgb, var(--color-text) 45%, transparent);"></span>
+          <span style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; color: var(--color-accent-700);">4</span>
         </p>
+        <p style="display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 16px; line-height: 28px;">
+          <span>Lower fertility than NLLB-200</span>
+          <span style="flex: 1; min-width: 28px; border-bottom: 1px dotted color-mix(in srgb, var(--color-text) 45%, transparent);"></span>
+          <span style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; color: var(--color-text);">1.83×</span>
+        </p>
+        <p style="display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 16px; line-height: 28px;">
+          <span>Hard &lt;unk&gt; rate, guaranteed</span>
+          <span style="flex: 1; min-width: 28px; border-bottom: 1px dotted color-mix(in srgb, var(--color-text) 45%, transparent);"></span>
+          <span style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; color: var(--color-text);">0.00%</span>
+        </p>
+        <p style="display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 16px; line-height: 28px;">
+          <span>Tokens per second, single core</span>
+          <span style="flex: 1; min-width: 28px; border-bottom: 1px dotted color-mix(in srgb, var(--color-text) 45%, transparent);"></span>
+          <span style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; color: var(--color-text);">356k</span>
+        </p>
+      </div>
+      <div style="border-top: 1px solid var(--color-text);"></div>
+    </section>
 
-        <div class="hero-actions">
-          <a href="#playground" class="btn-primary">Try Interactive Playground →</a>
-          <a href="#leaderboard" class="btn-secondary">View Benchmarks</a>
-          <a href="#docs" class="btn-secondary">Read Docs</a>
+    <!-- Playground Section -->
+    <section id="playground" style="padding: 56px 0 84px;">
+      <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 14px;">Playground</span>
+      <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0;">Watch a sentence come apart.</h2>
+      <p style="font-size: 16px; line-height: 1.7; max-width: 58ch; margin: 16px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent);">Type or pick a sample. Lookalike characters are mapped, tone marks kept or stripped, and anything unseen falls back to bytes.</p>
+
+      <!-- Sample Buttons -->
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 32px;" id="playground-presets">
+        <span style="font-size: 13px; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-right: 6px;">Samples</span>
+        <!-- Injected dynamically by app.js -->
+      </div>
+
+      <!-- Textarea Input -->
+      <textarea class="input" id="playground-input" aria-label="Text to tokenize" style="margin-top: 20px; min-height: 120px; font-size: 20px; line-height: 1.5; padding: 14px 16px; font-family: var(--font-body);"></textarea>
+
+      <!-- Toggles -->
+      <div style="display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 16px; font-size: 14px;">
+        <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" id="toggle-look" checked style="accent-color: var(--color-accent); width: 16px; height: 16px; margin: 0;">
+          <span>Map lookalikes (ε→ɛ, γ→ɣ, ɳ→ŋ, ð→ɖ)</span>
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" id="toggle-tone" style="accent-color: var(--color-accent); width: 16px; height: 16px; margin: 0;">
+          <span>Strip tone marks (pápá → papa)</span>
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" id="toggle-ws" checked style="accent-color: var(--color-accent); width: 16px; height: 16px; margin: 0;">
+          <span>Collapse whitespace</span>
+        </label>
+      </div>
+
+      <!-- Normalized Output -->
+      <div style="margin-top: 40px;">
+        <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 8px;">Normalized</span>
+        <p id="playground-normalized" style="font-size: 20px; line-height: 1.5; margin: 0; min-height: 30px;"></p>
+      </div>
+
+      <!-- Token Chips Viewport -->
+      <div style="margin-top: 32px;">
+        <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 12px;">Tokens</span>
+        <div id="playground-tokens" style="display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px;">
+          <!-- Injected dynamically by app.js -->
         </div>
+      </div>
 
-        <!-- Quick Stats Banner -->
-        <div class="stats-banner">
-          <div class="stat-item">
-            <span class="stat-num">4</span>
-            <span class="stat-lbl">Kwa Languages</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-num">1.83x</span>
-            <span class="stat-lbl">Lower Fertility vs NLLB</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-num">0.00%</span>
-            <span class="stat-lbl">Hard &lt;unk&gt; Rate Gate</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-num">356k</span>
-            <span class="stat-lbl">Tokens / Sec Throughput</span>
-          </div>
+      <!-- Stats Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 28px; margin-top: 44px;">
+        <div>
+          <div id="stat-words" style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 40px; line-height: 1; font-feature-settings: 'tnum' 1;">0</div>
+          <div style="font-size: 14px; margin-top: 10px; color: color-mix(in srgb, var(--color-text) 70%, transparent);">Words</div>
+        </div>
+        <div>
+          <div id="stat-tokens" style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 40px; line-height: 1; font-feature-settings: 'tnum' 1;">0</div>
+          <div style="font-size: 14px; margin-top: 10px; color: color-mix(in srgb, var(--color-text) 70%, transparent);">Subword tokens</div>
+        </div>
+        <div>
+          <div id="stat-fertility" style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 40px; line-height: 1; font-feature-settings: 'tnum' 1;">0.00</div>
+          <div style="font-size: 14px; margin-top: 10px; color: color-mix(in srgb, var(--color-text) 70%, transparent);">Fertility (tokens / word)</div>
+        </div>
+        <div>
+          <div id="stat-unk" style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 40px; line-height: 1; font-feature-settings: 'tnum' 1;">0.00%</div>
+          <div style="font-size: 14px; margin-top: 10px; color: color-mix(in srgb, var(--color-text) 70%, transparent);">Unknown &lt;unk&gt; rate</div>
         </div>
       </div>
     </section>
 
-    <!-- Interactive Tokenizer Playground -->
-    <section class="section" id="playground">
-      <div class="container">
-        <div class="section-head">
-          <h2>Interactive Tokenizer Playground</h2>
-          <p>Test real-time subword segmentation, orthographic lookalike replacement, and byte-level fallback right in your browser.</p>
-        </div>
-
-        <div class="playground-card">
-          <!-- Preset Buttons -->
-          <div class="playground-presets">
-            <span class="preset-label">Sample Presets:</span>
-            <button class="preset-btn active" data-sample="twi">Akan / Twi</button>
-            <button class="preset-btn" data-sample="ewe">Ewe</button>
-            <button class="preset-btn" data-sample="gaa">Ga</button>
-            <button class="preset-btn" data-sample="fat">Fante</button>
-            <button class="preset-btn" data-sample="norm">Lookalike & Tone Test</button>
-            <button class="preset-btn" data-sample="oov">Byte Fallback Test</button>
-          </div>
-
-          <!-- Input Area -->
-          <div class="playground-input-group">
-            <textarea id="playground-input" placeholder="Type or paste Kwa text here... (e.g. Akwaaba ba Ghana man mu.)" spellcheck="false"></textarea>
-          </div>
-
-          <!-- Normalization Options -->
-          <div class="playground-options">
-            <div class="toggle-group">
-              <label class="toggle-label">
-                <input type="checkbox" id="opt-canonical-mapping" checked disabled>
-                <span>Canonical Lookalike Mapping (ε→ɛ, γ→ɣ, ɳ→ŋ, ð→ɖ)</span>
-              </label>
-              <label class="toggle-label">
-                <input type="checkbox" id="opt-strip-accents">
-                <span>Strip Tone Accents (pápá → papa)</span>
-              </label>
-              <label class="toggle-label">
-                <input type="checkbox" id="opt-collapse-whitespace" checked>
-                <span>Collapse Whitespace</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Normalization Diff Notification -->
-          <div id="norm-diff" style="display: none;"></div>
-
-          <!-- Token Output Viewport -->
-          <div class="token-output-card">
-            <div class="token-chips-viewport" id="token-chips">
-              <!-- Token chips dynamically rendered by app.js -->
-            </div>
-          </div>
-
-          <!-- Metrics Footer -->
-          <div class="playground-stats-bar">
-            <div class="stat-cell">
-              <span class="stat-caption">Word Count</span>
-              <span class="stat-value" id="stat-words">0</span>
-            </div>
-            <div class="stat-cell">
-              <span class="stat-caption">Subword Tokens</span>
-              <span class="stat-value" id="stat-tokens">0</span>
-            </div>
-            <div class="stat-cell">
-              <span class="stat-caption">Fertility (tok/word)</span>
-              <span class="stat-value" id="stat-fertility">0.00</span>
-            </div>
-            <div class="stat-cell">
-              <span class="stat-caption">Unknown &lt;unk&gt; Rate</span>
-              <span class="stat-value stat-success" id="stat-unk">0.00% (0 &lt;unk&gt;)</span>
-            </div>
-          </div>
-        </div>
+    <!-- Leaderboard Section -->
+    <section id="leaderboard" style="padding: 56px 0 84px;">
+      <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 14px;">Leaderboard</span>
+      <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0;">Fewer tokens per word, in every language.</h2>
+      <p style="font-size: 16px; line-height: 1.7; max-width: 58ch; margin: 16px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent);">Fertility on held-out test splits, against multilingual NLLB-200 and monolingual baselines. Lower is better.</p>
+      <div style="overflow-x: auto; margin-top: 32px;">
+        <table class="table" style="font-size: 16px; min-width: 620px;">
+          <thead>
+            <tr><th>Language</th><th>Leke BPE 8k</th><th>NLLB-200</th><th>Monolingual</th><th>vs NLLB</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding-block: 14px;">Akan / Twi</td>
+              <td style="padding-block: 14px; font-weight: 600; font-feature-settings: 'tnum' 1;">2.23</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1;">2.92</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1; color: color-mix(in srgb, var(--color-text) 70%, transparent);">1.62 (Goldfish)</td>
+              <td style="padding-block: 14px;"><span class="tag tag-accent" style="font-size: 13px;">−24%</span></td>
+            </tr>
+            <tr>
+              <td style="padding-block: 14px;">Ewe</td>
+              <td style="padding-block: 14px; font-weight: 600; font-feature-settings: 'tnum' 1;">2.77</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1;">3.15</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1; color: color-mix(in srgb, var(--color-text) 70%, transparent);">1.71 (Wikilangs)</td>
+              <td style="padding-block: 14px;"><span class="tag tag-accent" style="font-size: 13px;">−12%</span></td>
+            </tr>
+            <tr>
+              <td style="padding-block: 14px;">Ga</td>
+              <td style="padding-block: 14px; font-weight: 600; font-feature-settings: 'tnum' 1;">2.38</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1;">3.20</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1; color: color-mix(in srgb, var(--color-text) 70%, transparent);">—</td>
+              <td style="padding-block: 14px;"><span class="tag tag-accent" style="font-size: 13px;">−26%</span></td>
+            </tr>
+            <tr>
+              <td style="padding-block: 14px;">Fante</td>
+              <td style="padding-block: 14px; font-weight: 600; font-feature-settings: 'tnum' 1;">2.16</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1;">2.98</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1; color: color-mix(in srgb, var(--color-text) 70%, transparent);">—</td>
+              <td style="padding-block: 14px;"><span class="tag tag-accent" style="font-size: 13px;">−28%</span></td>
+            </tr>
+            <tr>
+              <td style="padding-block: 14px;">Unknown rate</td>
+              <td style="padding-block: 14px; font-weight: 600; font-feature-settings: 'tnum' 1;">0.0%</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1;">0.0%</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1; color: color-mix(in srgb, var(--color-text) 70%, transparent);">0.4–0.6%</td>
+              <td style="padding-block: 14px;"><span class="tag tag-accent" style="font-size: 13px;">Guaranteed</span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+      <p style="font-size: 14px; margin: 20px 0 0; color: color-mix(in srgb, var(--color-text) 70%, transparent);">Full report: <a href="https://github.com/acquayefrank/leke/blob/main/specs/eval_results.md" target="_blank" rel="noopener noreferrer">specs/eval_results.md</a></p>
     </section>
 
-    <!-- Leaderboard & Benchmarks -->
-    <section class="section" id="leaderboard">
-      <div class="container">
-        <div class="section-head">
-          <h2>Evaluation Leaderboard</h2>
-          <p>Official release-gate benchmarks evaluated on held-out test splits against multilingual NLLB-200 and monolingual baselines.</p>
+    <!-- Architecture Section -->
+    <section id="architecture" style="padding: 56px 0 84px;">
+      <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 14px;">Architecture</span>
+      <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0; max-width: 22ch;">Built for the problems African text actually has.</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 48px clamp(28px, 4vw, 64px); margin-top: 48px;">
+        <div>
+          <h3 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; line-height: 1.3; margin: 0;">Orthographic harmonization</h3>
+          <p style="font-size: 15.5px; line-height: 1.75; margin: 10px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); text-align: justify; hyphens: auto;">Keyboards often produce Greek ε and γ or Cyrillic є in place of Kwa letters. Leke maps every variant to the official Latin code points — ɛ, ɣ, ŋ, ɖ — before training.</p>
         </div>
-
-        <!-- Language Switcher Tabs -->
-        <div class="leaderboard-tabs" id="leaderboard-tabs">
-          <!-- Dynamically populated by app.js -->
+        <div>
+          <h3 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; line-height: 1.3; margin: 0;">Zero &lt;unk&gt;, guaranteed</h3>
+          <p style="font-size: 15.5px; line-height: 1.75; margin: 10px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); text-align: justify; hyphens: auto;">The base vocabulary is seeded with all 256 bytes. Any unseen character, emoji, formula or code snippet degrades into byte tokens rather than collapsing into &lt;unk&gt;.</p>
         </div>
-
-        <!-- Leaderboard Table Container -->
-        <div class="leaderboard-container" id="leaderboard-table-container">
-          <!-- Dynamically populated by app.js -->
+        <div>
+          <h3 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; line-height: 1.3; margin: 0;">A high-throughput bridge</h3>
+          <p style="font-size: 15.5px; line-height: 1.75; margin: 10px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); text-align: justify; hyphens: auto;">A multi-threaded Rust core encodes over 356,000 tokens a second on ordinary CPUs. Zero-copy transfers release the Python GIL for parallel data loading.</p>
         </div>
-      </div>
-    </section>
-
-    <!-- Architecture & Features -->
-    <section class="section" id="architecture">
-      <div class="container">
-        <div class="section-head">
-          <h2>Engine Architecture & Innovations</h2>
-          <p>Engineered from the ground up to solve the unique linguistic challenges of African language tokenization.</p>
+        <div>
+          <h3 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; line-height: 1.3; margin: 0;">Tone, preserved</h3>
+          <p style="font-size: 15.5px; line-height: 1.75; margin: 10px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); text-align: justify; hyphens: auto;">Tone carries meaning in Akan and Ewe — Twi pápá, “goodness”, against papá, “father”. Diacritics are kept by default, with tone-agnostic stripping when a task calls for it.</p>
         </div>
-
-        <div class="features-grid">
-          <article class="feature-card">
-            <div class="feature-icon icon-gold">🔤</div>
-            <h3>Orthographic Harmonization</h3>
-            <p>
-              Users typing Kwa languages frequently use visually similar Greek (<code>ε</code>, <code>γ</code>) or Cyrillic (<code>є</code>) characters due to keyboard layout limitations. Leke standardizes all variants to official Latin code points (<code>ɛ</code>, <code>ɣ</code>, <code>ŋ</code>, <code>ɖ</code>) before training.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon icon-emerald">🛡️</div>
-            <h3>Zero &lt;unk&gt; Guarantee</h3>
-            <p>
-              By seeding the base vocabulary with all 256 raw byte representations (Byte-Level BPE), any unseen Unicode codepoint, rare emoji, math formula, or code snippet degrades gracefully into byte tokens rather than corrupting into <code>&lt;unk&gt;</code>.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon icon-cyan">⚡</div>
-            <h3>High-Throughput PyO3 Bridge</h3>
-            <p>
-              Multi-threaded Rust core executes over 356,000 tokens/second on standard CPU hardware. Zero-copy buffer transfers across the Python C-API release the Python GIL for parallel DataLoader processing.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon icon-violet">🎵</div>
-            <h3>Tone Mark Preservation</h3>
-            <p>
-              Tonal contrasts carry phonemic meaning in Akan and Ewe (e.g. Twi <em>pápá</em> "goodness" vs <em>papá</em> "father"). Leke preserves tone diacritics by default while offering tone-agnostic stripping when downstream tasks require it.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon icon-rose">🤗</div>
-            <h3>Hugging Face Drop-In</h3>
-            <p>
-              Exports standard <code>tokenizer.json</code> bundles directly consumable by <code>transformers.PreTrainedTokenizerFast</code>. Seamlessly drop Leke into PyTorch, JAX, or Hugging Face training pipelines.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon icon-gold">📜</div>
-            <h3>Cryptographic Receipts</h3>
-            <p>
-              Every trained model bundle is paired with a SHA-256 fingerprint, recording dataset provenance, algorithm configuration, vocab distribution, and seed settings for verifiable scientific reproducibility.
-            </p>
-          </article>
+        <div>
+          <h3 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; line-height: 1.3; margin: 0;">Drop into Hugging Face</h3>
+          <p style="font-size: 15.5px; line-height: 1.75; margin: 10px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); text-align: justify; hyphens: auto;">Exports a standard tokenizer.json that transformers.PreTrainedTokenizerFast reads directly, for PyTorch, JAX or any Hugging Face training pipeline.</p>
         </div>
-
-        <!-- Architecture Flow Diagram -->
-        <div class="arch-diagram-card">
-          <h3 style="font-family: var(--font-heading); margin-bottom: 0.5rem;">The Leke Tokenization Pipeline</h3>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">Step-by-step processing from raw user input to integer token embeddings</p>
-          <div class="arch-flow">
-            <div class="arch-node">1. Raw Text</div>
-            <div class="arch-arrow">→</div>
-            <div class="arch-node">2. Unicode NFC</div>
-            <div class="arch-arrow">→</div>
-            <div class="arch-node">3. Lookalike Mapping</div>
-            <div class="arch-arrow">→</div>
-            <div class="arch-node">4. Tone Policy</div>
-            <div class="arch-arrow">→</div>
-            <div class="arch-node">5. Byte-Level BPE</div>
-            <div class="arch-arrow">→</div>
-            <div class="arch-node">6. Model Token IDs</div>
-          </div>
+        <div>
+          <h3 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; line-height: 1.3; margin: 0;">Cryptographic receipts</h3>
+          <p style="font-size: 15.5px; line-height: 1.75; margin: 10px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); text-align: justify; hyphens: auto;">Every model bundle ships with a SHA-256 fingerprint recording dataset provenance, configuration, vocabulary distribution and seed — reproducible by design.</p>
         </div>
       </div>
+
+      <h3 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; margin: 84px 0 0;">The pipeline</h3>
+      <ol style="list-style: none; padding: 0; margin: 24px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 28px;">
+        <li>
+          <div style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 44px; line-height: 1; color: var(--color-accent-700);">1</div>
+          <div style="font-size: 16px; margin-top: 10px;">Raw text</div>
+        </li>
+        <li>
+          <div style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 44px; line-height: 1; color: var(--color-accent-700);">2</div>
+          <div style="font-size: 16px; margin-top: 10px;">Unicode NFC</div>
+        </li>
+        <li>
+          <div style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 44px; line-height: 1; color: var(--color-accent-700);">3</div>
+          <div style="font-size: 16px; margin-top: 10px;">Lookalike mapping</div>
+        </li>
+        <li>
+          <div style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 44px; line-height: 1; color: var(--color-accent-700);">4</div>
+          <div style="font-size: 16px; margin-top: 10px;">Tone policy</div>
+        </li>
+        <li>
+          <div style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 44px; line-height: 1; color: var(--color-accent-700);">5</div>
+          <div style="font-size: 16px; margin-top: 10px;">Byte-level BPE</div>
+        </li>
+        <li>
+          <div style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 44px; line-height: 1; color: var(--color-accent-700);">6</div>
+          <div style="font-size: 16px; margin-top: 10px;">Token IDs</div>
+        </li>
+      </ol>
     </section>
 
-    <!-- Documentation & Quickstart -->
-    <section class="section" id="docs">
-      <div class="container">
-        <div class="section-head">
-          <h2>Developer Quickstart</h2>
-          <p>Get up and running with Leke in Python, Rust, or directly via Hugging Face Transformers.</p>
+    <!-- Quickstart Section -->
+    <section id="docs" style="padding: 56px 0 84px;">
+      <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 14px;">Quickstart</span>
+      <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0;">Up and running in four lines.</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 32px;">
+        <div class="seg" role="radiogroup" aria-label="Language">
+          <label class="seg-opt active" data-tab="python" style="font-size: 14px;">
+            <input type="radio" name="qs" value="python" checked>Python
+          </label>
+          <label class="seg-opt" data-tab="rust" style="font-size: 14px;">
+            <input type="radio" name="qs" value="rust">Rust
+          </label>
+          <label class="seg-opt" data-tab="hf" style="font-size: 14px;">
+            <input type="radio" name="qs" value="hf">Hugging Face
+          </label>
+          <label class="seg-opt" data-tab="cli" style="font-size: 14px;">
+            <input type="radio" name="qs" value="cli">CLI training
+          </label>
         </div>
-
-        <div class="code-showcase">
-          <div class="code-header">
-            <div class="code-tabs">
-              <button class="code-tab-btn active" data-target="panel-python">Python (Leke)</button>
-              <button class="code-tab-btn" data-target="panel-rust">Rust (Crate)</button>
-              <button class="code-tab-btn" data-target="panel-hf">Hugging Face</button>
-              <button class="code-tab-btn" data-target="panel-cli">CLI Training</button>
-            </div>
-            <button class="copy-btn" data-code="active-code">
-              📋 Copy Code
-            </button>
-          </div>
-
-          <!-- Python Panel -->
-          <div class="code-panel active" id="panel-python">
-            <pre id="active-code"><code><span class="syn-kw">import</span> leke
-
-<span class="syn-comment"># Step 1: Normalize raw text with canonical orthographic mappings</span>
-raw = <span class="syn-str">"Wɔfrε no pápá!"</span>
-clean = leke.normalize(raw)
-<span class="syn-fn">print</span>(clean)  <span class="syn-comment"># 'Wɔfrɛ no pápá!' (Greek ε converted to Latin ɛ)</span>
-
-<span class="syn-comment"># Step 2: Load pre-trained Byte-Level BPE model</span>
-tokenizer = leke.LekeTokenizer.from_file(<span class="syn-str">"models/bpe-8k/tokenizer.json"</span>)
-
-<span class="syn-comment"># Step 3: High-speed encoding</span>
-encoding = tokenizer.encode(<span class="syn-str">"Akwaaba ba Ghana man mu."</span>)
-<span class="syn-fn">print</span>(encoding.tokens)
-<span class="syn-comment"># ['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']</span>
-<span class="syn-fn">print</span>(encoding.ids)
-<span class="syn-comment"># [570, 514, 339, 364, 338, 18]</span>
-
-<span class="syn-comment"># Step 4: Batch decoding</span>
-decoded = tokenizer.decode(encoding.ids)
-<span class="syn-fn">print</span>(decoded)  <span class="syn-comment"># 'Akwaaba ba Ghana man mu.'</span></code></pre>
-          </div>
-
-          <!-- Rust Panel -->
-          <div class="code-panel" id="panel-rust">
-            <pre><code><span class="syn-kw">use</span> _leke::normalizer::KwaNormalizer;
-<span class="syn-kw">use</span> _leke::trainer::{train_bpe, BpeTrainingConfig, save_tokenizer_bundle};
-<span class="syn-kw">use</span> std::path::{Path, PathBuf};
-
-<span class="syn-kw">fn</span> <span class="syn-fn">main</span>() -> Result&lt;(), Box&lt;<span class="syn-kw">dyn</span> std::error::Error&gt;&gt; {
-    <span class="syn-comment">// Step 1: Normalize Kwa text</span>
-    <span class="syn-kw">let</span> norm = KwaNormalizer::default();
-    <span class="syn-kw">let</span> clean = norm.normalize_str(<span class="syn-str">"Akwaaba   ε   Ghana"</span>);
-    <span class="syn-fn">println!</span>(<span class="syn-str">"Normalized: {}"</span>, clean);
-
-    <span class="syn-comment">// Step 2: Train Byte-Level BPE model</span>
-    <span class="syn-kw">let</span> config = BpeTrainingConfig::default();
-    <span class="syn-kw">let</span> files = <span class="syn-fn">vec!</span>[PathBuf::from(<span class="syn-str">"data/splits/twi/train.txt"</span>)];
-    <span class="syn-kw">let</span> (tokenizer, receipt) = train_bpe(&amp;files, &amp;config)?;
-
-    <span class="syn-comment">// Step 3: Save model and cryptographic audit receipt</span>
-    save_tokenizer_bundle(&amp;tokenizer, &amp;receipt, Path::new(<span class="syn-str">"models/bpe-8k"</span>))?;
-    <span class="syn-fn">println!</span>(<span class="syn-str">"Trained vocab size: {}"</span>, receipt.actual_vocab_size);
-    Ok(())
-}</code></pre>
-          </div>
-
-          <!-- Hugging Face Panel -->
-          <div class="code-panel" id="panel-hf">
-            <pre><code><span class="syn-kw">from</span> transformers <span class="syn-kw">import</span> PreTrainedTokenizerFast
-
-<span class="syn-comment"># Load Leke directly via Hugging Face Transformers</span>
-tokenizer = PreTrainedTokenizerFast.from_pretrained(<span class="syn-str">"models/bpe-8k"</span>)
-
-<span class="syn-comment"># Tokenize for LLM training / fine-tuning</span>
-inputs = tokenizer(<span class="syn-str">"Akwaaba ba Ghana man mu."</span>, return_tensors=<span class="syn-str">"pt"</span>)
-<span class="syn-fn">print</span>(inputs.input_ids)
-<span class="syn-comment"># tensor([[570, 514, 339, 364, 338, 18]])</span></code></pre>
-          </div>
-
-          <!-- CLI Panel -->
-          <div class="code-panel" id="panel-cli">
-            <pre><code><span class="syn-comment"># Train Byte-Level BPE model on Kwa corpus with 8,192 vocabulary</span>
-python -m leke.trainer \
-  --corpus data/splits/twi/train.txt data/splits/ewe/train.txt \
-  --output-dir models/bpe-8k \
-  --vocab-size 8192 \
-  --algorithm bpe
-
-<span class="syn-comment"># Evaluate leaderboard across all held-out language splits</span>
-python -m leke.evaluate \
-  --model-path models/bpe-8k/tokenizer.json \
-  --splits-dir data/splits \
-  --output-report specs/eval_results.md</code></pre>
-          </div>
-        </div>
+        <button type="button" class="btn btn-ghost" id="copy-btn">Copy code</button>
       </div>
+      <pre id="quickstart-code" style="margin: 16px 0 0; padding: 24px 28px; background: color-mix(in srgb, var(--color-text) 5%, var(--color-bg)); border-radius: var(--radius-md); overflow-x: auto; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 14px; line-height: 1.7; color: var(--color-text);"></pre>
     </section>
+
+    <!-- Footer -->
+    <footer style="padding: 56px 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; font-size: 14px; color: color-mix(in srgb, var(--color-text) 70%, transparent);">
+      <span><strong style="color: var(--color-text);">Leke</strong> — tokenization for African language NLP. Apache 2.0.</span>
+      <span style="display: flex; gap: 24px;">
+        <a href="#top">Back to top</a>
+        <a href="https://github.com/acquayefrank/leke" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/acquayefrank/leke/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a>
+      </span>
+    </footer>
   </main>
 
-  <!-- Site Footer -->
-  <footer class="site-footer">
-    <div class="container footer-content">
-      <div class="footer-copy">
-        <p><strong>Leke Tokenizer</strong> — Engineered for African Language NLP.</p>
-        <p style="margin-top: 0.25rem;">Released under the Apache 2.0 License. Developed with Google DeepMind & Antigravity.</p>
-      </div>
-      <div class="footer-links">
-        <a href="#hero">Back to Top ↑</a>
-        <a href="https://github.com/acquayefrank/leke" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
-        <a href="https://github.com/acquayefrank/leke/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Embedded Data & Application Logic -->
   <script src="leke-data.js"></script>
   <script src="app.js"></script>
 </body>

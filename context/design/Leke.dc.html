@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/broadsheet-e9e02375-9912-474e-9fbd-310ce15bf5f0/styles.css">
+<script src="_ds/broadsheet-e9e02375-9912-474e-9fbd-310ce15bf5f0/_ds_bundle.js"></script>
+<style>
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--color-bg); color: var(--color-text); text-wrap: pretty; }
+a { color: var(--color-accent-700); }
+a:hover { color: var(--color-accent-600); }
+code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; }
+</style>
+</helmet>
+
+<nav class="nav" style="padding-inline: clamp(20px, 5vw, 72px); flex-wrap: wrap;">
+  <a href="#top" class="nav-brand" style="font-size: 22px; color: var(--color-text);">Leke.</a>
+  <a href="#playground">Playground</a>
+  <a href="#leaderboard">Leaderboard</a>
+  <a href="#architecture">Architecture</a>
+  <a href="#docs">Documentation</a>
+  <a class="btn btn-primary" href="https://github.com/acquayefrank/leke" style="color: var(--color-bg); white-space: nowrap; flex-shrink: 0;">GitHub</a>
+</nav>
+
+<main id="top" style="max-width: 1200px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 72px);">
+
+  <section style="padding: 112px 0 84px;">
+    <sc-if value="{{ plates }}" hint-placeholder-val="{{ false }}">
+      <h1 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(42px, 6.4vw, 88px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 0 -0.035em;">
+        <span class="cmyk-head" style="display: block;"><span class="paper">Subword tokenization</span><span class="plate plate-c" aria-hidden="true">Subword tokenization</span><span class="plate plate-m" aria-hidden="true">Subword tokenization</span><span class="plate plate-y" aria-hidden="true">Subword tokenization</span></span>
+        <span class="cmyk-head" style="display: block;"><span class="paper">for Kwa languages.</span><span class="plate plate-c" aria-hidden="true">for Kwa languages.</span><span class="plate plate-m" aria-hidden="true">for Kwa languages.</span><span class="plate plate-y" aria-hidden="true">for Kwa languages.</span></span>
+      </h1>
+    </sc-if>
+    <sc-if value="{{ noPlates }}" hint-placeholder-val="{{ true }}">
+      <h1 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(42px, 6.4vw, 88px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 0 -0.035em;">
+        <span style="display: block;">Subword tokenization</span>
+        <span style="display: block;">for Kwa languages.</span>
+      </h1>
+    </sc-if>
+    <p style="font-size: 19px; line-height: 1.6; max-width: 58ch; margin: 36px 0 0;">A tokenizer built for Akan/Twi, Ewe, Ga and Fante. Orthographic normalization and byte-level BPE, written in Rust with Python bindings — so text stays short and no character is ever lost.</p>
+    <div style="display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: 32px;">
+      <a class="btn btn-primary" href="#playground" style="color: var(--color-bg); white-space: nowrap; flex-shrink: 0;">Try the playground</a>
+      <a class="btn btn-secondary" href="#leaderboard" style="color: var(--color-text); white-space: nowrap; flex-shrink: 0;">View benchmarks</a>
+      <a class="btn btn-ghost" href="#docs" style="white-space: nowrap; flex-shrink: 0;">Read the docs</a>
+    </div>
+  </section>
+
+  <section aria-label="Leke by the numbers" style="padding-bottom: 84px;">
+    <div style="height: 5px; border-top: 2px solid var(--color-text); border-bottom: 1px solid var(--color-text);"></div>
+    <p style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px 28px; margin: 0; padding: 14px 0; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent);">
+      <span>Byte-level fallback</span><span>Rust core · PyO3</span><span>Hugging Face ready</span><span>Apache 2.0</span>
+    </p>
+    <div style="border-top: 1px solid var(--color-text);"></div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 14px 70px; padding: 14px 0 28px;">
+      <sc-for list="{{ index }}" as="ix" hint-placeholder-count="4">
+        <p style="display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 16px; line-height: 28px;">
+          <span>{{ ix.label }}</span>
+          <span style="flex: 1; min-width: 28px; border-bottom: 1px dotted color-mix(in srgb, var(--color-text) 45%, transparent);"></span>
+          <span style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; color: {{ ix.color }};">{{ ix.value }}</span>
+        </p>
+      </sc-for>
+    </div>
+    <div style="border-top: 1px solid var(--color-text);"></div>
+  </section>
+
+  <section id="playground" style="padding: 56px 0 84px;">
+    <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 14px;">Playground</span>
+    <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0;">Watch a sentence come apart.</h2>
+    <p style="font-size: 16px; line-height: 1.7; max-width: 58ch; margin: 16px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent);">Type or pick a sample. Lookalike characters are mapped, tone marks kept or stripped, and anything unseen falls back to bytes.</p>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 32px;">
+      <span style="font-size: 13px; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-right: 6px;">Samples</span>
+      <sc-for list="{{ presets }}" as="p" hint-placeholder-count="6">
+        <button type="button" class="btn btn-secondary" onClick="{{ p.pick }}" style="min-height: 32px; padding: 4px 12px; font-size: 14px; background: {{ p.bg }};">{{ p.name }}</button>
+      </sc-for>
+    </div>
+
+    <textarea class="input" value="{{ text }}" onChange="{{ onText }}" aria-label="Text to tokenize" style="margin-top: 20px; min-height: 120px; font-size: 20px; line-height: 1.5; padding: 14px 16px; font-family: var(--font-body);"></textarea>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 16px; font-size: 14px;">
+      <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="3">
+        <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" checked="{{ t.on }}" onChange="{{ t.flip }}" style="accent-color: var(--color-accent); width: 16px; height: 16px; margin: 0;">
+          <span>{{ t.label }}</span>
+        </label>
+      </sc-for>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 8px;">Normalized</span>
+      <p style="font-size: 20px; line-height: 1.5; margin: 0; min-height: 30px;">{{ normalized }}</p>
+    </div>
+
+    <div style="margin-top: 32px;">
+      <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 12px;">Tokens</span>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px;">
+        <sc-for list="{{ tokens }}" as="tk" hint-placeholder-count="8">
+          <span title="{{ tk.title }}" style="display: inline-flex; flex-direction: column; align-items: flex-start; padding: 6px 10px 4px; border-radius: var(--radius-md); background: {{ tk.bg }}; color: {{ tk.fg }};">
+            <span style="font-size: 18px; line-height: 1.3; white-space: pre;">{{ tk.text }}</span>
+            <span style="font-size: 11px; line-height: 1.3; opacity: 0.8; font-feature-settings: 'tnum' 1;">{{ tk.id }}</span>
+          </span>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 28px; margin-top: 44px;">
+      <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+        <div>
+          <div style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 40px; line-height: 1; font-feature-settings: 'tnum' 1;">{{ s.value }}</div>
+          <div style="font-size: 14px; margin-top: 10px; color: color-mix(in srgb, var(--color-text) 70%, transparent);">{{ s.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="leaderboard" style="padding: 56px 0 84px;">
+    <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 14px;">Leaderboard</span>
+    <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0;">Fewer tokens per word, in every language.</h2>
+    <p style="font-size: 16px; line-height: 1.7; max-width: 58ch; margin: 16px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent);">Fertility on held-out test splits, against multilingual NLLB-200 and monolingual baselines. Lower is better.</p>
+    <div style="overflow-x: auto; margin-top: 32px;">
+      <table class="table" style="font-size: 16px; min-width: 620px;">
+        <thead>
+          <tr><th>Language</th><th>Leke BPE 8k</th><th>NLLB-200</th><th>Monolingual</th><th>vs NLLB</th></tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ board }}" as="r" hint-placeholder-count="5">
+            <tr>
+              <td style="padding-block: 14px;">{{ r.lang }}</td>
+              <td style="padding-block: 14px; font-weight: 600; font-feature-settings: 'tnum' 1;">{{ r.leke }}</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1;">{{ r.nllb }}</td>
+              <td style="padding-block: 14px; font-feature-settings: 'tnum' 1; color: color-mix(in srgb, var(--color-text) 70%, transparent);">{{ r.mono }}</td>
+              <td style="padding-block: 14px;"><span class="tag tag-accent" style="font-size: 13px;">{{ r.delta }}</span></td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size: 14px; margin: 20px 0 0; color: color-mix(in srgb, var(--color-text) 70%, transparent);">Full report: <a href="https://github.com/acquayefrank/leke/blob/main/specs/eval_results.md">specs/eval_results.md</a></p>
+  </section>
+
+  <section id="architecture" style="padding: 56px 0 84px;">
+    <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 14px;">Architecture</span>
+    <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0; max-width: 22ch;">Built for the problems African text actually has.</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 48px clamp(28px, 4vw, 64px); margin-top: 48px;">
+      <sc-for list="{{ features }}" as="f" hint-placeholder-count="6">
+        <div>
+          <h3 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; line-height: 1.3; margin: 0;">{{ f.title }}</h3>
+          <p style="font-size: 15.5px; line-height: 1.75; margin: 10px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); text-align: justify; hyphens: auto;">{{ f.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+
+    <h3 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 22px; margin: 84px 0 0;">The pipeline</h3>
+    <ol style="list-style: none; padding: 0; margin: 24px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 28px;">
+      <sc-for list="{{ pipeline }}" as="st" hint-placeholder-count="6">
+        <li>
+          <div class="cmyk-num" style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 44px; line-height: 1; color: var(--color-accent-700);">{{ st.n }}</div>
+          <div style="font-size: 16px; margin-top: 10px;">{{ st.label }}</div>
+        </li>
+      </sc-for>
+    </ol>
+  </section>
+
+  <section id="docs" style="padding: 56px 0 84px;">
+    <span style="display: block; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 70%, transparent); margin-bottom: 14px;">Quickstart</span>
+    <h2 style="font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -0.015em; margin: 0;">Up and running in four lines.</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 32px;">
+      <div class="seg" role="radiogroup" aria-label="Language">
+        <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4">
+          <label class="seg-opt" style="font-size: 14px;">
+            <input type="radio" name="qs" checked="{{ tb.on }}" onChange="{{ tb.pick }}" style="position: absolute; opacity: 0; pointer-events: none;">{{ tb.label }}
+          </label>
+        </sc-for>
+      </div>
+      <button type="button" class="btn btn-ghost" onClick="{{ copy }}">{{ copyLabel }}</button>
+    </div>
+    <pre style="margin: 16px 0 0; padding: 24px 28px; background: color-mix(in srgb, var(--color-text) 5%, var(--color-bg)); border-radius: var(--radius-md); overflow-x: auto; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 14px; line-height: 1.7; color: var(--color-text);">{{ code }}</pre>
+  </section>
+
+  <footer style="padding: 56px 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; font-size: 14px; color: color-mix(in srgb, var(--color-text) 70%, transparent);">
+    <span><strong style="color: var(--color-text);">Leke</strong> — tokenization for African language NLP. Apache 2.0.</span>
+    <span style="display: flex; gap: 24px;"><a href="#top">Back to top</a><a href="https://github.com/acquayefrank/leke">GitHub</a><a href="https://github.com/acquayefrank/leke/blob/main/LICENSE">License</a></span>
+  </footer>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;headlinePlates&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;tokenInk&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;cyan&quot;,&quot;neutral&quot;],&quot;default&quot;:&quot;cyan&quot;,&quot;tsType&quot;:&quot;'cyan'|'neutral'&quot;}}">
+const PRESETS = [
+  ['Akan / Twi', 'Akwaaba ba Ghana man mu. Wɔfrɛ me Kofi na mefiri Kumasi.'],
+  ['Ewe', 'Mìedó gbe na mi nyuie. Woezɔ loo!'],
+  ['Ga', 'Ojekoo, te oyɔɔ tɛŋŋ? Mitsɛ́ ji Nii Ayi.'],
+  ['Fante', 'Me dzin dze Kwesi, mefi Oguaa. Ɛte dɛn?'],
+  ['Lookalikes & tone', 'Wɔfrε no pápá! Ογε ɳkɔ ðeke.'],
+  ['Byte fallback', 'Akwaaba 🇬🇭 — ∑x² = λ, {code}']
+];
+const LOOK = { 'ε': 'ɛ', 'Ε': 'Ɛ', 'є': 'ɛ', 'γ': 'ɣ', 'Γ': 'Ɣ', 'ɳ': 'ŋ', 'ð': 'ɖ', 'Ð': 'Ɖ', 'ο': 'o', 'Ο': 'O' };
+const COMMON = new Set(['akwaaba','ba','ghana','man','mu','me','na','kofi','no','papa','pápá','wo','mi','gbe','nii','ji','te','dze','loo','de','fi']);
+const CODE = {
+  python: `import leke
+
+raw = "Wɔfrε no pápá!"
+clean = leke.normalize(raw)        # 'Wɔfrɛ no pápá!'  (Greek ε → Latin ɛ)
+
+tok = leke.LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
+enc = tok.encode("Akwaaba ba Ghana man mu.")
+print(enc.tokens)  # ['Akwaaba', 'Ġba', 'ĠGhana', 'Ġman', 'Ġmu', '.']
+print(enc.ids)     # [570, 514, 339, 364, 338, 18]
+print(tok.decode(enc.ids))`,
+  rust: `use _leke::normalizer::KwaNormalizer;
+use _leke::trainer::{train_bpe, BpeTrainingConfig, save_tokenizer_bundle};
+use std::path::{Path, PathBuf};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let norm = KwaNormalizer::default();
+    println!("{}", norm.normalize_str("Akwaaba   ε   Ghana"));
+
+    let config = BpeTrainingConfig::default();
+    let files = vec![PathBuf::from("data/splits/twi/train.txt")];
+    let (tokenizer, receipt) = train_bpe(&files, &config)?;
+    save_tokenizer_bundle(&tokenizer, &receipt, Path::new("models/bpe-8k"))?;
+    Ok(())
+}`,
+  hf: `from transformers import PreTrainedTokenizerFast
+
+tokenizer = PreTrainedTokenizerFast.from_pretrained("models/bpe-8k")
+inputs = tokenizer("Akwaaba ba Ghana man mu.", return_tensors="pt")
+print(inputs.input_ids)  # tensor([[570, 514, 339, 364, 338, 18]])`,
+  cli: `python -m leke.trainer \\
+  --corpus data/splits/twi/train.txt data/splits/ewe/train.txt \\
+  --output-dir models/bpe-8k \\
+  --vocab-size 8192 \\
+  --algorithm bpe
+
+python -m leke.evaluate \\
+  --model-path models/bpe-8k/tokenizer.json \\
+  --splits-dir data/splits \\
+  --output-report specs/eval_results.md`
+};
+
+function hashId(s) { let h = 2166136261; for (const c of s) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return 256 + (Math.abs(h) % 7936); }
+
+function normalize(text, o) {
+  let t = text.normalize('NFC');
+  if (o.look) t = [...t].map(c => LOOK[c] || c).join('');
+  if (o.tone) t = t.normalize('NFD').replace(/[\u0300-\u0304\u030C]/g, '').normalize('NFC');
+  if (o.ws) t = t.replace(/\s+/g, ' ').trim();
+  return t;
+}
+
+function splitWord(w) {
+  if (w.length <= 4 || COMMON.has(w.toLowerCase())) return [w];
+  const syl = w.match(/[^aeiouɛɔAEIOUƐƆ]*[aeiouɛɔAEIOUƐƆ\u0300-\u036f]+(?:[nmŋ](?![aeiouɛɔ]))?|.+$/g) || [w];
+  const out = []; let cur = '';
+  for (const s of syl) { if ((cur + s).length > 5 && cur) { out.push(cur); cur = s; } else cur += s; }
+  if (cur) out.push(cur);
+  return out;
+}
+
+function tokenize(t) {
+  const toks = []; let words = 0;
+  const re = /[\p{L}\p{M}]+|\p{N}+|[!-\/:-@\[-`{-~]|\S/gu; let m;
+  while ((m = re.exec(t))) {
+    const sp = m.index > 0 && /\s/.test(t[m.index - 1]) ? 'Ġ' : '';
+    const s = m[0];
+    if (/^[\p{L}\p{M}]+$/u.test(s)) {
+      words++;
+      splitWord(s).forEach((p, i) => toks.push({ text: (i === 0 ? sp : '') + p, kind: 'sub' }));
+    } else if (/^[\x21-\x7e]+$/.test(s) || /^\p{N}+$/u.test(s)) {
+      toks.push({ text: sp + s, kind: 'sub' });
+    } else {
+      [...new TextEncoder().encode(s)].forEach((b, i) => toks.push({ text: (i === 0 && sp ? 'Ġ' : '') + '<0x' + b.toString(16).toUpperCase().padStart(2, '0') + '>', kind: 'byte', id: b }));
+    }
+  }
+  return { toks, words };
+}
+
+class Component extends DCLogic {
+  state = { text: PRESETS[0][1], preset: 0, look: true, tone: false, ws: true, tab: 'python', copied: false };
+
+  renderVals() {
+    const s = this.state;
+    const cyan = (this.props.tokenInk ?? 'cyan') === 'cyan';
+    const plates = this.props.headlinePlates ?? false;
+    const norm = normalize(s.text, s);
+    const { toks, words } = tokenize(norm);
+    const tokens = toks.map((t, i) => {
+      const alt = i % 2 === 0;
+      const byte = t.kind === 'byte';
+      return {
+        text: t.text, id: byte ? t.id : hashId(t.text), title: byte ? 'Byte-level fallback' : 'Subword',
+        bg: byte ? 'var(--color-accent-2-100)' : cyan ? (alt ? 'var(--color-accent-100)' : 'var(--color-accent-200)') : (alt ? 'var(--color-neutral-100)' : 'var(--color-neutral-200)'),
+        fg: byte ? 'var(--color-accent-2-800)' : cyan ? 'var(--color-accent-900)' : 'var(--color-neutral-900)'
+      };
+    });
+    const fert = words ? (toks.length / words).toFixed(2) : '0.00';
+    const tabs = [['python', 'Python'], ['rust', 'Rust'], ['hf', 'Hugging Face'], ['cli', 'CLI training']];
+    return {
+      plates, noPlates: !plates,
+      text: s.text, normalized: norm,
+      onText: e => this.setState({ text: e.target.value, preset: -1 }),
+      presets: PRESETS.map(([name, txt], i) => ({ name, bg: s.preset === i ? 'var(--color-accent-100)' : 'transparent', pick: () => this.setState({ text: txt, preset: i }) })),
+      toggles: [['look', 'Map lookalikes (ε→ɛ, γ→ɣ, ɳ→ŋ, ð→ɖ)'], ['tone', 'Strip tone marks (pápá → papa)'], ['ws', 'Collapse whitespace']]
+        .map(([k, label]) => ({ label, on: s[k], flip: () => this.setState({ [k]: !s[k] }) })),
+      tokens,
+      stats: [
+        { value: String(words), label: 'Words' },
+        { value: String(toks.length), label: 'Subword tokens' },
+        { value: fert, label: 'Fertility (tokens / word)' },
+        { value: '0.00%', label: 'Unknown <unk> rate' }
+      ],
+      index: [
+        { label: 'Kwa languages supported', value: '4', color: 'var(--color-accent-700)' },
+        { label: 'Lower fertility than NLLB-200', value: '1.83×', color: 'var(--color-text)' },
+        { label: 'Hard <unk> rate, guaranteed', value: '0.00%', color: 'var(--color-text)' },
+        { label: 'Tokens per second, single core', value: '356k', color: 'var(--color-text)' }
+      ],
+      board: [
+        { lang: 'Akan / Twi', leke: '2.23', nllb: '2.92', mono: '1.62 (Goldfish)', delta: '−24%' },
+        { lang: 'Ewe', leke: '2.77', nllb: '3.15', mono: '1.71 (Wikilangs)', delta: '−12%' },
+        { lang: 'Ga', leke: '2.38', nllb: '3.20', mono: '—', delta: '−26%' },
+        { lang: 'Fante', leke: '2.16', nllb: '2.98', mono: '—', delta: '−28%' },
+        { lang: 'Unknown rate', leke: '0.0%', nllb: '0.0%', mono: '0.4–0.6%', delta: 'Guaranteed' }
+      ],
+      features: [
+        { title: 'Orthographic harmonization', body: 'Keyboards often produce Greek ε and γ or Cyrillic є in place of Kwa letters. Leke maps every variant to the official Latin code points — ɛ, ɣ, ŋ, ɖ — before training.' },
+        { title: 'Zero <unk>, guaranteed', body: 'The base vocabulary is seeded with all 256 bytes. Any unseen character, emoji, formula or code snippet degrades into byte tokens rather than collapsing into <unk>.' },
+        { title: 'A high-throughput bridge', body: 'A multi-threaded Rust core encodes over 356,000 tokens a second on ordinary CPUs. Zero-copy transfers release the Python GIL for parallel data loading.' },
+        { title: 'Tone, preserved', body: 'Tone carries meaning in Akan and Ewe — Twi pápá, “goodness”, against papá, “father”. Diacritics are kept by default, with tone-agnostic stripping when a task calls for it.' },
+        { title: 'Drop into Hugging Face', body: 'Exports a standard tokenizer.json that transformers.PreTrainedTokenizerFast reads directly, for PyTorch, JAX or any Hugging Face training pipeline.' },
+        { title: 'Cryptographic receipts', body: 'Every model bundle ships with a SHA-256 fingerprint recording dataset provenance, configuration, vocabulary distribution and seed — reproducible by design.' }
+      ],
+      pipeline: ['Raw text', 'Unicode NFC', 'Lookalike mapping', 'Tone policy', 'Byte-level BPE', 'Token IDs'].map((label, i) => ({ n: String(i + 1), label })),
+      tabs: tabs.map(([k, label]) => ({ label, on: s.tab === k, pick: () => this.setState({ tab: k, copied: false }) })),
+      code: CODE[s.tab],
+      copyLabel: s.copied ? 'Copied' : 'Copy code',
+      copy: () => { navigator.clipboard?.writeText(CODE[s.tab]); this.setState({ copied: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
