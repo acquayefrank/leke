@@ -156,7 +156,7 @@ Sentences held out from the same sources as the curriculum training text. The Tw
 | :--- | :--- | :--- | :--- | :--- |
 | **Akan / Twi** | 1.38 | 1.55 (Leke −11%) | **1.28** | 1.24 (Wikilangs 32k) |
 | **Ewe** | 1.45 | 1.65 (Leke −12%) | **1.38** | 1.34 (Wikilangs 32k) |
-| **Ga** | **1.39** | 1.93 (Leke −28%) | — | — |
+| **Ga** | **1.39** | 1.93 (Leke −28%) | none | none |
 | **Fante** | 1.34 | 1.70 (Leke −21%) | **1.30** | 1.26 (Wikilangs 32k) |
 | **Unknown rate** | **0.0%** | 0.08% – 0.61% | 0.02% – 0.11% | 0.0% – 0.11% |
 
@@ -215,5 +215,5 @@ uv run pytest
 
 ## License
 
-This project is licensed under the **Apache License 2.0** — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
 Corpus licensing audit details are documented in [specs/corpus_licenses.md](specs/corpus_licenses.md).

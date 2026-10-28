@@ -43,7 +43,7 @@ Fertility (tokens per word, lower is better). All tokenizers are scored with the
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Leke BPE (16k)** | 1.49 | 1.44 | **1.43** | **1.39** | 1.34 | **0.0%** |
 | NLLB-200 (256k) | 1.59 | 1.47 | 1.54 | 1.93 | 1.70 | 0.02% – 1.52% |
-| Wikilangs, single language (16k) | **1.45** | **1.37** | 1.44 | — | **1.30** | 0.02% – 2.57% |
+| Wikilangs, single language (16k) | **1.45** | **1.37** | 1.44 | none | **1.30** | 0.02% – 2.57% |
 
 Dedicated Twi tokenizers remain 3–5% more compact on Twi at the same vocabulary size, and larger single-language tokenizers (32k–50k) reach lower fertility on the languages they cover. Full results: [`specs/eval_results.md`](https://github.com/acquayefrank/leke/blob/main/specs/eval_results.md).
 

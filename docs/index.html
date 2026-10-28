@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Leke — Subword Tokenization for Kwa Languages</title>
+  <title>Leke: Subword Tokenization for Kwa Languages</title>
   <meta name="description" content="A subword tokenizer built for Akan/Twi, Ewe, Ga and Fante. Orthographic normalization and byte-level BPE, written in Rust with Python bindings.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +44,7 @@
         <span style="display: block;">Subword tokenization</span>
         <span style="display: block;">for Kwa languages.</span>
       </h1>
-      <p style="font-size: 18px; line-height: 1.65; color: var(--color-muted); max-width: 58ch; margin: 24px 0 0;">A tokenizer built for Akan/Twi, Ewe, Ga and Fante. Orthographic normalization and byte-level BPE, written in Rust with Python bindings — so text stays short and no character is ever lost.</p>
+      <p style="font-size: 18px; line-height: 1.65; color: var(--color-muted); max-width: 58ch; margin: 24px 0 0;">A tokenizer built for Akan/Twi, Ewe, Ga and Fante. Orthographic normalization and byte-level BPE, written in Rust with Python bindings, so text stays short and no character is ever lost.</p>
       <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px;">
         <a class="btn btn-primary" href="#playground">
           <i class="ph-duotone ph-play-circle" style="font-size: 18px;"></i>Try the playground
@@ -193,7 +193,7 @@
               <td>Curriculum</td>
               <td style="color: var(--color-text); font-weight: 600;">1.39</td>
               <td>1.93</td>
-              <td>—</td>
+              <td>none</td>
               <td><span class="tag tag-accent">−28%</span></td>
             </tr>
             <tr>
@@ -227,7 +227,7 @@
         <div class="feature-card">
           <i class="ph-duotone ph-arrows-merge" style="font-size: 28px; color: var(--color-accent-700);"></i>
           <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 8px;">Orthographic harmonization</h3>
-          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">Keyboards often produce Greek ε and γ or Cyrillic є in place of Kwa letters. Leke maps every variant to the official Latin code points — ɛ, ɣ, ŋ, ɖ — before training.</p>
+          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">Keyboards often produce Greek ε and γ or Cyrillic є in place of Kwa letters. Leke maps every variant to the official Latin code points (ɛ, ɣ, ŋ, ɖ) before training.</p>
         </div>
         <div class="feature-card">
           <i class="ph-duotone ph-shield-check" style="font-size: 28px; color: var(--color-accent-700);"></i>
@@ -242,7 +242,7 @@
         <div class="feature-card">
           <i class="ph-duotone ph-waveform" style="font-size: 28px; color: var(--color-accent-700);"></i>
           <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 8px;">Tone, preserved</h3>
-          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">Tone carries meaning in Akan and Ewe — Twi pápá, “goodness”, against papá, “father”. Diacritics are kept by default, with tone-agnostic stripping when a task calls for it.</p>
+          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">Tone carries meaning in Akan and Ewe: Twi pápá, “goodness”, against papá, “father”. Diacritics are kept by default, with tone-agnostic stripping when a task calls for it.</p>
         </div>
         <div class="feature-card">
           <i class="ph-duotone ph-cube" style="font-size: 28px; color: var(--color-accent-700);"></i>
@@ -252,7 +252,7 @@
         <div class="feature-card">
           <i class="ph-duotone ph-fingerprint" style="font-size: 28px; color: var(--color-accent-700);"></i>
           <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 8px;">Cryptographic receipts</h3>
-          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">Every model bundle ships with a SHA-256 fingerprint recording dataset provenance, configuration, vocabulary distribution and seed — reproducible by design.</p>
+          <p style="font-size: 14px; line-height: 1.6; margin: 0; color: var(--color-muted);">Every model bundle ships with a training receipt recording the algorithm, vocabulary size, special tokens, seed and the SHA-256 of the training corpus.</p>
         </div>
       </div>
 
@@ -313,7 +313,7 @@
     <footer style="padding: 40px 0 64px; border-top: 1px solid var(--color-divider); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 32px; font-size: 13.5px; color: var(--color-muted);">
       <span style="display: inline-flex; align-items: center; gap: 8px;">
         <span class="nav-brand-icon" style="width: 18px; height: 18px; font-size: 11px; border-radius: 5px;">L</span>
-        <span><strong style="color: var(--color-text);">leke</strong> — tokenization for African language NLP. Apache 2.0.</span>
+        <span><strong style="color: var(--color-text);">leke</strong>: tokenization for African language NLP. Apache 2.0.</span>
       </span>
       <span style="display: flex; gap: 24px;">
         <a href="docs/">Documentation</a>

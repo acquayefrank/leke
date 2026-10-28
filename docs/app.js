@@ -1,5 +1,5 @@
 /**
- * Leke — Broadsheet Showcase Engine
+ * Leke: Broadsheet Showcase Engine
  * Recreates the newsprint design reference from context/design/
  */
 
@@ -12,7 +12,7 @@
     ['Ga', 'Ojekoo, te oyɔɔ tɛŋŋ? Mitsɛ́ ji Nii Ayi.'],
     ['Fante', 'Me dzin dze Kwesi, mefi Oguaa. Ɛte dɛn?'],
     ['Lookalikes & tone', 'Wɔfrε no pápá! Ογε ɳkɔ ðeke.'],
-    ['Byte fallback', 'Akwaaba 🇬🇭 — ∑x² = λ, {code}']
+    ['Byte fallback', 'Akwaaba 🇬🇭 ∑x² = λ, {code}']
   ];
 
   const LOOK = {
