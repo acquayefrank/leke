@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Leke Documentation — Subword Tokenization for Kwa Languages</title>
+  <title>Leke Documentation: Subword Tokenization for Kwa Languages</title>
   <meta name="description" content="A self-contained interactive tutorial and reference covering the science of subword tokenization, Kwa linguistics, Byte-Level BPE, and the Leke Rust/Python library.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -583,7 +583,7 @@
       <div class="cover">
         <span class="label">Interactive Tutorial &amp; Reference · Leke Subword Tokenizer</span>
         <h1>Leke <em>Documentation</em></h1>
-        <p class="lede">The information theory, West African Kwa linguistics, subword algorithms, and Rust/PyO3 systems engineering behind a dedicated tokenizer for Akan/Twi, Ewe, Ga, and Fante — taught from first principles on Leke's own data, benchmarks, and code.</p>
+        <p class="lede">An introduction to the ideas behind Leke, a tokenizer for Akan/Twi, Ewe, Ga, and Fante: information theory, Kwa linguistics, subword algorithms, and the Rust/PyO3 engineering, with examples drawn from Leke's data, benchmarks, and code.</p>
         <div class="parts">
           <a href="#fertility-metrics" style="--c: var(--info)"><b>Information Theory</b><span>Fertility, byte compression, attention cost, temperature upsampling</span></a>
           <a href="#unicode-nfc" style="--c: var(--ling)"><b>Kwa Linguistics</b><span>Unicode NFC, Greek/Cyrillic lookalikes, phonemic tone, 4 languages</span></a>
@@ -603,9 +603,9 @@
 
         <h3>How each principle is laid out</h3>
         <div class="facets">
-          <div class="facet"><span class="label">The idea</span><p>What the principle is from first principles, with the mathematical formula where it clarifies the trade-off.</p></div>
+          <div class="facet"><span class="label">The idea</span><p>What the principle is, with the formula where it clarifies the trade-off.</p></div>
           <div class="facet"><span class="label">In Leke</span><p>How Leke implements it in Rust (<code>src/</code>) and Python (<code>python/leke/</code>), with real benchmark numbers.</p></div>
-          <div class="facet"><span class="label">Why this choice</span><p>What the decision buys in fertility, throughput, or accuracy — and what the alternatives cost.</p></div>
+          <div class="facet"><span class="label">Why this choice</span><p>What the decision buys in fertility, throughput, or accuracy, and what the alternatives cost.</p></div>
           <div class="facet"><span class="label">Limits</span><p>Where the mechanism reaches its boundary, and how downstream models must handle what remains.</p></div>
         </div>
 
@@ -759,21 +759,21 @@
               <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>Leke fertility vs. this model</th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Leke BPE (16k)</b></td><td>Twi (Asante)</td><td class="n"><b>1.49</b></td><td class="n">10.6%</td><td class="n"><b>0.0%</b></td><td class="n">3.67</td><td>—</td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Twi (Asante)</td><td class="n"><b>1.49</b></td><td class="n">10.6%</td><td class="n"><b>0.0%</b></td><td class="n">3.67</td><td>reference</td></tr>
               <tr><td>Wikilangs Twi (32k)</td><td>Twi (Asante)</td><td class="n">1.40</td><td class="n">8.5%</td><td class="n">0.05%</td><td class="n">3.90</td><td>+6.4%</td></tr>
               <tr><td>Goldfish Akan (50k)</td><td>Twi (Asante)</td><td class="n">1.42</td><td class="n">9.1%</td><td class="n">0.0%</td><td class="n">3.84</td><td>+4.9%</td></tr>
               <tr><td>Goldfish Twi (50k)</td><td>Twi (Asante)</td><td class="n">1.43</td><td class="n">9.6%</td><td class="n">0.0%</td><td class="n">3.81</td><td>+4.2%</td></tr>
               <tr><td>Wikilangs Twi (16k)</td><td>Twi (Asante)</td><td class="n">1.45</td><td class="n">10.0%</td><td class="n">0.05%</td><td class="n">3.76</td><td>+2.8%</td></tr>
               <tr><td>Wikilangs Twi (8k)</td><td>Twi (Asante)</td><td class="n">1.53</td><td class="n">12.3%</td><td class="n">0.05%</td><td class="n">3.57</td><td><b>−2.6%</b></td></tr>
               <tr><td>NLLB-200 (256k)</td><td>Twi (Asante)</td><td class="n">1.59</td><td class="n">13.9%</td><td class="n">1.52%</td><td class="n">3.42</td><td><b>−6.3%</b></td></tr>
-              <tr><td><b>Leke BPE (16k)</b></td><td>Twi (Akuapem)</td><td class="n"><b>1.44</b></td><td class="n">9.6%</td><td class="n"><b>0.0%</b></td><td class="n">3.70</td><td>—</td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Twi (Akuapem)</td><td class="n"><b>1.44</b></td><td class="n">9.6%</td><td class="n"><b>0.0%</b></td><td class="n">3.70</td><td>reference</td></tr>
               <tr><td>Wikilangs Twi (32k)</td><td>Twi (Akuapem)</td><td class="n">1.31</td><td class="n">6.4%</td><td class="n">0.07%</td><td class="n">4.07</td><td>+9.9%</td></tr>
               <tr><td>Goldfish Akan (50k)</td><td>Twi (Akuapem)</td><td class="n">1.32</td><td class="n">6.8%</td><td class="n">0.0%</td><td class="n">4.02</td><td>+9.1%</td></tr>
               <tr><td>Goldfish Twi (50k)</td><td>Twi (Akuapem)</td><td class="n">1.33</td><td class="n">6.9%</td><td class="n">0.0%</td><td class="n">4.00</td><td>+8.3%</td></tr>
               <tr><td>Wikilangs Twi (16k)</td><td>Twi (Akuapem)</td><td class="n">1.37</td><td class="n">8.1%</td><td class="n">0.07%</td><td class="n">3.90</td><td>+5.1%</td></tr>
               <tr><td>Wikilangs Twi (8k)</td><td>Twi (Akuapem)</td><td class="n">1.44</td><td class="n">10.1%</td><td class="n">0.07%</td><td class="n">3.70</td><td>+0.0%</td></tr>
               <tr><td>NLLB-200 (256k)</td><td>Twi (Akuapem)</td><td class="n">1.47</td><td class="n">10.7%</td><td class="n">0.92%</td><td class="n">3.63</td><td><b>−2.0%</b></td></tr>
-              <tr><td><b>Leke BPE (16k)</b></td><td>Ewe</td><td class="n"><b>1.43</b></td><td class="n">9.3%</td><td class="n"><b>0.0%</b></td><td class="n">3.94</td><td>—</td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Ewe</td><td class="n"><b>1.43</b></td><td class="n">9.3%</td><td class="n"><b>0.0%</b></td><td class="n">3.94</td><td>reference</td></tr>
               <tr><td>Goldfish Ewe (50k)</td><td>Ewe</td><td class="n">1.33</td><td class="n">6.9%</td><td class="n">2.74%</td><td class="n">4.22</td><td>+7.5%</td></tr>
               <tr><td>Wikilangs Ewe (32k)</td><td>Ewe</td><td class="n">1.39</td><td class="n">8.8%</td><td class="n">2.66%</td><td class="n">4.03</td><td>+2.9%</td></tr>
               <tr><td>Wikilangs Ewe (16k)</td><td>Ewe</td><td class="n">1.44</td><td class="n">10.1%</td><td class="n">2.57%</td><td class="n">3.91</td><td><b>−0.7%</b></td></tr>
@@ -791,22 +791,22 @@
               <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>Leke fertility vs. this model</th></tr>
             </thead>
             <tbody>
-              <tr><td><b>Leke BPE (16k)</b></td><td>Akan / Twi</td><td class="n"><b>1.38</b></td><td class="n">8.0%</td><td class="n"><b>0.0%</b></td><td class="n">4.01</td><td>—</td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Akan / Twi</td><td class="n"><b>1.38</b></td><td class="n">8.0%</td><td class="n"><b>0.0%</b></td><td class="n">4.01</td><td>reference</td></tr>
               <tr><td>Wikilangs Twi (32k)</td><td>Akan / Twi</td><td class="n">1.24</td><td class="n">4.5%</td><td class="n">0.11%</td><td class="n">4.46</td><td>+11.3%</td></tr>
               <tr><td>Goldfish Twi (50k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.4%</td><td class="n">0.0%</td><td class="n">4.31</td><td>+7.8%</td></tr>
               <tr><td>Goldfish Akan (50k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.2%</td><td class="n">0.0%</td><td class="n">4.31</td><td>+7.8%</td></tr>
               <tr><td>Wikilangs Twi (16k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.6%</td><td class="n">0.1%</td><td class="n">4.33</td><td>+7.8%</td></tr>
               <tr><td>Wikilangs Twi (8k)</td><td>Akan / Twi</td><td class="n">1.34</td><td class="n">7.4%</td><td class="n">0.1%</td><td class="n">4.12</td><td>+3.0%</td></tr>
               <tr><td>NLLB-200 (256k)</td><td>Akan / Twi</td><td class="n">1.55</td><td class="n">12.6%</td><td class="n">0.26%</td><td class="n">3.57</td><td><b>−11.0%</b></td></tr>
-              <tr><td><b>Leke BPE (16k)</b></td><td>Ewe</td><td class="n"><b>1.45</b></td><td class="n">10.4%</td><td class="n"><b>0.0%</b></td><td class="n">4.03</td><td>—</td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Ewe</td><td class="n"><b>1.45</b></td><td class="n">10.4%</td><td class="n"><b>0.0%</b></td><td class="n">4.03</td><td>reference</td></tr>
               <tr><td>Wikilangs Ewe (32k)</td><td>Ewe</td><td class="n">1.34</td><td class="n">7.7%</td><td class="n">0.11%</td><td class="n">4.34</td><td>+8.2%</td></tr>
               <tr><td>Goldfish Ewe (50k)</td><td>Ewe</td><td class="n">1.35</td><td class="n">8.3%</td><td class="n">0.03%</td><td class="n">4.32</td><td>+7.4%</td></tr>
               <tr><td>Wikilangs Ewe (16k)</td><td>Ewe</td><td class="n">1.38</td><td class="n">9.0%</td><td class="n">0.11%</td><td class="n">4.22</td><td>+5.1%</td></tr>
               <tr><td>Wikilangs Ewe (8k)</td><td>Ewe</td><td class="n">1.44</td><td class="n">10.3%</td><td class="n">0.11%</td><td class="n">4.07</td><td>+0.7%</td></tr>
               <tr><td>NLLB-200 (256k)</td><td>Ewe</td><td class="n">1.65</td><td class="n">15.9%</td><td class="n">0.3%</td><td class="n">3.53</td><td><b>−12.1%</b></td></tr>
-              <tr><td><b>Leke BPE (16k)</b></td><td>Ga</td><td class="n"><b>1.39</b></td><td class="n">7.9%</td><td class="n"><b>0.0%</b></td><td class="n">4.39</td><td>—</td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Ga</td><td class="n"><b>1.39</b></td><td class="n">7.9%</td><td class="n"><b>0.0%</b></td><td class="n">4.39</td><td>reference</td></tr>
               <tr><td>NLLB-200 (256k)</td><td>Ga</td><td class="n">1.93</td><td class="n">25.1%</td><td class="n">0.08%</td><td class="n">3.16</td><td><b>−28.0%</b></td></tr>
-              <tr><td><b>Leke BPE (16k)</b></td><td>Fante</td><td class="n"><b>1.34</b></td><td class="n">6.2%</td><td class="n"><b>0.0%</b></td><td class="n">4.11</td><td>—</td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Fante</td><td class="n"><b>1.34</b></td><td class="n">6.2%</td><td class="n"><b>0.0%</b></td><td class="n">4.11</td><td>reference</td></tr>
               <tr><td>Wikilangs Fante (32k)</td><td>Fante</td><td class="n">1.26</td><td class="n">5.0%</td><td class="n">0.02%</td><td class="n">4.36</td><td>+6.3%</td></tr>
               <tr><td>Wikilangs Fante (16k)</td><td>Fante</td><td class="n">1.30</td><td class="n">6.2%</td><td class="n">0.02%</td><td class="n">4.23</td><td>+3.1%</td></tr>
               <tr><td>Wikilangs Fante (8k)</td><td>Fante</td><td class="n">1.38</td><td class="n">8.5%</td><td class="n">0.02%</td><td class="n">3.99</td><td><b>−2.9%</b></td></tr>
@@ -865,7 +865,7 @@
           <ul>
             <li><b>Raw share ($\alpha = 1.0$):</b> Twi gets $50.9\%$, Ewe $37.4\%$, Ga $6.6\%$, and Fante only $\mathbf{5.1\%}$.</li>
             <li><b>Square-root weights ($N_i^{0.5}$):</b> $\sqrt{49000} \approx 221.4$, $\sqrt{36000} \approx 189.7$, $\sqrt{64000/10} = 80.0$, $\sqrt{4900} = 70.0$ (sum $= 561.1$).</li>
-            <li><b>Upsampled share ($\alpha = 0.5$):</b> Twi $39.5\%$, Ewe $33.8\%$, Ga $\mathbf{14.3\%}$, Fante $\mathbf{12.5\%}$ — more than doubling Ga and Fante representation without overfitting.</li>
+            <li><b>Upsampled share ($\alpha = 0.5$):</b> Twi $39.5\%$, Ewe $33.8\%$, Ga $\mathbf{14.3\%}$, Fante $\mathbf{12.5\%}$. Ga and Fante representation more than doubles without overfitting.</li>
           </ul>
         </div>
 
@@ -921,7 +921,7 @@
         <p>For open vowels like <code>ɛ́</code> (<code>U+025B</code> + <code>U+0301</code>) and <code>ɔ̀</code> (<code>U+0254</code> + <code>U+0300</code>), no single precomposed Unicode point exists, so NFC keeps the base African Latin vowel followed by the canonical ordered combining mark, while composing every vowel that <i>does</i> have a precomposed form (`á, é, í, ó, ú, ã, ẽ, ĩ, õ, ũ`).</p>
 
         <div class="pitfall"><span class="label">What happens if you skip NFC before BPE</span>
-          <p>In web-scraped Ewe and Twi corpora, macOS/iOS keyboards often emit NFD while Windows/Android keyboards emit NFC. An unnormalized byte-level BPE tokenizer treats NFD <code>a + U+0301</code> and NFC <code>á</code> as unrelated byte sequences, and frequently splits the combining accent <code>0xCC 0x81</code> away from its vowel — attaching the floating tone mark to the <i>next</i> consonant! Leke's <code>KwaNormalizer</code> runs `.nfc()` as Stage 1 of every normalization call.</p>
+          <p>In web-scraped Ewe and Twi corpora, macOS/iOS keyboards often emit NFD while Windows/Android keyboards emit NFC. An unnormalized byte-level BPE tokenizer treats NFD <code>a + U+0301</code> and NFC <code>á</code> as unrelated byte sequences, and frequently splits the combining accent <code>0xCC 0x81</code> away from its vowel, attaching the floating tone mark to the <i>next</i> consonant. Leke's <code>KwaNormalizer</code> runs `.nfc()` as Stage 1 of every normalization call.</p>
         </div>
 
         <div class="quiz">
@@ -1198,7 +1198,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
       <section class="chapter" id="zero-unk" data-track="1" data-title="The 0.0% unk guarantee and live sandbox" style="--c: var(--algo)">
         <div class="eyebrow"><span class="num">09</span> Part III · Subword Algorithms</div>
         <h2>The 0.0% <code>&lt;unk&gt;</code> guarantee &amp; live tokenizer sandbox</h2>
-        <p class="intro">When a character-based tokenizer encounters a character it did not see during training — an emoji, a currency sign, a mathematical operator, or a borrowed diacritic — it replaces the token with <code>&lt;unk&gt;</code>. Once <code>&lt;unk&gt;</code> is emitted, the original information is permanently destroyed: <code>decode(encode(x)) != x</code>.</p>
+        <p class="intro">When a character-based tokenizer encounters a character it did not see during training (an emoji, a currency sign, a mathematical operator, or a borrowed diacritic), it replaces the token with <code>&lt;unk&gt;</code>. Once <code>&lt;unk&gt;</code> is emitted, the original information is permanently destroyed: <code>decode(encode(x)) != x</code>.</p>
 
         <h3>How byte-level fallback guarantees lossless round-trips</h3>
         <p>Every valid UTF-8 string is a sequence of bytes in <code>0x00..0xFF</code>. Because Leke seeds its base vocabulary with all 256 byte tokens before learning any merges, <b>no UTF-8 string can ever be out-of-vocabulary</b>:</p>
@@ -1217,7 +1217,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
             <button class="btn" type="button" data-sb="Ojekoo, te oyɔɔ tɛŋŋ? Mitsɛ́ ji Nii Ayi.">Ga</button>
             <button class="btn" type="button" data-sb="Me dzin dze Kwesi, mefi Oguaa. Ɛte dɛn?">Fante</button>
             <button class="btn" type="button" data-sb="Wↄfrε no pápá! Ογε ɳkↄ ðeke.">Lookalikes &amp; Tone</button>
-            <button class="btn" type="button" data-sb="Akwaaba 🇬🇭 — ∑x² = λ">Byte Fallback</button>
+            <button class="btn" type="button" data-sb="Akwaaba 🇬🇭 ∑x² = λ">Byte Fallback</button>
           </div>
           <div class="controls">
             <label for="sb-in">Input text
