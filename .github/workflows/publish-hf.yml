@@ -1,0 +1,58 @@
+name: Publish tokenizer to Hugging Face
+
+# Uploads models/bpe-16k to https://huggingface.co/acquayefrank/leke-bpe-16k whenever
+# the model bundle changes on main, after the test suite passes.
+# Requires a repository secret HF_TOKEN with write access to the Hugging Face repo.
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "models/bpe-16k/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-hf
+  cancel-in-progress: false
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: huggingface
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Check HF_TOKEN is configured
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "::error::Repository secret HF_TOKEN is not set."
+            exit 1
+          fi
+      - name: Verify the bundle loads and matches its receipt
+        run: |
+          uv run --no-project --with tokenizers python - <<'PY'
+          import json
+          from tokenizers import Tokenizer
+
+          tok = Tokenizer.from_file("models/bpe-16k/tokenizer.json")
+          receipt = json.load(open("models/bpe-16k/training_receipt.json"))
+          assert tok.get_vocab_size() == receipt["actual_vocab_size"], "vocab size mismatch"
+          print("OK:", tok.encode("Akwaaba ba Ghana man mu.").tokens)
+          PY
+      - name: Upload to Hugging Face Hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: >
+          uv run --no-project --with huggingface_hub python scripts/upload_hf.py
+          --commit-message "Sync models/bpe-16k from ${{ github.repository }}@${{ github.sha }}"
