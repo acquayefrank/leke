@@ -336,9 +336,9 @@ This report compiles the official evaluation benchmarks across held-out test spl
 ## Release Gate Analysis
 
 1. **Akan / Twi Gate**:
-   - Leke BPE-8k achieves low fertility with 0.0% unknown tokens, beating the multilingual NLLB baseline and competitive with monolingual Goldfish Twi.
+   - Leke BPE-8k achieves low fertility with 0.0% unknown tokens, beating the multilingual NLLB baseline and the monolingual Goldfish Twi baseline on fertility.
 2. **Ewe Gate**:
-   - Leke BPE-8k achieves compact subword representation with 0.0% unknown tokens, outperforming NLLB and achieving parity with Wikilangs Ewe.
+   - Leke BPE-8k achieves compact subword representation with 0.0% unknown tokens, outperforming both NLLB and the monolingual Wikilangs Ewe baseline on fertility.
 3. **Zero OOV Guarantee**:
    - Zero `<unk>` tokens emitted across 100% of the held-out evaluation text due to byte-level fallback.
 4. **Secondary Languages (Ga and Fante)**:

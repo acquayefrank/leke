@@ -24,6 +24,8 @@ def run_comparison(bpe_path: Path, unigram_path: Path, splits_dir: Path, output_
     uni_total_fertility = 0.0
     bpe_total_split = 0.0
     uni_total_split = 0.0
+    bpe_total_unk = 0.0
+    uni_total_unk = 0.0
 
     for lang in LANGUAGES:
         test_file = splits_dir / lang / "test.txt"
@@ -38,6 +40,8 @@ def run_comparison(bpe_path: Path, unigram_path: Path, splits_dir: Path, output_
         uni_total_fertility += uni_m["fertility"]
         bpe_total_split += bpe_m["split_rate_gt2"]
         uni_total_split += uni_m["split_rate_gt2"]
+        bpe_total_unk += bpe_m["unk_rate"]
+        uni_total_unk += uni_m["unk_rate"]
 
         winner = "BPE" if bpe_m["fertility"] <= uni_m["fertility"] else "Unigram"
 
@@ -75,6 +79,25 @@ def run_comparison(bpe_path: Path, unigram_path: Path, splits_dir: Path, output_
     avg_uni_f = round(uni_total_fertility / len(LANGUAGES), 2)
     avg_bpe_s = round(bpe_total_split / len(LANGUAGES), 1)
     avg_uni_s = round(uni_total_split / len(LANGUAGES), 1)
+    avg_bpe_u = round(bpe_total_unk / len(LANGUAGES), 2)
+    avg_uni_u = round(uni_total_unk / len(LANGUAGES), 2)
+
+    def summary_row(metric, bpe_val, uni_val, suffix=""):
+        if bpe_val < uni_val:
+            return (
+                f"| **{metric}** | **{bpe_val}{suffix}** | {uni_val}{suffix} | **Byte-Level BPE** |"
+            )
+        if uni_val < bpe_val:
+            return f"| **{metric}** | {bpe_val}{suffix} | **{uni_val}{suffix}** | **Unigram** |"
+        return f"| **{metric}** | **{bpe_val}{suffix}** | **{uni_val}{suffix}** | **Tie** |"
+
+    summary_rows = "\n".join(
+        [
+            summary_row("Mean Fertility (tokens/word)", avg_bpe_f, avg_uni_f),
+            summary_row("Mean Excessive Split Rate (>2)", avg_bpe_s, avg_uni_s, "%"),
+            summary_row("Mean Unknown Token Rate", avg_bpe_u, avg_uni_u, "%"),
+        ]
+    )
 
     decision = f"""# Subword Architectural Selection — Byte-Level BPE vs. Unigram
 
@@ -88,14 +111,13 @@ This document records the empirical head-to-head comparison between **Byte-Level
 
 | Metric | Byte-Level BPE | Unigram | Winner |
 | :--- | :--- | :--- | :--- |
-| **Mean Fertility (tokens/word)** | **{avg_bpe_f}** | {avg_uni_f} | **Byte-Level BPE** |
-| **Mean Excessive Split Rate (>2)** | **{avg_bpe_s}%** | {avg_uni_s}% | **Byte-Level BPE** |
-| **Unknown Token Rate** | **0.0%** | **0.0%** | **Tie (0.0% guaranteed)** |
+{summary_rows}
 
 ## Architectural Decision & Conclusion
 
 1. **Fertility & Fragmentation**:
-   - **Byte-Level BPE** consistently achieves lower tokens-per-word fertility and significantly lower word fragmentation rates (>2 subwords per word) across all four target Kwa languages (Akan/Twi, Ewe, Ga, and Fante).
+   - **Byte-Level BPE** achieves lower tokens-per-word fertility and higher byte compression across all four target Kwa languages (Akan/Twi, Ewe, Ga, and Fante), with a strict 0.0% unknown-token rate.
+   - Unigram spreads its splits more evenly, so fewer words break into more than two pieces (lower >2 split rate), but it emits a small number of `<unk>` tokens and produces longer sequences overall.
    - This occurs because BPE greedily merges high-frequency adjacent syllable affixes (CV, CVC), perfectly aligning with Niger-Congo agglutinative and compound word morphology.
 2. **Standard Ecosystem Interoperability**:
    - Byte-Level BPE is the standard subword architecture for state-of-the-art transformer LLMs (GPT-4, LLaMA-3, Mistral, Gemma).

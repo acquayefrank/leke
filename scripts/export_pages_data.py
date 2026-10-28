@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from leke import LekeTokenizer, normalize
+from leke import LekeTokenizer, calculate_metrics, normalize
 from tokenizers.pre_tokenizers import ByteLevel
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -54,7 +54,13 @@ for s in test_sentences:
         }
     )
 
-# 4. Evaluation Leaderboard Data
+# 4. Evaluation Leaderboard Data (computed dynamically on held-out test splits)
+lang_metrics = {}
+for lang_code in ["twi", "ewe", "gaa", "fat"]:
+    test_path = ROOT / "data" / "splits" / lang_code / "test.txt"
+    test_lines = test_path.read_text(encoding="utf-8").splitlines()
+    lang_metrics[lang_code] = calculate_metrics(tok, test_lines)
+
 leaderboard = [
     {
         "lang": "Akan / Twi",
@@ -63,12 +69,12 @@ leaderboard = [
         "models": [
             {
                 "name": "Leke BPE (8k)",
-                "fertility": 2.23,
-                "splitRate": 38.5,
-                "unkRate": 0.0,
-                "compression": 2.40,
+                "fertility": lang_metrics["twi"]["fertility"],
+                "splitRate": lang_metrics["twi"]["split_rate_gt2"],
+                "unkRate": lang_metrics["twi"]["unk_rate"],
+                "compression": lang_metrics["twi"]["compression_ratio"],
                 "isLeke": True,
-                "status": "✅ Leke Superior",
+                "status": "✅ Beats All Baselines",
             },
             {
                 "name": "NLLB-200 (Multilingual)",
@@ -97,12 +103,12 @@ leaderboard = [
         "models": [
             {
                 "name": "Leke BPE (8k)",
-                "fertility": 2.77,
-                "splitRate": 54.8,
-                "unkRate": 0.0,
-                "compression": 2.17,
+                "fertility": lang_metrics["ewe"]["fertility"],
+                "splitRate": lang_metrics["ewe"]["split_rate_gt2"],
+                "unkRate": lang_metrics["ewe"]["unk_rate"],
+                "compression": lang_metrics["ewe"]["compression_ratio"],
                 "isLeke": True,
-                "status": "✅ Leke Superior",
+                "status": "✅ Beats All Baselines",
             },
             {
                 "name": "NLLB-200 (Multilingual)",
@@ -131,10 +137,10 @@ leaderboard = [
         "models": [
             {
                 "name": "Leke BPE (8k)",
-                "fertility": 2.38,
-                "splitRate": 41.7,
-                "unkRate": 0.0,
-                "compression": 2.16,
+                "fertility": lang_metrics["gaa"]["fertility"],
+                "splitRate": lang_metrics["gaa"]["split_rate_gt2"],
+                "unkRate": lang_metrics["gaa"]["unk_rate"],
+                "compression": lang_metrics["gaa"]["compression_ratio"],
                 "isLeke": True,
                 "status": "✅ Leke Superior",
             },
@@ -156,10 +162,10 @@ leaderboard = [
         "models": [
             {
                 "name": "Leke BPE (8k)",
-                "fertility": 2.16,
-                "splitRate": 47.4,
-                "unkRate": 0.0,
-                "compression": 2.51,
+                "fertility": lang_metrics["fat"]["fertility"],
+                "splitRate": lang_metrics["fat"]["split_rate_gt2"],
+                "unkRate": lang_metrics["fat"]["unk_rate"],
+                "compression": lang_metrics["fat"]["compression_ratio"],
                 "isLeke": True,
                 "status": "✅ Leke Superior",
             },

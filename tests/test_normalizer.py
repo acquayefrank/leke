@@ -8,6 +8,11 @@ def test_standalone_normalize():
     assert normalize("γ") == "ɣ"
     # Cyrillic ie -> Latin Open E (ɛ)
     assert normalize("є") == "ɛ"
+    # Textbook lookalikes: Greek reversed lunate sigma, mathematical superset, Greek phi
+    assert normalize("yɛbͻhwɛ") == "yɛbɔhwɛ"
+    assert normalize("Ͻsᴐ") == "Ɔsɔ"
+    assert normalize("⊃no") == "ɔno"
+    assert normalize("Kofi φo nɔvia") == "Kofi ƒo nɔvia"
 
 
 def test_normalizer_tone_preservation_by_default():

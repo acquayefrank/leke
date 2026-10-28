@@ -17,9 +17,9 @@
 Standard multilingual tokenizers (LLaMA, Mistral, GPT-4, NLLB) suffer from extreme fragmentation on West African languages, frequently segmenting words into 3 to 6 tokens per word. This inflates context window costs, increases inference latency, and causes hallucination loops in ASR/TTS and speech translation.
 
 Leke solves this with:
-1. **Low Fertility**: Cuts token counts per word to ~2.2 – 2.7, beating general multilingual models by over 50%.
+1. **Low Fertility**: Cuts token counts per word to **1.34 – 1.48** (mean **1.40** across Twi, Ewe, Ga, and Fante), outperforming NLLB-200 by **54%** and beating specialized monolingual baselines (Goldfish Twi & Wikilangs Ewe).
 2. **Zero Unknown Tokens**: Byte-Level BPE ensures arbitrary byte sequences, names, or loanwords never produce `<unk>`.
-3. **Canonical Normalization**: Maps chaotic Unicode variations of `ɛ`, `ɔ`, `ŋ`, `ɖ`, `ɣ` to standard NFC codepoints.
+3. **Canonical Normalization**: Maps chaotic Unicode variations of `ɛ`, `ɔ`, `ŋ`, `ɖ`, `ƒ`, `ɣ` (including textbook lookalikes `ͻ`, `Ͻ`, `ↄ`, `ᴐ`, `⊃`, `φ`, `ε`, `γ`, `ð`) to standard NFC codepoints.
 4. **Tone Preservation**: Tone marks are preserved by default, protecting phonemic pitch distinctions for Kwa speech and language AI.
 5. **Drop-in Ecosystem Support**: Serializes to standard `tokenizer.json`, immediately consumable by Hugging Face `transformers.AutoTokenizer`.
 
@@ -39,7 +39,7 @@ Leke solves this with:
 │                           Rust Core (leke crate)                       │
 │  - Custom Normalizer trait (Unicode NFC, canonical character mapping)  │
 │  - Byte-Level BPE & Unigram training engines                           │
-│  - High-throughput batch encode/decode (350,000+ tokens/sec)           │
+│  - High-throughput batch encode/decode (170,000+ tokens/sec)           │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -60,6 +60,21 @@ cd leke
 # Set up environment and compile extension
 uv sync
 uv run maturin develop
+```
+
+### Reproducing the Corpus & Training from Raw PDFs
+The 13 reference curriculum manuals and textbooks (`data/raw/pdfs/`, git-ignored) are archived for reproducibility on **[Google Drive](https://drive.google.com/drive/folders/13Nwl6DbuEhFY2qH-RxONorv5_kunyLXM?usp=sharing)**. To download the PDFs, extract and normalize the sentences, generate the 80/10/10 splits, and retrain `bpe-8k`:
+
+```bash
+# 1. Download source PDFs from Google Drive and extract normalized corpora
+uv run --with pypdf,gdown python scripts/extract_pdf_corpora.py --download
+
+# 2. Build stratified splits (80/10/10) and temperature-upsampled pooled_train.txt
+uv run python -m leke.corpus
+
+# 3. Train Byte-Level BPE (8,192 vocab) and run evaluation
+uv run python -m leke.trainer --algorithm bpe --corpus data/splits/pooled_train.txt --output-dir models/bpe-8k --vocab-size 8192
+uv run python -m leke.evaluate
 ```
 
 ---
@@ -114,18 +129,18 @@ fn main() {
 
 | Language | Leke BPE (8k) | NLLB-200 | Monolingual Baseline | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **Akan / Twi** | **2.23 tok/word** | 2.92 tok/word | 1.62 tok/word (Goldfish) | ✅ Leke Superior to NLLB |
-| **Ewe** | **2.77 tok/word** | 3.15 tok/word | 1.71 tok/word (Wikilangs) | ✅ Leke Superior to NLLB |
-| **Ga** | **2.38 tok/word** | 3.20 tok/word | — | ✅ Leke Superior to NLLB |
-| **Fante** | **2.16 tok/word** | 2.98 tok/word | — | ✅ Leke Superior to NLLB |
+| **Akan / Twi** | **1.48 tok/word** | 2.92 tok/word | 1.62 tok/word (Goldfish) | ✅ Beats Goldfish & NLLB |
+| **Ewe** | **1.37 tok/word** | 3.15 tok/word | 1.71 tok/word (Wikilangs) | ✅ Beats Wikilangs & NLLB |
+| **Ga** | **1.41 tok/word** | 3.20 tok/word | — | ✅ Leke Superior to NLLB |
+| **Fante** | **1.34 tok/word** | 2.98 tok/word | — | ✅ Leke Superior to NLLB |
 | **Unknown Rate** | **0.0% (guaranteed)** | 0.0% | 0.4% – 0.6% | ✅ 0 OOV Guaranteed |
 
 *See full evaluation report in [`specs/eval_results.md`](specs/eval_results.md) and algorithm decision in [`specs/algorithm_decision.md`](specs/algorithm_decision.md).*
 
 ### 2. Throughput Benchmarks
 
-- **Single-Core Encode**: **356,000+ tokens/sec** in Python.
-- **Single-Core Decode**: **59,000+ sentences/sec**.
+- **Single-Core Encode**: **173,000+ tokens/sec** in Python.
+- **Single-Core Decode**: **51,000+ sentences/sec**.
 - *See Criterion statistical profiles in [`specs/benchmarks.md`](specs/benchmarks.md).*
 
 ---

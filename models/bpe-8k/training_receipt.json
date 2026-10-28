@@ -1,7 +1,7 @@
 {
   "algorithm": "ByteLevel-BPE",
   "vocab_size": 8192,
-  "actual_vocab_size": 956,
+  "actual_vocab_size": 8192,
   "special_tokens": [
     "<unk>",
     "<s>",
@@ -11,5 +11,5 @@
   ],
   "seed": 42,
   "corpus_path": "data/splits/pooled_train.txt",
-  "corpus_sha256": "1fe721e4c35290eeffb39f3de43419fb"
+  "corpus_sha256": "f285061e1ce6c6f1549fea2c0355a68"
 }
