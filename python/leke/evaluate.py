@@ -1,31 +1,30 @@
 """Evaluation harness for fertility, split rate, unknown-token rate, and compression ratio.
 
-Tutorial & Linguistic Evaluation Theory:
-    Evaluating a subword tokenizer requires structural linguistic metrics rather than
-    downstream model scores (like BLEU or accuracy). This module computes four primary
-    benchmarks across held-out evaluation corpora:
+Evaluating a subword tokenizer requires structural linguistic metrics rather than
+downstream model scores (like BLEU or accuracy). This module computes four primary
+benchmarks across held-out evaluation corpora:
 
-    1. **Fertility (Tokens per Word)**:
-       - Formula: Total Tokens / Total Words
-       - Interpretation: In subword tokenization, **lower fertility is superior**.
-         When a tokenizer has low fertility (e.g. 1.8 vs 3.2), each word is represented
-         by fewer subword units. This directly conserves the model's sequence length context
-         window and accelerates generation speed during autoregressive decoding.
+1. **Fertility (Tokens per Word)**:
+   - Formula: Total Tokens / Total Words
+   - Interpretation: In subword tokenization, **lower fertility is superior**.
+     When a tokenizer has low fertility (e.g. 1.8 vs 3.2), each word is represented
+     by fewer subword units. This directly conserves the model's sequence length context
+     window and accelerates generation speed during autoregressive decoding.
 
-    2. **Word Fragmentation Rate (Split > 2)**:
-       - Formula: (Count of words with > 2 subwords) / (Total Words) * 100%
-       - Interpretation: High fragmentation indicates severe over-segmentation where
-         morphemes are shattered into individual characters or byte tokens. A lower split
-         rate indicates that the tokenizer aligns well with natural syllabic affixes (CV/CVC).
+2. **Word Fragmentation Rate (Split > 2)**:
+   - Formula: (Count of words with > 2 subwords) / (Total Words) * 100%
+   - Interpretation: High fragmentation indicates severe over-segmentation where
+     morphemes are shattered into individual characters or byte tokens. A lower split
+     rate indicates that the tokenizer aligns well with natural syllabic affixes (CV/CVC).
 
-    3. **Unknown Token Rate (<unk> Rate)**:
-       - Formula: (Count of <unk> tokens) / (Total Tokens) * 100%
-       - Hard Release Gate: Must be **0.00%** on arbitrary text via byte-level fallback.
+3. **Unknown Token Rate (<unk> Rate)**:
+   - Formula: (Count of <unk> tokens) / (Total Tokens) * 100%
+   - Hard Release Gate: Must be **0.00%** on arbitrary text via byte-level fallback.
 
-    4. **Compression Ratio (Bytes per Token)**:
-       - Formula: Total UTF-8 Bytes / Total Tokens
-       - Interpretation: Measures information density. Higher bytes/token indicates
-         that tokens represent larger linguistic chunks on average.
+4. **Compression Ratio (Bytes per Token)**:
+   - Formula: Total UTF-8 Bytes / Total Tokens
+   - Interpretation: Measures information density. Higher bytes/token indicates
+     that tokens represent larger linguistic chunks on average.
 
 Published Baselines:
     - **NLLB-200 (SentencePiece)**: Meta's multilingual model covering 200+ languages.
@@ -34,7 +33,7 @@ Published Baselines:
     - **Goldfish Twi & Wikilangs Ewe**: Specialized monolingual subword models serving
       as theoretical upper-bound targets for Akan and Ewe.
 
-Example:
+Examples:
     >>> from leke.evaluate import calculate_metrics
     >>> from leke.tokenizer import LekeTokenizer
     >>> tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
@@ -113,16 +112,6 @@ PUBLISHED_BASELINES: Dict[str, Dict[str, Dict[str, float]]] = {
 def calculate_metrics(tokenizer: Any, lines: List[str]) -> Dict[str, float]:
     """Calculates evaluation metrics over a collection of text lines.
 
-    Tutorial:
-        1. Strips lines and filters empty records.
-        2. Detects the numerical ID for `<unk>` if present in the tokenizer vocabulary.
-        3. Iterates over sentences:
-           - Encodes the full line to measure total token count and byte length.
-           - Iterates over each individual whitespace-separated word to measure
-             isolated word fragmentation (detecting words broken into >2 subwords).
-        4. Calculates fertility, split rate (>2 pieces), unknown token percentage,
-           and compression ratio.
-
     Args:
         tokenizer (Any): Either a LekeTokenizer, native Tokenizer, or Hugging Face
             PreTrainedTokenizerFast instance.
@@ -135,7 +124,17 @@ def calculate_metrics(tokenizer: Any, lines: List[str]) -> Dict[str, float]:
             - `unk_rate` (float): Percentage of emitted tokens that are <unk>.
             - `compression_ratio` (float): Average UTF-8 bytes per token.
 
-    Example:
+    Notes:
+        1. Strips lines and filters empty records.
+        2. Detects the numerical ID for `<unk>` if present in the tokenizer vocabulary.
+        3. Iterates over sentences:
+           - Encodes the full line to measure total token count and byte length.
+           - Iterates over each individual whitespace-separated word to measure
+             isolated word fragmentation (detecting words broken into >2 subwords).
+        4. Calculates fertility, split rate (>2 pieces), unknown token percentage,
+           and compression ratio.
+
+    Examples:
         >>> m = calculate_metrics(tok, ["Akwaaba ba Ghana"])
         >>> print(m["unk_rate"])
         0.0
@@ -217,7 +216,15 @@ def evaluate_all(
 ) -> str:
     """Runs evaluation across all target languages on held-out test splits.
 
-    Tutorial:
+    Args:
+        model_path (Path, optional): Path to the tokenizer.json file.
+        splits_dir (Path, optional): Directory containing language split folders.
+        output_report_path (Optional[Path], optional): File to save markdown leaderboard.
+
+    Returns:
+        str: Formatted Markdown leaderboard report.
+
+    Notes:
         1. Loads the specified model bundle into `LekeTokenizer`.
         2. Iterates across languages (`twi`, `ewe`, `gaa`, `fat`), loading `test.txt`.
         3. Computes metrics and compares against:
@@ -226,14 +233,6 @@ def evaluate_all(
         4. Formats a GitHub-flavored Markdown table comparing fertility, split rate,
            unknown token rate, and compression.
         5. Saves the leaderboard report to `output_report_path` and returns markdown text.
-
-    Args:
-        model_path (Path, optional): Path to the tokenizer.json file.
-        splits_dir (Path, optional): Directory containing language split folders.
-        output_report_path (Optional[Path], optional): File to save markdown leaderboard.
-
-    Returns:
-        str: Formatted Markdown leaderboard report.
     """
     # Step 1: Load tokenizer from disk.
     tokenizer = LekeTokenizer.from_file(model_path)

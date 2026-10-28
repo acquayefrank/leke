@@ -1,21 +1,20 @@
 """Leke: High-performance subword tokenizer for Kwa languages.
 
-Tutorial & Overview:
-    Leke is a high-performance subword tokenization toolkit specifically engineered
-    for Niger-Congo languages in the Kwa branch, including Akan/Twi (Asante & Akuapem),
-    Ewe, Ga, and Fante.
+Leke is a high-performance subword tokenization toolkit specifically engineered
+for Niger-Congo languages in the Kwa branch, including Akan/Twi (Asante & Akuapem),
+Ewe, Ga, and Fante.
 
-    Standard multilingual tokenizers (such as SentencePiece in NLLB-200) suffer from severe
-    fragmentation on Kwa languages because their vocabularies are dominated by high-resource
-    Indo-European languages. Leke achieves lower fertility, zero out-of-vocabulary rate,
-    and sub-millisecond encoding throughput by integrating:
-        1. A native Rust normalization engine (`KwaNormalizer`) handling Unicode NFC
-           and phonetic glyph variations (e.g., standardizing open-e / open-o).
-        2. Tone-preserving orthographic processing.
-        3. Byte-Level BPE segmentation with fallback guarantees.
-        4. Seamless drop-in interoperability with Hugging Face transformers.
+Standard multilingual tokenizers (such as SentencePiece in NLLB-200) suffer from severe
+fragmentation on Kwa languages because their vocabularies are dominated by high-resource
+Indo-European languages. Leke achieves lower fertility, zero out-of-vocabulary rate,
+and sub-millisecond encoding throughput by integrating:
+    1. A native Rust normalization engine (`KwaNormalizer`) handling Unicode NFC
+       and phonetic glyph variations (e.g., standardizing open-e / open-o).
+    2. Tone-preserving orthographic processing.
+    3. Byte-Level BPE segmentation with fallback guarantees.
+    4. Seamless drop-in interoperability with Hugging Face transformers.
 
-Example:
+Examples:
     >>> import leke
     >>> # Step 1: Normalize raw text with canonical orthographic mappings
     >>> clean = leke.normalize("Akwaaba ba Ghana")

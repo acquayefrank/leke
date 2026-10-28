@@ -1,16 +1,15 @@
 """Tokenizer training orchestrator and CLI interface for Leke.
 
-Tutorial & Methodology:
-    This module orchestrates the training of subword tokenizers on single or multi-language
-    Kwa text corpora. It provides Python functions and a command-line interface (CLI)
-    for two primary subword algorithms:
-        1. **Byte-Level Byte-Pair Encoding (BPE)**:
-           - Iteratively merges the most frequent adjacent byte or character pairs.
-           - Employs a byte-level fallback to ensure that every single UTF-8 byte
-             is represented, guaranteeing a 0% out-of-vocabulary (<unk>) rate.
-        2. **Unigram Language Model**:
-           - Starts from a large seed vocabulary and iteratively prunes subwords
-             that minimize the loss in corpus likelihood via the Expectation-Maximization (EM) algorithm.
+This module orchestrates the training of subword tokenizers on single or multi-language
+Kwa text corpora. It provides Python functions and a command-line interface (CLI)
+for two primary subword algorithms:
+    1. **Byte-Level Byte-Pair Encoding (BPE)**:
+       - Iteratively merges the most frequent adjacent byte or character pairs.
+       - Employs a byte-level fallback to ensure that every single UTF-8 byte
+         is represented, guaranteeing a 0% out-of-vocabulary (<unk>) rate.
+    2. **Unigram Language Model**:
+       - Starts from a large seed vocabulary and iteratively prunes subwords
+         that minimize the loss in corpus likelihood via the Expectation-Maximization (EM) algorithm.
 
 Provenance & Reproducibility:
     Every training run automatically generates two artifacts in the destination directory:
@@ -19,7 +18,7 @@ Provenance & Reproducibility:
           of the input training files, line counts, random seed, vocabulary size,
           and hyperparameter configurations.
 
-Example:
+Examples:
     >>> from leke.trainer import train_bpe
     >>> receipt = train_bpe(
     ...     corpus_paths="data/splits/pooled_train.txt",
@@ -51,14 +50,6 @@ def train_bpe(
 ) -> Dict[str, Any]:
     """Trains a Byte-Level BPE tokenizer on input text file(s) and writes the bundle.
 
-    Tutorial:
-        1. Paths are converted into an array of string paths for the Rust C-bridge.
-        2. The native Rust engine opens the corpus files with multi-threaded chunk readers.
-        3. Initial character frequencies are counted, and the 256 basic byte tokens are populated.
-        4. Successive merges are executed until `vocab_size` is reached.
-        5. `tokenizer.json` and `training_receipt.json` are written to `output_dir`.
-        6. The provenance metadata dictionary is returned to Python.
-
     Args:
         corpus_paths (Union[str, Path, List[Union[str, Path]]]): One or more file paths
             pointing to plain-text UTF-8 training corpora.
@@ -76,7 +67,15 @@ def train_bpe(
         FileNotFoundError: If any of the corpus paths do not exist.
         RuntimeError: If training fails inside the native Rust engine.
 
-    Example:
+    Notes:
+        1. Paths are converted into an array of string paths for the Rust C-bridge.
+        2. The native Rust engine opens the corpus files with multi-threaded chunk readers.
+        3. Initial character frequencies are counted, and the 256 basic byte tokens are populated.
+        4. Successive merges are executed until `vocab_size` is reached.
+        5. `tokenizer.json` and `training_receipt.json` are written to `output_dir`.
+        6. The provenance metadata dictionary is returned to Python.
+
+    Examples:
         >>> receipt = train_bpe("data/samples/twi.txt", "models/bpe-8k", vocab_size=8192)
     """
     # Step 1: Normalize input corpus path(s) into a list of absolute/relative string paths.
@@ -113,12 +112,6 @@ def train_unigram(
 ) -> Dict[str, Any]:
     """Trains a Unigram tokenizer on input text file(s) and writes the bundle.
 
-    Tutorial:
-        Unlike BPE, which builds subwords from the bottom up, Unigram starts with an
-        overly large seed vocabulary and iteratively prunes symbols that contribute least
-        to the likelihood of the corpus under an unigram language model.
-        This provides probabilistic subword segmentation capability (subword regularization).
-
     Args:
         corpus_paths (Union[str, Path, List[Union[str, Path]]]): One or more file paths
             pointing to plain-text UTF-8 training corpora.
@@ -135,7 +128,13 @@ def train_unigram(
         FileNotFoundError: If any of the corpus paths do not exist.
         RuntimeError: If training fails inside the native Rust engine.
 
-    Example:
+    Notes:
+        Unlike BPE, which builds subwords from the bottom up, Unigram starts with an
+        overly large seed vocabulary and iteratively prunes symbols that contribute least
+        to the likelihood of the corpus under an unigram language model.
+        This provides probabilistic subword segmentation capability (subword regularization).
+
+    Examples:
         >>> receipt = train_unigram("data/samples/ewe.txt", "models/unigram-8k", vocab_size=8192)
     """
     # Step 1: Normalize input corpus paths into a list of string paths.
@@ -163,7 +162,7 @@ def train_unigram(
 def main() -> None:
     """CLI entrypoint for training Kwa subword tokenizers.
 
-    Tutorial:
+    Notes:
         Parses command-line arguments to allow direct CLI training via:
         `python -m leke.trainer --algorithm bpe --corpus data/splits/pooled_train.txt ...`
     """
