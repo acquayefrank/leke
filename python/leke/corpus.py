@@ -1,35 +1,34 @@
 """Corpus ingestion, normalization filtering, stratified splitting, and temperature upsampling.
 
-Tutorial & Linguistic Workflow:
-    High-quality subword tokenizers require clean, balanced, and strictly isolated corpora.
-    This module provides the complete dataset preprocessing pipeline for Kwa languages:
+High-quality subword tokenizers require clean, balanced, and strictly isolated corpora.
+This module provides the complete dataset preprocessing pipeline for Kwa languages:
 
-    1. **Corpus Ingestion & Normalization**:
-       - Cleans raw text lines, standardizes Unicode codepoints (NFC), replaces non-standard
-         phonetic glyph variants (e.g., standardizing open-e / open-o), and collapses whitespace.
-       - Filters out noise (e.g., lines with fewer than 3 words or greater than 250 words).
-       - Performs exact string deduplication while preserving chronological document order.
+1. **Corpus Ingestion & Normalization**:
+   - Cleans raw text lines, standardizes Unicode codepoints (NFC), replaces non-standard
+     phonetic glyph variants (e.g., standardizing open-e / open-o), and collapses whitespace.
+   - Filters out noise (e.g., lines with fewer than 3 words or greater than 250 words).
+   - Performs exact string deduplication while preserving chronological document order.
 
-    2. **Stratified Splitting (80/10/10)**:
-       - Deterministically partitions each language's corpus into Train (80%), Dev (10%),
-         and Test (10%) splits using a seeded random generator (seed=42).
-       - Enforces strict mathematical isolation: asserts 0% data leakage across sets.
+2. **Stratified Splitting (80/10/10)**:
+   - Deterministically partitions each language's corpus into Train (80%), Dev (10%),
+     and Test (10%) splits using a seeded random generator (seed=42).
+   - Enforces strict mathematical isolation: asserts 0% data leakage across sets.
 
-    3. **Temperature-Scaled Upsampling**:
-       - Combines individual language splits into a unified `pooled_train.txt`.
-       - High-resource languages (e.g., Akan/Twi) naturally have larger text corpora than
-         lower-resource languages (Ga, Fante). Standard pooling would cause high-resource
-         languages to monopolize vocabulary capacity.
-       - We employ temperature upsampling where language sampling probability is scaled:
-             P(L_i) ~ (Count(L_i))^alpha
-         Setting alpha=0.5 (square-root scaling) dampens high-resource dominance while
-         boosting low-resource representation.
+3. **Temperature-Scaled Upsampling**:
+   - Combines individual language splits into a unified `pooled_train.txt`.
+   - High-resource languages (e.g., Akan/Twi) naturally have larger text corpora than
+     lower-resource languages (Ga, Fante). Standard pooling would cause high-resource
+     languages to monopolize vocabulary capacity.
+   - We employ temperature upsampling where language sampling probability is scaled:
+         P(L_i) ~ (Count(L_i))^alpha
+     Setting alpha=0.5 (square-root scaling) dampens high-resource dominance while
+     boosting low-resource representation.
 
-    4. **Data Manifest & Checksums**:
-       - Computes cryptographic SHA-256 digests for every generated split, recording line counts
-         and tiers into `data/data_manifest.json` for reproducible provenance.
+4. **Data Manifest & Checksums**:
+   - Computes cryptographic SHA-256 digests for every generated split, recording line counts
+     and tiers into `data/data_manifest.json` for reproducible provenance.
 
-Example:
+Examples:
     >>> from leke.corpus import run_pipeline
     >>> manifest = run_pipeline()
     >>> print(manifest["pooled"]["sentences"])
@@ -58,17 +57,17 @@ PRIMARY_LANGUAGES: Set[str] = {"twi", "ewe"}
 def sha256_of_file(filepath: Path) -> str:
     """Computes the cryptographic SHA-256 checksum of a file on disk.
 
-    Tutorial:
-        Reads the file in streaming 64-kilobyte chunks rather than loading the entire
-        file into memory, ensuring low RAM utilization even on large corpora.
-
     Args:
         filepath (Path): Path to the target file.
 
     Returns:
         str: Hexadecimal SHA-256 digest string.
 
-    Example:
+    Notes:
+        Reads the file in streaming 64-kilobyte chunks rather than loading the entire
+        file into memory, ensuring low RAM utilization even on large corpora.
+
+    Examples:
         >>> digest = sha256_of_file(Path("data/samples/twi.txt"))
         >>> len(digest)
         64
@@ -120,7 +119,13 @@ class CorpusProcessor:
     def clean_line(self, line: str) -> Optional[str]:
         """Normalizes and validates a single line.
 
-        Tutorial:
+        Args:
+            line (str): Raw input sentence or paragraph.
+
+        Returns:
+            Optional[str]: The normalized line, or None if rejected.
+
+        Notes:
             1. Strips leading and trailing whitespace.
             2. Rejects empty lines immediately.
             3. Passes text to `KwaNormalizer` to enforce Unicode NFC, standardize
@@ -128,13 +133,7 @@ class CorpusProcessor:
             4. Splits line into words to verify word-count boundaries.
             5. Returns the cleaned text, or None if the line is filtered out.
 
-        Args:
-            line (str): Raw input sentence or paragraph.
-
-        Returns:
-            Optional[str]: The normalized line, or None if rejected.
-
-        Example:
+        Examples:
             >>> proc = CorpusProcessor()
             >>> proc.clean_line("  Akwaaba   ba Ghana  ")
             'Akwaaba ba Ghana'
@@ -162,17 +161,17 @@ class CorpusProcessor:
     def process_lines(self, lines: List[str]) -> List[str]:
         """Deduplicates and normalizes a sequence of lines preserving original document order.
 
-        Tutorial:
-            Deduplication is critical in tokenizer training because repeated sentences
-            artificially inflate subword counts, causing frequent phrases to be merged
-            into monolithic single tokens. We use a set for O(1) membership checks while
-            maintaining a list to preserve deterministic document ordering.
-
         Args:
             lines (List[str]): Sequence of raw text strings.
 
         Returns:
             List[str]: Cleaned, normalized, and deduplicated list of lines.
+
+        Notes:
+            Deduplication is critical in tokenizer training because repeated sentences
+            artificially inflate subword counts, causing frequent phrases to be merged
+            into monolithic single tokens. We use a set for O(1) membership checks while
+            maintaining a list to preserve deterministic document ordering.
         """
         # Maintain a hash set of observed lines for fast O(1) deduplication.
         seen: Set[str] = set()
@@ -204,14 +203,6 @@ def split_dataset(
 ) -> Tuple[List[str], List[str], List[str]]:
     """Deterministically splits lines into train, dev, and test sets with 0% overlap.
 
-    Tutorial:
-        1. Validates that ratios sum to 1.0 within floating point precision.
-        2. Copies the list and shuffles using a seeded PRNG (`random.Random(seed)`).
-        3. Computes exact split boundaries.
-        4. Slices lines into train, dev, and test sets.
-        5. Performs mathematical set intersection assertions to guarantee zero
-           contamination between train, development, and test evaluations.
-
     Args:
         lines (List[str]): Cleaned list of text lines.
         train_ratio (float, optional): Proportion for training set. Defaults to 0.8.
@@ -224,6 +215,14 @@ def split_dataset(
 
     Raises:
         AssertionError: If ratios do not sum to 1.0 or if data contamination occurs.
+
+    Notes:
+        1. Validates that ratios sum to 1.0 within floating point precision.
+        2. Copies the list and shuffles using a seeded PRNG (`random.Random(seed)`).
+        3. Computes exact split boundaries.
+        4. Slices lines into train, dev, and test sets.
+        5. Performs mathematical set intersection assertions to guarantee zero
+           contamination between train, development, and test evaluations.
     """
     # Step 1: Validate partition ratios.
     assert abs(train_ratio + dev_ratio + test_ratio - 1.0) < 1e-6, "Ratios must sum to 1.0"
@@ -264,17 +263,6 @@ def temperature_upsample(
 ) -> List[str]:
     """Generates a balanced pooled training dataset using temperature upsampling.
 
-    Tutorial:
-        When training a multilingual tokenizer across high-resource languages (e.g. Twi)
-        and lower-resource languages (e.g. Ga or Fante), naive concatenation leads
-        to vocabulary bias. Temperature sampling modifies the probability of drawing
-        from language L_i according to:
-            P(L_i) = (Count(L_i))^alpha / sum_j (Count(L_j))^alpha
-
-        - alpha = 1.0: Natural distribution (proportional to raw corpus size).
-        - alpha = 0.0: Perfectly uniform distribution across all languages.
-        - alpha = 0.5: Sub-linear square-root scaling (standard in modern multilingual models).
-
     Args:
         lang_train_lines (Dict[str, List[str]]): Dictionary mapping language code to training lines.
         alpha (float, optional): Temperature exponent in [0.0, 1.0]. Defaults to 0.5.
@@ -284,6 +272,17 @@ def temperature_upsample(
 
     Returns:
         List[str]: Balanced, temperature-upsampled list of lines for pooled training.
+
+    Notes:
+        When training a multilingual tokenizer across high-resource languages (e.g. Twi)
+        and lower-resource languages (e.g. Ga or Fante), naive concatenation leads
+        to vocabulary bias. Temperature sampling modifies the probability of drawing
+        from language L_i according to:
+            P(L_i) = (Count(L_i))^alpha / sum_j (Count(L_j))^alpha
+
+        - alpha = 1.0: Natural distribution (proportional to raw corpus size).
+        - alpha = 0.0: Perfectly uniform distribution across all languages.
+        - alpha = 0.5: Sub-linear square-root scaling (standard in modern multilingual models).
     """
     # Step 1: Count valid lines per language.
     counts = {lang: len(lines) for lang, lines in lang_train_lines.items() if len(lines) > 0}
@@ -331,16 +330,6 @@ def run_pipeline(
 ) -> Dict[str, Any]:
     """Executes the complete corpus ingestion, splitting, upsampling, and manifest generation.
 
-    Tutorial:
-        1. Iterates over target Kwa languages (`twi`, `ewe`, `gaa`, `fat`).
-        2. Ingests raw text files from `raw_dir`.
-        3. Cleans, normalizes, and deduplicates lines via `CorpusProcessor`.
-        4. Partitions lines into 80/10/10 train/dev/test splits.
-        5. Writes split files into `data/splits/<lang>/`.
-        6. Computes SHA-256 hashes of all written files for provenance.
-        7. Performs temperature upsampling (alpha=0.5) to produce `data/splits/pooled_train.txt`.
-        8. Serializes all statistics, line counts, and checksums to `data_manifest.json`.
-
     Args:
         raw_dir (Path, optional): Directory containing raw sample files. Defaults to Path("data/samples").
         output_dir (Path, optional): Output directory for split files. Defaults to Path("data/splits").
@@ -350,8 +339,19 @@ def run_pipeline(
 
     Returns:
         Dict[str, Any]: Complete provenance manifest dictionary.
+
+    Notes:
+        1. Iterates over target Kwa languages (`twi`, `ewe`, `gaa`, `fat`).
+        2. Ingests raw text files from `raw_dir`.
+        3. Cleans, normalizes, and deduplicates lines via `CorpusProcessor`.
+        4. Partitions lines into 80/10/10 train/dev/test splits.
+        5. Writes split files into `data/splits/<lang>/`.
+        6. Computes SHA-256 hashes of all written files for provenance.
+        7. Performs temperature upsampling (alpha=0.5) to produce `data/splits/pooled_train.txt`.
+        8. Serializes all statistics, line counts, and checksums to `data_manifest.json`.
     """
     # Step 1: Initialize corpus processor and ensure output directories exist.
+
     processor = CorpusProcessor()
     output_dir.mkdir(parents=True, exist_ok=True)
 

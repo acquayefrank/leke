@@ -1,23 +1,22 @@
 """High-level Python Tokenizer interface for Leke.
 
-Tutorial & Architecture:
-    The `LekeTokenizer` class provides an idiomatic, high-level Python wrapper around
-    the native Rust `NativeTokenizer` engine compiled via PyO3.
+The `LekeTokenizer` class provides an idiomatic, high-level Python wrapper around
+the native Rust `NativeTokenizer` engine compiled via PyO3.
 
-    In modern NLP pipelines (e.g., PyTorch, Hugging Face transformers, vLLM), tokenizers
-    must satisfy two critical constraints:
-        1. Microsecond latency during real-time inference and high-throughput data loading.
-        2. Exact alignment tracking between input characters and subword tokens.
+In modern NLP pipelines (e.g., PyTorch, Hugging Face transformers, vLLM), tokenizers
+must satisfy two critical constraints:
+    1. Microsecond latency during real-time inference and high-throughput data loading.
+    2. Exact alignment tracking between input characters and subword tokens.
 
-    `LekeTokenizer` accomplishes this by executing all intensive tokenization, regex splitting,
-    and BPE merge lookups in native compiled Rust. The Python class acts as a thin,
-    ergonomic facade providing:
-        - Single sentence and batch encoding (`encode`, `encode_batch`).
-        - Subword decoding and detokenization (`decode`, `decode_batch`).
-        - Token vocabulary lookups (`token_to_id`, `id_to_token`).
-        - Direct zero-copy bridge to Hugging Face `transformers.PreTrainedTokenizerFast`.
+`LekeTokenizer` accomplishes this by executing all intensive tokenization, regex splitting,
+and BPE merge lookups in native compiled Rust. The Python class acts as a thin,
+ergonomic facade providing:
+    - Single sentence and batch encoding (`encode`, `encode_batch`).
+    - Subword decoding and detokenization (`decode`, `decode_batch`).
+    - Token vocabulary lookups (`token_to_id`, `id_to_token`).
+    - Direct zero-copy bridge to Hugging Face `transformers.PreTrainedTokenizerFast`.
 
-Example:
+Examples:
     >>> from leke import LekeTokenizer
     >>> # 1. Instantiate from a saved tokenizer bundle
     >>> tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
@@ -63,12 +62,6 @@ class LekeTokenizer:
     def from_file(cls, path: Union[str, Path]) -> LekeTokenizer:
         """Loads a trained tokenizer bundle from a tokenizer.json file.
 
-        Tutorial:
-            When loading a tokenizer, the path is converted to a string and passed
-            directly to the Rust deserializer. Rust parses the JSON structure
-            (containing the normalizer, pre-tokenizer, model merges, and decoder)
-            instantly into memory.
-
         Args:
             path (Union[str, Path]): Filesystem path to the serialized `tokenizer.json`.
 
@@ -79,7 +72,13 @@ class LekeTokenizer:
             FileNotFoundError: If the specified file does not exist on disk.
             RuntimeError: If the JSON cannot be parsed by the native engine.
 
-        Example:
+        Notes:
+            When loading a tokenizer, the path is converted to a string and passed
+            directly to the Rust deserializer. Rust parses the JSON structure
+            (containing the normalizer, pre-tokenizer, model merges, and decoder)
+            instantly into memory.
+
+        Examples:
             >>> tok = LekeTokenizer.from_file("models/bpe-8k/tokenizer.json")
         """
         # Step 1: Normalize path to string format required by the PyO3 C-API bridge.
@@ -114,14 +113,6 @@ class LekeTokenizer:
     def encode(self, text: str, add_special_tokens: bool = True) -> Encoding:
         """Encodes an input string into subword tokens, integer IDs, and byte offsets.
 
-        Tutorial:
-            1. The input string is passed into the native Rust pipeline.
-            2. `KwaNormalizer` standardizes Unicode codepoints and dialectal variants.
-            3. `Metaspace` or `ByteLevel` pre-tokenizers segment words into chunks.
-            4. The BPE merge graph or Unigram Viterbi path finds optimal subwords.
-            5. Byte-level fallback guarantees that unseen characters never cause errors.
-            6. Returns an `Encoding` object containing `.ids`, `.tokens`, and `.offsets`.
-
         Args:
             text (str): The raw text to tokenize.
             add_special_tokens (bool, optional): Whether to prepend/append special tokens
@@ -130,7 +121,15 @@ class LekeTokenizer:
         Returns:
             Encoding: Container holding token IDs, subword strings, and byte offsets.
 
-        Example:
+        Notes:
+            1. The input string is passed into the native Rust pipeline.
+            2. `KwaNormalizer` standardizes Unicode codepoints and dialectal variants.
+            3. `Metaspace` or `ByteLevel` pre-tokenizers segment words into chunks.
+            4. The BPE merge graph or Unigram Viterbi path finds optimal subwords.
+            5. Byte-level fallback guarantees that unseen characters never cause errors.
+            6. Returns an `Encoding` object containing `.ids`, `.tokens`, and `.offsets`.
+
+        Examples:
             >>> enc = tok.encode("Wɔfrɛ me Kofi")
             >>> print(enc.ids)
             >>> print(enc.tokens)
@@ -141,28 +140,23 @@ class LekeTokenizer:
     def encode_batch(self, texts: List[str], add_special_tokens: bool = True) -> List[Encoding]:
         """Encodes a batch of strings in parallel with minimal Python GIL contention.
 
-        Tutorial:
-            For large datasets (thousands of sentences), looping in Python causes
-            interpreter overhead. `encode_batch` delegates the full list to Rust,
-            which can leverage multi-threaded CPU parallelization across batch items.
-
         Args:
             texts (List[str]): List of sentences or paragraphs to tokenize.
             add_special_tokens (bool, optional): Whether to add special tokens. Defaults to True.
 
         Returns:
             List[Encoding]: List of Encoding objects corresponding to each input text.
+
+        Notes:
+            For large datasets (thousands of sentences), looping in Python causes
+            interpreter overhead. `encode_batch` delegates the full list to Rust,
+            which can leverage multi-threaded CPU parallelization across batch items.
         """
         # Pass the entire list of strings into Rust for batch tokenization.
         return self._native.encode_batch(texts, add_special_tokens)
 
     def decode(self, ids: List[int], skip_special_tokens: bool = True) -> str:
         """Decodes a sequence of integer token IDs back into normalized text.
-
-        Tutorial:
-            The decoder looks up the subword bytes corresponding to each ID,
-            stitches them together, resolves byte-level prefixes (like Metaspace ` `),
-            and reconstructs valid UTF-8 characters.
 
         Args:
             ids (List[int]): List of token IDs produced by the model.
@@ -172,7 +166,12 @@ class LekeTokenizer:
         Returns:
             str: The reconstructed, human-readable string.
 
-        Example:
+        Notes:
+            The decoder looks up the subword bytes corresponding to each ID,
+            stitches them together, resolves byte-level prefixes (like Metaspace ` `),
+            and reconstructs valid UTF-8 characters.
+
+        Examples:
             >>> text = tok.decode([12, 45, 90])
         """
         # Delegate sequence decoding to the native Rust decoder.
@@ -220,16 +219,16 @@ class LekeTokenizer:
     def to_transformers(self) -> Any:
         """Converts to a Hugging Face `transformers.PreTrainedTokenizerFast` instance.
 
-        Tutorial:
+        Returns:
+            PreTrainedTokenizerFast: A Hugging Face fast tokenizer pointing to the model file.
+
+        Notes:
             Because Leke generates official standard `tokenizer.json` files,
             it can be converted into Hugging Face's `PreTrainedTokenizerFast` with zero copy.
             This allows seamless integration with `AutoModelForCausalLM`, `Trainer`,
             Hugging Face Datasets, and standard PyTorch collators.
 
-        Returns:
-            PreTrainedTokenizerFast: A Hugging Face fast tokenizer pointing to the model file.
-
-        Example:
+        Examples:
             >>> hf_tok = tok.to_transformers()
             >>> batch = hf_tok(["Akwaaba", "Mìedó gbe"], return_tensors="pt", padding=True)
         """
