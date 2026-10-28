@@ -69,7 +69,7 @@
         </div>
         <div class="feature-card" style="padding: 20px;">
           <div style="font-size: 13px; color: var(--color-muted);">Lower fertility vs. NLLB-200</div>
-          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">−49% to −57%</div>
+          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">−5% to −27%</div>
           <div style="font-size: 13px; color: var(--color-subtle); margin-top: 4px;">Fewer subwords per word</div>
         </div>
         <div class="feature-card" style="padding: 20px;">
@@ -156,8 +156,8 @@
     <!-- Leaderboard Section -->
     <section id="leaderboard" style="padding: 56px 0 72px; border-top: 1px solid var(--color-divider);">
       <span style="display: block; font-size: 13px; color: var(--color-muted); margin-bottom: 10px;">Leaderboard</span>
-      <h2 style="font-size: clamp(26px, 3vw, 34px); font-weight: 600; letter-spacing: -0.025em; margin: 0;">Fewer tokens per word, in every language.</h2>
-      <p style="font-size: 15px; line-height: 1.65; max-width: 60ch; margin: 12px 0 0; color: var(--color-muted);">Fertility on held-out test splits against multilingual NLLB-200 and monolingual baselines. Lower is better.</p>
+      <h2 style="font-size: clamp(26px, 3vw, 34px); font-weight: 600; letter-spacing: -0.025em; margin: 0;">Fewer tokens than NLLB-200, in every language.</h2>
+      <p style="font-size: 15px; line-height: 1.65; max-width: 60ch; margin: 12px 0 0; color: var(--color-muted);">Fertility on held-out test splits, with every tokenizer measured on the same text. Lower is better. Monolingual column is the same-size (8k) Wikilangs tokenizer.</p>
       <div class="table-card" style="margin-top: 28px;">
         <table class="table" style="min-width: 620px;">
           <thead>
@@ -167,36 +167,36 @@
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Akan / Twi</td>
               <td style="color: var(--color-text); font-weight: 600;">1.48</td>
-              <td>2.92</td>
-              <td>1.62 (Goldfish)</td>
-              <td><span class="tag tag-accent">−49%</span></td>
+              <td>1.55</td>
+              <td>1.34</td>
+              <td><span class="tag tag-accent">−5%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Ewe</td>
               <td style="color: var(--color-text); font-weight: 600;">1.37</td>
-              <td>3.15</td>
-              <td>1.71 (Wikilangs)</td>
-              <td><span class="tag tag-accent">−57%</span></td>
+              <td>1.65</td>
+              <td>1.44</td>
+              <td><span class="tag tag-accent">−17%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Ga</td>
               <td style="color: var(--color-text); font-weight: 600;">1.41</td>
-              <td>3.20</td>
+              <td>1.93</td>
               <td>—</td>
-              <td><span class="tag tag-accent">−56%</span></td>
+              <td><span class="tag tag-accent">−27%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Fante</td>
               <td style="color: var(--color-text); font-weight: 600;">1.34</td>
-              <td>2.98</td>
-              <td>—</td>
-              <td><span class="tag tag-accent">−55%</span></td>
+              <td>1.70</td>
+              <td>1.38</td>
+              <td><span class="tag tag-accent">−21%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Unknown rate</td>
               <td style="color: var(--color-text); font-weight: 600;">0.0%</td>
-              <td>0.0%</td>
-              <td>0.4–0.6%</td>
+              <td>0.08–0.61%</td>
+              <td>0.02–0.11%</td>
               <td><span class="tag tag-accent">Guaranteed</span></td>
             </tr>
           </tbody>

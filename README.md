@@ -14,10 +14,10 @@
 
 ## Why Leke?
 
-Standard multilingual tokenizers (LLaMA, Mistral, GPT-4, NLLB) suffer from extreme fragmentation on West African languages, frequently segmenting words into 3 to 6 tokens per word. This inflates context window costs, increases inference latency, and causes hallucination loops in ASR/TTS and speech translation.
+Standard multilingual tokenizers (LLaMA, Mistral, GPT-4, NLLB) are built around high-resource languages and fragment West African words into more subword pieces than necessary. This inflates context window costs, increases inference latency, and causes hallucination loops in ASR/TTS and speech translation.
 
 Leke solves this with:
-1. **Low Fertility**: Cuts token counts per word to **1.34 – 1.48** (mean **1.40** across Twi, Ewe, Ga, and Fante), outperforming NLLB-200 by **54%** and beating specialized monolingual baselines (Goldfish Twi & Wikilangs Ewe).
+1. **Low Fertility**: **1.34 – 1.48** tokens per word (mean **1.40**) from a single 8k vocabulary shared across Twi, Ewe, Ga, and Fante: **5–27% fewer tokens than NLLB-200** (256k), and fewer than same-size (8k) monolingual Wikilangs tokenizers on Ewe and Fante.
 2. **Zero Unknown Tokens**: Byte-Level BPE ensures arbitrary byte sequences, names, or loanwords never produce `<unk>`.
 3. **Canonical Normalization**: Maps chaotic Unicode variations of `ɛ`, `ɔ`, `ŋ`, `ɖ`, `ƒ`, `ɣ` (including textbook lookalikes `ͻ`, `Ͻ`, `ↄ`, `ᴐ`, `⊃`, `φ`, `ε`, `γ`, `ð`) to standard NFC codepoints.
 4. **Tone Preservation**: Tone marks are preserved by default, protecting phonemic pitch distinctions for Kwa speech and language AI.
@@ -63,11 +63,11 @@ uv run maturin develop
 ```
 
 ### Reproducing the Corpus & Training from Raw PDFs
-The 13 reference curriculum manuals and textbooks (`data/raw/pdfs/`, git-ignored) are archived for reproducibility on **[Google Drive](https://drive.google.com/drive/folders/13Nwl6DbuEhFY2qH-RxONorv5_kunyLXM?usp=sharing)**. To download the PDFs, extract and normalize the sentences, generate the 80/10/10 splits, and retrain `bpe-8k`:
+The 13 reference curriculum manuals and textbooks are not distributed with this repository. Place the PDFs listed in `scripts/extract_pdf_corpora.py` in `data/raw/pdfs/` (git-ignored), then extract and normalize the sentences, generate the 80/10/10 splits, and retrain `bpe-8k`:
 
 ```bash
-# 1. Download source PDFs from Google Drive and extract normalized corpora
-uv run --with pypdf,gdown python scripts/extract_pdf_corpora.py --download
+# 1. Extract normalized corpora from the PDFs in data/raw/pdfs/
+uv run --with pypdf python scripts/extract_pdf_corpora.py
 
 # 2. Build stratified splits (80/10/10) and temperature-upsampled pooled_train.txt
 uv run python -m leke.corpus
@@ -127,13 +127,17 @@ fn main() {
 
 ### 1. Fertility & Fragmentation on Held-out Test Splits
 
-| Language | Leke BPE (8k) | NLLB-200 | Monolingual Baseline | Status |
+Fertility (tokens per word, lower is better). Every tokenizer is scored with the same metric code on the same held-out test splits (`scripts/measure_baselines.py`).
+
+| Language | Leke BPE (8k, 4 languages) | NLLB-200 (256k) | Wikilangs monolingual (8k) | Best monolingual (any size) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Akan / Twi** | **1.48 tok/word** | 2.92 tok/word | 1.62 tok/word (Goldfish) | ✅ Beats Goldfish & NLLB |
-| **Ewe** | **1.37 tok/word** | 3.15 tok/word | 1.71 tok/word (Wikilangs) | ✅ Beats Wikilangs & NLLB |
-| **Ga** | **1.41 tok/word** | 3.20 tok/word | — | ✅ Leke Superior to NLLB |
-| **Fante** | **1.34 tok/word** | 2.98 tok/word | — | ✅ Leke Superior to NLLB |
-| **Unknown Rate** | **0.0% (guaranteed)** | 0.0% | 0.4% – 0.6% | ✅ 0 OOV Guaranteed |
+| **Akan / Twi** | 1.48 | 1.55 (Leke −5%) | **1.34** | 1.24 (Wikilangs 32k) |
+| **Ewe** | **1.37** | 1.65 (Leke −17%) | 1.44 | 1.34 (Wikilangs 32k) |
+| **Ga** | **1.41** | 1.93 (Leke −27%) | — | — |
+| **Fante** | **1.34** | 1.70 (Leke −21%) | 1.38 | 1.26 (Wikilangs 32k) |
+| **Unknown Rate** | **0.0% (guaranteed)** | 0.08% – 0.61% | 0.02% – 0.11% | 0.0% – 0.11% |
+
+Leke beats NLLB-200 on all four languages and same-size monolingual tokenizers on Ewe and Fante. Larger monolingual tokenizers (32k–50k, one language each) still achieve lower fertility, and Twi is Leke's weakest language. The test splits come from the same textbooks as the training data, so these are in-domain results.
 
 *See full evaluation report in [`specs/eval_results.md`](specs/eval_results.md) and algorithm decision in [`specs/algorithm_decision.md`](specs/algorithm_decision.md).*
 

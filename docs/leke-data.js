@@ -803,30 +803,63 @@ window.LEKE_DATA = {
       "models": [
         {
           "name": "Leke BPE (8k)",
+          "vocab": "8k",
           "fertility": 1.48,
-          "splitRate": 21.5,
+          "splitRate": 11.5,
           "unkRate": 0.0,
           "compression": 3.75,
           "isLeke": true,
-          "status": "✅ Beats All Baselines"
+          "status": "Leke"
         },
         {
-          "name": "NLLB-200 (Multilingual)",
-          "fertility": 2.92,
-          "splitRate": 38.4,
-          "unkRate": 0.0,
-          "compression": 2.45,
+          "name": "Wikilangs Twi (tw, 32k)",
+          "vocab": "32k",
+          "fertility": 1.24,
+          "splitRate": 4.5,
+          "unkRate": 0.11,
+          "compression": 4.46,
           "isLeke": false,
-          "status": "Baseline"
+          "status": "Leke +19.4% fertility"
         },
         {
-          "name": "Goldfish Twi (Monolingual)",
-          "fertility": 1.62,
-          "splitRate": 16.8,
-          "unkRate": 0.4,
+          "name": "Goldfish Twi (twi_latn_full)",
+          "vocab": "50k",
+          "fertility": 1.28,
+          "splitRate": 5.4,
+          "unkRate": 0.0,
+          "compression": 4.31,
+          "isLeke": false,
+          "status": "Leke +15.6% fertility"
+        },
+        {
+          "name": "Goldfish Akan (aka_latn_full)",
+          "vocab": "50k",
+          "fertility": 1.28,
+          "splitRate": 5.2,
+          "unkRate": 0.0,
+          "compression": 4.31,
+          "isLeke": false,
+          "status": "Leke +15.6% fertility"
+        },
+        {
+          "name": "Wikilangs Twi (tw, 8k)",
+          "vocab": "8k",
+          "fertility": 1.34,
+          "splitRate": 7.4,
+          "unkRate": 0.1,
           "compression": 4.12,
           "isLeke": false,
-          "status": "Baseline"
+          "status": "Leke +10.4% fertility"
+        },
+        {
+          "name": "NLLB-200 (multilingual)",
+          "vocab": "256k",
+          "fertility": 1.55,
+          "splitRate": 12.6,
+          "unkRate": 0.26,
+          "compression": 3.57,
+          "isLeke": false,
+          "status": "Leke -4.5% fertility"
         }
       ]
     },
@@ -837,30 +870,53 @@ window.LEKE_DATA = {
       "models": [
         {
           "name": "Leke BPE (8k)",
+          "vocab": "8k",
           "fertility": 1.37,
-          "splitRate": 16.5,
+          "splitRate": 8.3,
           "unkRate": 0.0,
           "compression": 4.27,
           "isLeke": true,
-          "status": "✅ Beats All Baselines"
+          "status": "Leke"
         },
         {
-          "name": "NLLB-200 (Multilingual)",
-          "fertility": 3.15,
-          "splitRate": 44.1,
-          "unkRate": 0.0,
-          "compression": 2.28,
+          "name": "Wikilangs Ewe (ee, 32k)",
+          "vocab": "32k",
+          "fertility": 1.34,
+          "splitRate": 7.7,
+          "unkRate": 0.11,
+          "compression": 4.34,
           "isLeke": false,
-          "status": "Baseline"
+          "status": "Leke +2.2% fertility"
         },
         {
-          "name": "Wikilangs Ewe (Monolingual)",
-          "fertility": 1.71,
-          "splitRate": 19.3,
-          "unkRate": 0.6,
-          "compression": 3.95,
+          "name": "Goldfish Ewe (ewe_latn_full)",
+          "vocab": "50k",
+          "fertility": 1.35,
+          "splitRate": 8.3,
+          "unkRate": 0.03,
+          "compression": 4.32,
           "isLeke": false,
-          "status": "Baseline"
+          "status": "Leke +1.5% fertility"
+        },
+        {
+          "name": "Wikilangs Ewe (ee, 8k)",
+          "vocab": "8k",
+          "fertility": 1.44,
+          "splitRate": 10.3,
+          "unkRate": 0.11,
+          "compression": 4.07,
+          "isLeke": false,
+          "status": "Leke -4.9% fertility"
+        },
+        {
+          "name": "NLLB-200 (multilingual)",
+          "vocab": "256k",
+          "fertility": 1.65,
+          "splitRate": 15.9,
+          "unkRate": 0.3,
+          "compression": 3.53,
+          "isLeke": false,
+          "status": "Leke -17.0% fertility"
         }
       ]
     },
@@ -871,21 +927,23 @@ window.LEKE_DATA = {
       "models": [
         {
           "name": "Leke BPE (8k)",
+          "vocab": "8k",
           "fertility": 1.41,
-          "splitRate": 17.7,
+          "splitRate": 8.3,
           "unkRate": 0.0,
           "compression": 4.33,
           "isLeke": true,
-          "status": "✅ Leke Superior"
+          "status": "Leke"
         },
         {
-          "name": "NLLB-200 (Multilingual)",
-          "fertility": 3.2,
-          "splitRate": 46.2,
-          "unkRate": 0.0,
-          "compression": 2.2,
+          "name": "NLLB-200 (multilingual)",
+          "vocab": "256k",
+          "fertility": 1.93,
+          "splitRate": 25.1,
+          "unkRate": 0.08,
+          "compression": 3.16,
           "isLeke": false,
-          "status": "Baseline"
+          "status": "Leke -26.9% fertility"
         }
       ]
     },
@@ -896,28 +954,80 @@ window.LEKE_DATA = {
       "models": [
         {
           "name": "Leke BPE (8k)",
+          "vocab": "8k",
           "fertility": 1.34,
-          "splitRate": 15.4,
+          "splitRate": 7.1,
           "unkRate": 0.0,
           "compression": 4.11,
           "isLeke": true,
-          "status": "✅ Leke Superior"
+          "status": "Leke"
         },
         {
-          "name": "NLLB-200 (Multilingual)",
-          "fertility": 2.98,
-          "splitRate": 39.5,
-          "unkRate": 0.0,
-          "compression": 2.4,
+          "name": "Wikilangs Fante (fat, 32k)",
+          "vocab": "32k",
+          "fertility": 1.26,
+          "splitRate": 5.0,
+          "unkRate": 0.02,
+          "compression": 4.36,
           "isLeke": false,
-          "status": "Baseline"
+          "status": "Leke +6.3% fertility"
+        },
+        {
+          "name": "Wikilangs Fante (fat, 8k)",
+          "vocab": "8k",
+          "fertility": 1.38,
+          "splitRate": 8.5,
+          "unkRate": 0.02,
+          "compression": 3.99,
+          "isLeke": false,
+          "status": "Leke -2.9% fertility"
+        },
+        {
+          "name": "Goldfish Akan (aka_latn_full)",
+          "vocab": "50k",
+          "fertility": 1.39,
+          "splitRate": 8.1,
+          "unkRate": 0.0,
+          "compression": 3.95,
+          "isLeke": false,
+          "status": "Leke -3.6% fertility"
+        },
+        {
+          "name": "Wikilangs Twi (tw, 32k)",
+          "vocab": "32k",
+          "fertility": 1.51,
+          "splitRate": 11.3,
+          "unkRate": 0.05,
+          "compression": 3.64,
+          "isLeke": false,
+          "status": "Leke -11.3% fertility"
+        },
+        {
+          "name": "NLLB-200 (multilingual)",
+          "vocab": "256k",
+          "fertility": 1.7,
+          "splitRate": 17.2,
+          "unkRate": 0.61,
+          "compression": 3.24,
+          "isLeke": false,
+          "status": "Leke -21.2% fertility"
+        },
+        {
+          "name": "Wikilangs Twi (tw, 8k)",
+          "vocab": "8k",
+          "fertility": 1.71,
+          "splitRate": 16.5,
+          "unkRate": 0.04,
+          "compression": 3.22,
+          "isLeke": false,
+          "status": "Leke -21.6% fertility"
         }
       ]
     }
   ],
   "benchmarks": {
-    "encode_speed": "356,508 tokens/sec",
-    "decode_speed": "59,407 sentences/sec",
+    "encode_speed": "173,866 tokens/sec",
+    "decode_speed": "51,044 sentences/sec",
     "vocab_size": "8,192",
     "unk_rate": "0.00%",
     "languages": [

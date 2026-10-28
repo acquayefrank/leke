@@ -1,0 +1,182 @@
+[
+  {
+    "model": "Leke BPE (8k)",
+    "vocab": "8k",
+    "lang": "twi",
+    "fertility": 1.48,
+    "split_rate_gt2": 11.5,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.75
+  },
+  {
+    "model": "Leke BPE (8k)",
+    "vocab": "8k",
+    "lang": "ewe",
+    "fertility": 1.37,
+    "split_rate_gt2": 8.3,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.27
+  },
+  {
+    "model": "Leke BPE (8k)",
+    "vocab": "8k",
+    "lang": "gaa",
+    "fertility": 1.41,
+    "split_rate_gt2": 8.3,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.33
+  },
+  {
+    "model": "Leke BPE (8k)",
+    "vocab": "8k",
+    "lang": "fat",
+    "fertility": 1.34,
+    "split_rate_gt2": 7.1,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.11
+  },
+  {
+    "model": "NLLB-200 (multilingual)",
+    "vocab": "256k",
+    "lang": "twi",
+    "fertility": 1.55,
+    "split_rate_gt2": 12.6,
+    "unk_rate": 0.26,
+    "compression_ratio": 3.57
+  },
+  {
+    "model": "NLLB-200 (multilingual)",
+    "vocab": "256k",
+    "lang": "ewe",
+    "fertility": 1.65,
+    "split_rate_gt2": 15.9,
+    "unk_rate": 0.3,
+    "compression_ratio": 3.53
+  },
+  {
+    "model": "NLLB-200 (multilingual)",
+    "vocab": "256k",
+    "lang": "gaa",
+    "fertility": 1.93,
+    "split_rate_gt2": 25.1,
+    "unk_rate": 0.08,
+    "compression_ratio": 3.16
+  },
+  {
+    "model": "NLLB-200 (multilingual)",
+    "vocab": "256k",
+    "lang": "fat",
+    "fertility": 1.7,
+    "split_rate_gt2": 17.2,
+    "unk_rate": 0.61,
+    "compression_ratio": 3.24
+  },
+  {
+    "model": "Goldfish Twi (twi_latn_full)",
+    "vocab": "50k",
+    "lang": "twi",
+    "fertility": 1.28,
+    "split_rate_gt2": 5.4,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.31
+  },
+  {
+    "model": "Goldfish Akan (aka_latn_full)",
+    "vocab": "50k",
+    "lang": "twi",
+    "fertility": 1.28,
+    "split_rate_gt2": 5.2,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.31
+  },
+  {
+    "model": "Goldfish Akan (aka_latn_full)",
+    "vocab": "50k",
+    "lang": "fat",
+    "fertility": 1.39,
+    "split_rate_gt2": 8.1,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.95
+  },
+  {
+    "model": "Goldfish Ewe (ewe_latn_full)",
+    "vocab": "50k",
+    "lang": "ewe",
+    "fertility": 1.35,
+    "split_rate_gt2": 8.3,
+    "unk_rate": 0.03,
+    "compression_ratio": 4.32
+  },
+  {
+    "model": "Wikilangs Twi (tw, 8k)",
+    "vocab": "8k",
+    "lang": "twi",
+    "fertility": 1.34,
+    "split_rate_gt2": 7.4,
+    "unk_rate": 0.1,
+    "compression_ratio": 4.12
+  },
+  {
+    "model": "Wikilangs Twi (tw, 8k)",
+    "vocab": "8k",
+    "lang": "fat",
+    "fertility": 1.71,
+    "split_rate_gt2": 16.5,
+    "unk_rate": 0.04,
+    "compression_ratio": 3.22
+  },
+  {
+    "model": "Wikilangs Twi (tw, 32k)",
+    "vocab": "32k",
+    "lang": "twi",
+    "fertility": 1.24,
+    "split_rate_gt2": 4.5,
+    "unk_rate": 0.11,
+    "compression_ratio": 4.46
+  },
+  {
+    "model": "Wikilangs Twi (tw, 32k)",
+    "vocab": "32k",
+    "lang": "fat",
+    "fertility": 1.51,
+    "split_rate_gt2": 11.3,
+    "unk_rate": 0.05,
+    "compression_ratio": 3.64
+  },
+  {
+    "model": "Wikilangs Ewe (ee, 8k)",
+    "vocab": "8k",
+    "lang": "ewe",
+    "fertility": 1.44,
+    "split_rate_gt2": 10.3,
+    "unk_rate": 0.11,
+    "compression_ratio": 4.07
+  },
+  {
+    "model": "Wikilangs Ewe (ee, 32k)",
+    "vocab": "32k",
+    "lang": "ewe",
+    "fertility": 1.34,
+    "split_rate_gt2": 7.7,
+    "unk_rate": 0.11,
+    "compression_ratio": 4.34
+  },
+  {
+    "model": "Wikilangs Fante (fat, 8k)",
+    "vocab": "8k",
+    "lang": "fat",
+    "fertility": 1.38,
+    "split_rate_gt2": 8.5,
+    "unk_rate": 0.02,
+    "compression_ratio": 3.99
+  },
+  {
+    "model": "Wikilangs Fante (fat, 32k)",
+    "vocab": "32k",
+    "lang": "fat",
+    "fertility": 1.26,
+    "split_rate_gt2": 5.0,
+    "unk_rate": 0.02,
+    "compression_ratio": 4.36
+  }
+]

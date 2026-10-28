@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from leke import LekeTokenizer, calculate_metrics, normalize
+from leke.evaluate import load_measured_baselines
 from tokenizers.pre_tokenizers import ByteLevel
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -54,138 +55,70 @@ for s in test_sentences:
         }
     )
 
-# 4. Evaluation Leaderboard Data (computed dynamically on held-out test splits)
-lang_metrics = {}
-for lang_code in ["twi", "ewe", "gaa", "fat"]:
-    test_path = ROOT / "data" / "splits" / lang_code / "test.txt"
-    test_lines = test_path.read_text(encoding="utf-8").splitlines()
-    lang_metrics[lang_code] = calculate_metrics(tok, test_lines)
-
-leaderboard = [
-    {
-        "lang": "Akan / Twi",
-        "code": "twi",
-        "description": "Primary release gate language (~10M speakers in Ghana and Côte d'Ivoire). High morphological affixation.",
-        "models": [
-            {
-                "name": "Leke BPE (8k)",
-                "fertility": lang_metrics["twi"]["fertility"],
-                "splitRate": lang_metrics["twi"]["split_rate_gt2"],
-                "unkRate": lang_metrics["twi"]["unk_rate"],
-                "compression": lang_metrics["twi"]["compression_ratio"],
-                "isLeke": True,
-                "status": "✅ Beats All Baselines",
-            },
-            {
-                "name": "NLLB-200 (Multilingual)",
-                "fertility": 2.92,
-                "splitRate": 38.4,
-                "unkRate": 0.0,
-                "compression": 2.45,
-                "isLeke": False,
-                "status": "Baseline",
-            },
-            {
-                "name": "Goldfish Twi (Monolingual)",
-                "fertility": 1.62,
-                "splitRate": 16.8,
-                "unkRate": 0.4,
-                "compression": 4.12,
-                "isLeke": False,
-                "status": "Baseline",
-            },
-        ],
-    },
-    {
-        "lang": "Ewe",
-        "code": "ewe",
-        "description": "Gbe group of Kwa (~7M speakers in Ghana, Togo, Benin). Tonal with phonemic diacritics.",
-        "models": [
-            {
-                "name": "Leke BPE (8k)",
-                "fertility": lang_metrics["ewe"]["fertility"],
-                "splitRate": lang_metrics["ewe"]["split_rate_gt2"],
-                "unkRate": lang_metrics["ewe"]["unk_rate"],
-                "compression": lang_metrics["ewe"]["compression_ratio"],
-                "isLeke": True,
-                "status": "✅ Beats All Baselines",
-            },
-            {
-                "name": "NLLB-200 (Multilingual)",
-                "fertility": 3.15,
-                "splitRate": 44.1,
-                "unkRate": 0.0,
-                "compression": 2.28,
-                "isLeke": False,
-                "status": "Baseline",
-            },
-            {
-                "name": "Wikilangs Ewe (Monolingual)",
-                "fertility": 1.71,
-                "splitRate": 19.3,
-                "unkRate": 0.6,
-                "compression": 3.95,
-                "isLeke": False,
-                "status": "Baseline",
-            },
-        ],
-    },
-    {
-        "lang": "Ga",
-        "code": "gaa",
-        "description": "Ga-Dangme branch (~2.5M speakers in Greater Accra region). Syllable-timed tone language.",
-        "models": [
-            {
-                "name": "Leke BPE (8k)",
-                "fertility": lang_metrics["gaa"]["fertility"],
-                "splitRate": lang_metrics["gaa"]["split_rate_gt2"],
-                "unkRate": lang_metrics["gaa"]["unk_rate"],
-                "compression": lang_metrics["gaa"]["compression_ratio"],
-                "isLeke": True,
-                "status": "✅ Leke Superior",
-            },
-            {
-                "name": "NLLB-200 (Multilingual)",
-                "fertility": 3.20,
-                "splitRate": 46.2,
-                "unkRate": 0.0,
-                "compression": 2.20,
-                "isLeke": False,
-                "status": "Baseline",
-            },
-        ],
-    },
-    {
-        "lang": "Fante",
-        "code": "fat",
-        "description": "Central Akan dialect spoken in coastal Ghana. Closely related to Twi with distinct vowel harmony.",
-        "models": [
-            {
-                "name": "Leke BPE (8k)",
-                "fertility": lang_metrics["fat"]["fertility"],
-                "splitRate": lang_metrics["fat"]["split_rate_gt2"],
-                "unkRate": lang_metrics["fat"]["unk_rate"],
-                "compression": lang_metrics["fat"]["compression_ratio"],
-                "isLeke": True,
-                "status": "✅ Leke Superior",
-            },
-            {
-                "name": "NLLB-200 (Multilingual)",
-                "fertility": 2.98,
-                "splitRate": 39.5,
-                "unkRate": 0.0,
-                "compression": 2.40,
-                "isLeke": False,
-                "status": "Baseline",
-            },
-        ],
-    },
+# 4. Evaluation Leaderboard Data: Leke is scored live on the held-out test splits and
+# baselines come from scripts/measure_baselines.py, measured on the same splits.
+LANGUAGE_INFO = [
+    (
+        "twi",
+        "Akan / Twi",
+        "Primary release gate language (~10M speakers in Ghana and Côte d'Ivoire). High morphological affixation.",
+    ),
+    (
+        "ewe",
+        "Ewe",
+        "Gbe group of Kwa (~7M speakers in Ghana, Togo, Benin). Tonal with phonemic diacritics.",
+    ),
+    (
+        "gaa",
+        "Ga",
+        "Ga-Dangme branch (~2.5M speakers in Greater Accra region). Syllable-timed tone language.",
+    ),
+    (
+        "fat",
+        "Fante",
+        "Central Akan dialect spoken in coastal Ghana. Closely related to Twi with distinct vowel harmony.",
+    ),
 ]
 
-# 5. Throughput Benchmarks
+baselines = load_measured_baselines(ROOT / "data" / "baselines" / "measured_baselines.json")
+
+
+def leaderboard_row(name, vocab, metrics, is_leke, status):
+    return {
+        "name": name,
+        "vocab": vocab,
+        "fertility": metrics["fertility"],
+        "splitRate": metrics["split_rate_gt2"],
+        "unkRate": metrics["unk_rate"],
+        "compression": metrics["compression_ratio"],
+        "isLeke": is_leke,
+        "status": status,
+    }
+
+
+leaderboard = []
+for lang_code, lang_name, description in LANGUAGE_INFO:
+    test_path = ROOT / "data" / "splits" / lang_code / "test.txt"
+    test_lines = test_path.read_text(encoding="utf-8").splitlines()
+    leke_metrics = calculate_metrics(tok, test_lines)
+
+    models = [leaderboard_row("Leke BPE (8k)", "8k", leke_metrics, True, "Leke")]
+    lang_baselines = sorted(
+        (b for b in baselines if b["lang"] == lang_code), key=lambda b: b["fertility"]
+    )
+    for b in lang_baselines:
+        delta = (leke_metrics["fertility"] / b["fertility"] - 1.0) * 100.0
+        status = f"Leke {delta:+.1f}% fertility"
+        models.append(leaderboard_row(b["model"], b["vocab"], b, False, status))
+
+    leaderboard.append(
+        {"lang": lang_name, "code": lang_code, "description": description, "models": models}
+    )
+
+# 5. Throughput Benchmarks (from specs/benchmarks.md)
 benchmarks = {
-    "encode_speed": "356,508 tokens/sec",
-    "decode_speed": "59,407 sentences/sec",
+    "encode_speed": "173,866 tokens/sec",
+    "decode_speed": "51,044 sentences/sec",
     "vocab_size": "8,192",
     "unk_rate": "0.00%",
     "languages": ["Akan / Twi", "Ewe", "Ga", "Fante"],

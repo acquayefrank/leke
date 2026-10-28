@@ -26,10 +26,8 @@ This document records the legal and licensing terms governing text corpora used 
    - To guarantee complete compliance with CC BY-SA 4.0 (Wikipedia) and ODC-By (MADLAD-400), all tokenizer models and vocabulary tables released under Leke are made available under terms that permit downstream reuse and modification.
 3. **Redistribution of Datasets**:
    - The repository distributes only curated sample test splits for benchmark reproducibility (`data/samples/` and `data/splits/`).
-   - For full end-to-end reproducibility of the PDF extraction pipeline (`scripts/extract_pdf_corpora.py`), the complete 13-book PDF source archive is hosted at:
-     **[Google Drive Source PDF Archive (`data/raw/pdfs/`)](https://drive.google.com/drive/folders/13Nwl6DbuEhFY2qH-RxONorv5_kunyLXM?usp=sharing)**
-   - Downstream users can fetch the PDFs and rebuild all splits with a single command:
+   - The 13 source PDFs used by the extraction pipeline (`scripts/extract_pdf_corpora.py`) are not redistributed. Users who have obtained the PDFs place them in `data/raw/pdfs/` and rebuild all splits with:
      ```bash
-     uv run --with pypdf,gdown python scripts/extract_pdf_corpora.py --download
+     uv run --with pypdf python scripts/extract_pdf_corpora.py
      uv run python -m leke.corpus
      ```
