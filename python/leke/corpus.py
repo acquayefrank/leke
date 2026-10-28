@@ -327,7 +327,7 @@ def run_pipeline(
     manifest_path: Path = Path("data/data_manifest.json"),
     alpha: float = 0.5,
     seed: int = 42,
-    extra_train_dir: Optional[Path] = None,
+    extra_train_dirs: Optional[List[Path]] = None,
     pooled_path: Optional[Path] = None,
     total_samples: Optional[int] = None,
 ) -> Dict[str, Any]:
@@ -339,9 +339,9 @@ def run_pipeline(
         manifest_path (Path, optional): Path to write the JSON manifest. Defaults to Path("data/data_manifest.json").
         alpha (float, optional): Temperature sampling factor. Defaults to 0.5.
         seed (int, optional): Fixed random seed. Defaults to 42.
-        extra_train_dir (Optional[Path], optional): Directory of `<lang>.txt` files whose
-            lines are added to that language's training lines only (never to dev/test),
-            e.g. MADLAD-400 text from `scripts/fetch_madlad.py`. Defaults to None.
+        extra_train_dirs (Optional[List[Path]], optional): Directories of `<lang>.txt`
+            files whose lines are added to that language's training lines only (never to
+            dev/test), e.g. MADLAD-400 text from `scripts/fetch_madlad.py`. Defaults to None.
         pooled_path (Optional[Path], optional): Where to write the pooled training file.
             Defaults to `output_dir / "pooled_train.txt"`.
         total_samples (Optional[int], optional): Lines to draw for the pooled file.
@@ -394,15 +394,18 @@ def run_pipeline(
         train, dev, test = split_dataset(cleaned_lines, seed=seed)
 
         # Store training lines for pooled upsampling, plus any extra training-only text.
-        pool_lines = train
-        extra_file = extra_train_dir / f"{lang}.txt" if extra_train_dir else None
-        if extra_file and extra_file.exists():
-            held_out = set(dev) | set(test)
+        pool_lines = list(train)
+        seen = set(train) | set(dev) | set(test)
+        for extra_dir in extra_train_dirs or []:
+            extra_file = extra_dir / f"{lang}.txt"
+            if not extra_file.exists():
+                continue
             with open(extra_file, "r", encoding="utf-8") as f:
-                extra = processor.process_lines(f.readlines())
-            seen = set(train)
-            extra = [line for line in extra if line not in seen and line not in held_out]
-            pool_lines = train + extra
+                extra = [
+                    line for line in processor.process_lines(f.readlines()) if line not in seen
+                ]
+            seen.update(extra)
+            pool_lines.extend(extra)
         train_lines_by_lang[lang] = pool_lines
 
         # Create language-specific output directory.
@@ -464,8 +467,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--extra-train-dir",
         type=Path,
+        nargs="+",
         default=None,
-        help="Directory of <lang>.txt training-only text (e.g. data/raw/madlad)",
+        help="Directories of <lang>.txt training-only text (e.g. data/raw/madlad)",
     )
     parser.add_argument("--pooled-out", type=Path, default=None, help="Pooled output path")
     parser.add_argument("--manifest-out", type=Path, default=Path("data/data_manifest.json"))
@@ -476,7 +480,7 @@ if __name__ == "__main__":
     m = run_pipeline(
         manifest_path=args.manifest_out,
         alpha=args.alpha,
-        extra_train_dir=args.extra_train_dir,
+        extra_train_dirs=args.extra_train_dir,
         pooled_path=args.pooled_out,
         total_samples=args.total_samples,
     )

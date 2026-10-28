@@ -10,6 +10,6 @@
     "<mask>"
   ],
   "seed": 42,
-  "corpus_path": "data/raw/pooled_train_madlad.txt",
-  "corpus_sha256": "2de1cb6f22375d4ebc492a096b53349ae3a8d23117ddabd7cd0cae9c575204d6"
+  "corpus_path": "data/raw/pooled_train_extended.txt",
+  "corpus_sha256": "465b8bbfd5babc3bcca76ab40f072fe6011b5c3e6e58c2aa18500a6ebe3c6261"
 }

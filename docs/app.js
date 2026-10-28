@@ -55,10 +55,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 tokenizer = PreTrainedTokenizerFast.from_pretrained("models/bpe-16k")
 inputs = tokenizer("Akwaaba ba Ghana man mu.", return_tensors="pt")
-print(inputs.input_ids)  # tensor([[37, 5403, 408, 593, 1657, 1496, 340, 18]])`,
+print(inputs.input_ids)  # tensor([[37, 5091, 349, 562, 450, 703, 300, 18]])`,
 
     cli: `python -m leke.trainer \\
-  --corpus data/raw/pooled_train_madlad.txt \\
+  --corpus data/raw/pooled_train_extended.txt \\
   --output-dir models/bpe-16k \\
   --vocab-size 16384 \\
   --algorithm bpe

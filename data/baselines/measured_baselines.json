@@ -4,70 +4,70 @@
     "vocab": "16k",
     "eval_set": "test_split",
     "lang": "twi",
-    "fertility": 1.48,
-    "split_rate_gt2": 10.9,
+    "fertility": 1.38,
+    "split_rate_gt2": 8.0,
     "unk_rate": 0.0,
-    "compression_ratio": 3.73
+    "compression_ratio": 4.01
   },
   {
     "model": "Leke BPE (16k)",
     "vocab": "16k",
     "eval_set": "test_split",
     "lang": "ewe",
-    "fertility": 1.41,
-    "split_rate_gt2": 9.4,
+    "fertility": 1.45,
+    "split_rate_gt2": 10.4,
     "unk_rate": 0.0,
-    "compression_ratio": 4.14
+    "compression_ratio": 4.03
   },
   {
     "model": "Leke BPE (16k)",
     "vocab": "16k",
     "eval_set": "test_split",
     "lang": "gaa",
-    "fertility": 1.4,
-    "split_rate_gt2": 8.2,
+    "fertility": 1.39,
+    "split_rate_gt2": 7.9,
     "unk_rate": 0.0,
-    "compression_ratio": 4.38
+    "compression_ratio": 4.39
   },
   {
     "model": "Leke BPE (16k)",
     "vocab": "16k",
     "eval_set": "test_split",
     "lang": "fat",
-    "fertility": 1.3,
-    "split_rate_gt2": 5.6,
+    "fertility": 1.34,
+    "split_rate_gt2": 6.2,
     "unk_rate": 0.0,
-    "compression_ratio": 4.24
+    "compression_ratio": 4.11
   },
   {
     "model": "Leke BPE (16k)",
     "vocab": "16k",
     "eval_set": "flores_devtest",
     "lang": "twi_asante",
-    "fertility": 1.52,
-    "split_rate_gt2": 11.6,
+    "fertility": 1.49,
+    "split_rate_gt2": 10.6,
     "unk_rate": 0.0,
-    "compression_ratio": 3.58
+    "compression_ratio": 3.67
   },
   {
     "model": "Leke BPE (16k)",
     "vocab": "16k",
     "eval_set": "flores_devtest",
     "lang": "twi_akuapem",
-    "fertility": 1.47,
-    "split_rate_gt2": 10.7,
+    "fertility": 1.44,
+    "split_rate_gt2": 9.6,
     "unk_rate": 0.0,
-    "compression_ratio": 3.63
+    "compression_ratio": 3.7
   },
   {
     "model": "Leke BPE (16k)",
     "vocab": "16k",
     "eval_set": "flores_devtest",
     "lang": "ewe",
-    "fertility": 1.41,
-    "split_rate_gt2": 9.0,
+    "fertility": 1.43,
+    "split_rate_gt2": 9.3,
     "unk_rate": 0.0,
-    "compression_ratio": 3.98
+    "compression_ratio": 3.94
   },
   {
     "model": "NLLB-200 (multilingual)",

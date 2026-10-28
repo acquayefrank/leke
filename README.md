@@ -17,7 +17,7 @@
 Standard multilingual tokenizers (LLaMA, Mistral, GPT-4, NLLB) are built around high-resource languages and fragment West African words into more subword pieces than necessary. This inflates context window costs, increases inference latency, and causes hallucination loops in ASR/TTS and speech translation.
 
 Leke solves this with:
-1. **Low Fertility**: one 16k vocabulary shared across Twi, Ewe, Ga, and Fante gives **1.30 – 1.48** tokens per word on held-out curriculum text (4–28% fewer than NLLB-200) and **1.41 – 1.52** on out-of-domain FLORES+ text (up to 8% fewer than NLLB-200). Dedicated single-language tokenizers still do better on Twi; see [Benchmark Highlights](#benchmark-highlights).
+1. **Low Fertility**: one 16k vocabulary shared across Twi, Ewe, Ga, and Fante gives **1.34 – 1.45** tokens per word on held-out curriculum text (11–28% fewer than NLLB-200) and **1.43 – 1.49** on out-of-domain FLORES+ text (2–7% fewer than NLLB-200). Dedicated single-language tokenizers still do better on Twi; see [Benchmark Highlights](#benchmark-highlights).
 2. **Zero Unknown Tokens**: Byte-Level BPE ensures arbitrary byte sequences, names, or loanwords never produce `<unk>`.
 3. **Canonical Normalization**: Maps chaotic Unicode variations of `ɛ`, `ɔ`, `ŋ`, `ɖ`, `ƒ`, `ɣ` (including textbook lookalikes `ͻ`, `Ͻ`, `ↄ`, `ᴐ`, `⊃`, `φ`, `ε`, `γ`, `ð`, `Đ`, `ט`) to standard NFC codepoints, and strips zero-width characters.
 4. **Tone Preservation**: Tone marks are preserved by default, protecting phonemic pitch distinctions for Kwa speech and language AI.
@@ -69,20 +69,21 @@ The 13 reference curriculum manuals and textbooks are not distributed with this 
 # 1. Extract normalized curriculum corpora from the PDFs in data/raw/pdfs/
 uv run --with pypdf python scripts/extract_pdf_corpora.py
 
-# 2. Download MADLAD-400 Akan and Ewe text (training only, git-ignored in data/raw/madlad/)
+# 2. Download training-only text (git-ignored): MADLAD-400 Akan/Ewe and Twi/Ewe/Fante Wikipedia
 uv run --with huggingface_hub python scripts/fetch_madlad.py
+uv run --with huggingface_hub,pyarrow python scripts/fetch_wikipedia.py
 
-# 3. Build 80/10/10 curriculum splits plus a temperature-upsampled pool with MADLAD-400
-uv run python -m leke.corpus --alpha 0.3 --extra-train-dir data/raw/madlad \
-  --pooled-out data/raw/pooled_train_madlad.txt --total-samples 500000
+# 3. Build 80/10/10 curriculum splits plus a temperature-upsampled training pool
+uv run python -m leke.corpus --alpha 0.2 --extra-train-dir data/raw/madlad data/raw/wikipedia \
+  --pooled-out data/raw/pooled_train_extended.txt --total-samples 500000
 
 # 4. Train Byte-Level BPE (16,384 vocab) and run evaluation
-uv run python -m leke.trainer --algorithm bpe --corpus data/raw/pooled_train_madlad.txt \
+uv run python -m leke.trainer --algorithm bpe --corpus data/raw/pooled_train_extended.txt \
   --output-dir models/bpe-16k --vocab-size 16384
 uv run python -m leke.evaluate
 ```
 
-MADLAD-400 text is used only for training; dev/test splits contain curriculum text only, and any MADLAD line overlapping a dev/test or FLORES+ sentence is removed. `models/bpe-16k/training_receipt.json` records the SHA-256 of the pooled training file, which matches `data/data_manifest.json`.
+MADLAD-400 and Wikipedia text is used only for training; dev/test splits contain curriculum text only. MADLAD lines overlapping a dev/test or FLORES+ sentence are removed, and so is every Wikipedia article containing one. `models/bpe-16k/training_receipt.json` records the SHA-256 of the pooled training file, which matches `data/data_manifest.json`.
 
 ---
 
@@ -140,33 +141,33 @@ Professionally translated sentences that none of the compared tokenizers were tr
 
 | Language | Leke BPE (16k) | NLLB-200 (256k) | Wikilangs (16k) | Best monolingual (any size) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Twi (Asante)** | 1.52 | 1.59 (Leke −4%) | **1.45** | 1.40 (Wikilangs 32k) |
-| **Twi (Akuapem)** | 1.47 | 1.47 (tie) | **1.37** | 1.31 (Wikilangs 32k) |
-| **Ewe** | **1.41** | 1.54 (Leke −8%) | 1.44 | 1.33 (Goldfish 50k) |
+| **Twi (Asante)** | 1.49 | 1.59 (Leke −6%) | **1.45** | 1.40 (Wikilangs 32k) |
+| **Twi (Akuapem)** | 1.44 | 1.47 (Leke −2%) | **1.37** | 1.31 (Wikilangs 32k) |
+| **Ewe** | **1.43** | 1.54 (Leke −7%) | 1.44 | 1.33 (Goldfish 50k) |
 | **Unknown rate** | **0.0%** | 0.02% – 1.52% | 0.05% – 2.57% | 0.0% – 2.74% |
 
-On Ewe, Leke beats NLLB-200 and the same-size 16k monolingual tokenizer. Ewe monolingual tokenizers lose 2.5–2.7% of tokens to `<unk>`, mostly the Greek lookalike `ͻ` used for `ɔ` in FLORES+, which Leke normalizes. On Twi, dedicated Twi tokenizers are still 5–7% more compact at the same vocabulary size.
+Leke beats NLLB-200 on all three, and narrowly beats the same-size 16k Ewe-only tokenizer on Ewe. Ewe monolingual tokenizers lose 2.5–2.7% of tokens to `<unk>`, mostly the Greek lookalike `ͻ` used for `ɔ` in FLORES+, which Leke normalizes. On Twi, dedicated Twi tokenizers are still 3–5% more compact at the same vocabulary size.
 
 ### 2. In-domain: held-out curriculum test splits
 
-Sentences held out from the same sources as the curriculum training text. The Twi split is mostly Twi Wikipedia, which the Wikilangs and Goldfish tokenizers were likely trained on.
+Sentences held out from the same sources as the curriculum training text. The Twi split is mostly Twi Wikipedia, which the Wikilangs and Goldfish tokenizers were likely trained on; Leke also trains on Twi Wikipedia, minus every article containing a test sentence.
 
 | Language | Leke BPE (16k) | NLLB-200 (256k) | Wikilangs (16k) | Best monolingual (any size) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Akan / Twi** | 1.48 | 1.55 (Leke −5%) | **1.28** | 1.24 (Wikilangs 32k) |
-| **Ewe** | 1.41 | 1.65 (Leke −15%) | **1.38** | 1.34 (Wikilangs 32k) |
-| **Ga** | **1.40** | 1.93 (Leke −28%) | — | — |
-| **Fante** | **1.30** | 1.70 (Leke −24%) | **1.30** | 1.26 (Wikilangs 32k) |
+| **Akan / Twi** | 1.38 | 1.55 (Leke −11%) | **1.28** | 1.24 (Wikilangs 32k) |
+| **Ewe** | 1.45 | 1.65 (Leke −12%) | **1.38** | 1.34 (Wikilangs 32k) |
+| **Ga** | **1.39** | 1.93 (Leke −28%) | — | — |
+| **Fante** | 1.34 | 1.70 (Leke −21%) | **1.30** | 1.26 (Wikilangs 32k) |
 | **Unknown rate** | **0.0%** | 0.08% – 0.61% | 0.02% – 0.11% | 0.0% – 0.11% |
 
 *See full evaluation report in [`specs/eval_results.md`](specs/eval_results.md) and algorithm decision in [`specs/algorithm_decision.md`](specs/algorithm_decision.md).*
 
 ### 2. Throughput Benchmarks
 
-Measured from Python on the 1,151 held-out test sentences with `models/bpe-16k` (median of 7 runs, release build, 8-core x86_64 Linux). Absolute numbers vary by roughly 2× with machine load: an idle machine reached ~450,000 tokens/sec on 1 thread with the earlier 8k model, while the latest run under load measured:
+Measured from Python on the 1,151 held-out test sentences with `models/bpe-16k` (median of 7 runs, release build, 8-core x86_64 Linux). Absolute numbers vary by up to ~2× with machine load (a run under heavy background load measured ~240,000 tokens/sec on 1 thread); the latest run measured:
 
-- **Encode**: ~240,000 tokens/sec on 1 thread; ~950,000 tokens/sec on 8 threads.
-- **Decode**: ~60,000 sentences/sec on 1 thread; ~235,000 sentences/sec on 8 threads.
+- **Encode**: ~410,000 tokens/sec on 1 thread; ~1.3 million tokens/sec on 8 threads.
+- **Decode**: ~110,000 sentences/sec on 1 thread; ~300,000 sentences/sec on 8 threads.
 - **Overhead**: on par with the raw Hugging Face `tokenizers` library running the same `tokenizer.json` (0.75×–1.7× across runs, within run-to-run noise).
 - Build with `maturin develop --release`; a debug build is roughly 7–10× slower. Reproduce with `uv run python scripts/benchmark_throughput.py` (results in [`specs/benchmarks.md`](specs/benchmarks.md)).
 
@@ -184,7 +185,7 @@ leke/
 │   ├── baselines/         # Baseline tokenizer metrics on the same test sets
 │   └── data_manifest.json # Provenance manifest with SHA-256 hashes
 ├── models/
-│   ├── bpe-16k/           # Production Byte-Level BPE tokenizer bundle (curriculum + MADLAD-400)
+│   ├── bpe-16k/           # Production Byte-Level BPE tokenizer bundle (curriculum + MADLAD-400 + Wikipedia)
 │   ├── unigram-16k/       # Unigram comparison model bundle
 │   └── bpe-8k/            # Legacy 8k model (curriculum text only)
 ├── python/leke/           # Python package wrapper (tokenizer, trainer, corpus, evaluate)

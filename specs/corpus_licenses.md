@@ -8,7 +8,7 @@ This document records the legal and licensing terms governing text corpora used 
 
 | Corpus | Target Languages Covered | Primary License | Commercial Use Permitted | Attribution Requirement |
 | :--- | :--- | :--- | :--- | :--- |
-| **Wikipedia Dumps** | Akan/Twi (`tw`), Ewe (`ee`) | Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) | Yes | "Text from Wikipedia, licensed under CC BY-SA 4.0" |
+| **Wikipedia Dumps** (`wikimedia/wikipedia` 20231101; training only, not redistributed) | Akan/Twi (`tw`), Ewe (`ee`), Fante (`fat`) | Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) | Yes | "Text from Wikipedia, licensed under CC BY-SA 4.0" |
 | **NaCCA / MoE Curriculum Manuals** | Asante Twi, Ewe, Ga, Mfantse (Fante) | Open Educational Resources (Ministry of Education / NaCCA / T-TEL / GILLBT) | Educational / Transformative Subword Extraction | Cite: National Council for Curriculum and Assessment (NaCCA), Ministry of Education, Ghana (2024–2026) |
 | **Peace Corps & FSI Twi Courses** | Twi (`twi`) | US Government Public Domain (17 U.S.C. § 105) | Yes | Public Domain (Peace Corps Ghana / Foreign Service Institute) |
 | **Basel Mission English–Tshi Dictionary (1909)** | Asante / Akuapem Twi, Fante | Public Domain (Published 1909) | Yes | Cite: Christaller & Mohr, *English-Tshi (Asante) Dictionary*, Basel (1909) |
