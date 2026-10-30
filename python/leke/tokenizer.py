@@ -235,8 +235,16 @@ class LekeTokenizer:
         # Lazy import transformers so downstream users only pay import time when requested.
         from transformers import PreTrainedTokenizerFast
 
-        # Initialize Hugging Face fast tokenizer pointing to Leke's bundle.
-        return PreTrainedTokenizerFast(tokenizer_file=self.path)
+        # Initialize Hugging Face fast tokenizer pointing to Leke's bundle, with the
+        # special tokens every Leke bundle is trained with (see tokenizer_config.json).
+        return PreTrainedTokenizerFast(
+            tokenizer_file=self.path,
+            unk_token="<unk>",
+            bos_token="<s>",
+            eos_token="</s>",
+            pad_token="<pad>",
+            mask_token="<mask>",
+        )
 
     def __repr__(self) -> str:
         """Returns an unambiguous string representation of the LekeTokenizer instance.

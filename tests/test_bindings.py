@@ -74,6 +74,9 @@ def test_transformers_interop(model_path):
     tok = LekeTokenizer.from_file(model_path)
     hf_trans = tok.to_transformers()
     assert hf_trans is not None
+    assert hf_trans.pad_token == "<pad>"
+    assert hf_trans.pad_token_id == tok.token_to_id("<pad>")
+    assert (hf_trans.bos_token, hf_trans.eos_token) == ("<s>", "</s>")
 
     tokens = hf_trans.tokenize("Wɔfrɛ me Kofi")
     assert len(tokens) > 0
