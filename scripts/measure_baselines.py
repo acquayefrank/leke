@@ -23,7 +23,7 @@ from pathlib import Path
 import sentencepiece as spm
 from huggingface_hub import hf_hub_download
 from leke import LekeTokenizer, calculate_metrics
-from leke.evaluate import LEKE_MODEL_NAME, LEKE_VOCAB
+from leke.evaluate import LEKE_MODELS
 from tokenizers import Tokenizer
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -123,13 +123,14 @@ def main():
     eval_sets = load_eval_sets()
 
     results = []
-    leke = LekeTokenizer.from_file(ROOT / "models" / "bpe-16k" / "tokenizer.json")
-    for eval_set, eval_lang, _, lines in eval_sets:
-        metrics = calculate_metrics(leke, lines)
-        results.append(
-            {"model": LEKE_MODEL_NAME, "vocab": LEKE_VOCAB, "eval_set": eval_set, "lang": eval_lang}
-            | metrics
-        )
+    for leke_name, leke_vocab, bundle in LEKE_MODELS:
+        leke = LekeTokenizer.from_file(ROOT / bundle / "tokenizer.json")
+        for eval_set, eval_lang, _, lines in eval_sets:
+            metrics = calculate_metrics(leke, lines)
+            results.append(
+                {"model": leke_name, "vocab": leke_vocab, "eval_set": eval_set, "lang": eval_lang}
+                | metrics
+            )
 
     for name, vocab, factory, langs in BASELINES:
         tok = factory()

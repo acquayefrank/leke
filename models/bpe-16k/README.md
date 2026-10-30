@@ -24,6 +24,8 @@ pipeline_tag: text-generation
 
 **Leke** is a Byte-Level BPE tokenizer for the Kwa languages **Akan/Twi**, **Ewe**, **Ga**, and **Fante**, with one 16,384-token vocabulary shared across all four, Kwa-specific Unicode normalization, and a guaranteed **0.0% unknown-token rate**.
 
+A larger sibling, [Leke BPE-32k](https://huggingface.co/acquayefrank/leke-bpe-32k), is trained on the same data and uses about 6–8% fewer tokens per word. Choose 16k for small models trained on little data and 32k when sequence length matters more than model size.
+
 ---
 
 ## Key Highlights

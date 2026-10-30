@@ -45,7 +45,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from tabulate import tabulate
 
@@ -62,9 +62,15 @@ LANGUAGE_NAMES: Dict[str, str] = {
     "fat": "Fante",
 }
 
-# Display name and vocabulary size of the default Leke model in leaderboards.
-LEKE_MODEL_NAME = "Leke BPE (16k)"
-LEKE_VOCAB = "16k"
+# Shipped Leke models as (display name, vocabulary size, bundle directory). The first
+# entry is the default model used by the docs page and examples.
+LEKE_MODELS: List[Tuple[str, str, Path]] = [
+    ("Leke BPE (16k)", "16k", Path("models/bpe-16k")),
+    ("Leke BPE (32k)", "32k", Path("models/bpe-32k")),
+]
+
+# Display name and vocabulary size of the default Leke model.
+LEKE_MODEL_NAME, LEKE_VOCAB, _ = LEKE_MODELS[0]
 
 # Baseline metrics measured on the held-out test splits by scripts/measure_baselines.py.
 DEFAULT_BASELINES_PATH = Path("data/baselines/measured_baselines.json")
@@ -206,12 +212,15 @@ def calculate_metrics(tokenizer: Any, lines: List[str]) -> Dict[str, float]:
 
 
 def _comparison_section(
-    tokenizer: Any, eval_sets: List[Any], baselines: List[Dict[str, Any]]
+    leke_models: List[Tuple[str, str, Any]],
+    eval_sets: List[Any],
+    baselines: List[Dict[str, Any]],
 ) -> Any:
     """Builds a Markdown comparison table and summary for one evaluation set.
 
     Args:
-        tokenizer (Any): The Leke tokenizer under evaluation.
+        leke_models (List[Tuple[str, str, Any]]): `(name, vocab, tokenizer)` tuples for
+            the Leke models under evaluation.
         eval_sets (List[Any]): `(lang_key, display_name, path)` tuples.
         baselines (List[Dict[str, Any]]): Measured baseline rows for this evaluation set.
 
@@ -221,27 +230,34 @@ def _comparison_section(
     table_data = []
     summary_items = []
     for lang, label, path in eval_sets:
-        metrics = calculate_metrics(tokenizer, path.read_text(encoding="utf-8").splitlines())
+        lines = path.read_text(encoding="utf-8").splitlines()
+        leke_metrics = [
+            (name, vocab, calculate_metrics(tok, lines)) for name, vocab, tok in leke_models
+        ]
 
-        # Leke row first, then baselines measured on the same text, best first.
-        table_data.append(
-            [
-                f"**{LEKE_MODEL_NAME}**",
-                LEKE_VOCAB,
-                label,
-                f"**{metrics['fertility']}**",
-                f"{metrics['split_rate_gt2']}%",
-                f"**{metrics['unk_rate']}%**",
-                f"{metrics['compression_ratio']}",
-                "—",
-            ]
-        )
+        # Leke rows first, then baselines measured on the same text, best first.
+        for name, vocab, metrics in leke_metrics:
+            table_data.append(
+                [
+                    f"**{name}**",
+                    vocab,
+                    label,
+                    f"**{metrics['fertility']}**",
+                    f"{metrics['split_rate_gt2']}%",
+                    f"**{metrics['unk_rate']}%**",
+                    f"{metrics['compression_ratio']}",
+                    "—",
+                ]
+            )
         lang_baselines = sorted(
             (b for b in baselines if b["lang"] == lang), key=lambda b: b["fertility"]
         )
         for b_metrics in lang_baselines:
-            delta = (metrics["fertility"] / b_metrics["fertility"] - 1.0) * 100.0
-            status = "✅ Leke lower" if delta < 0 else "⚠️ Baseline lower"
+            deltas = []
+            for _, vocab, metrics in leke_metrics:
+                delta = (metrics["fertility"] / b_metrics["fertility"] - 1.0) * 100.0
+                mark = "✅" if delta < 0 else "⚠️"
+                deltas.append(f"{mark} {vocab} {delta:+.1f}%")
             table_data.append(
                 [
                     b_metrics["model"],
@@ -251,22 +267,23 @@ def _comparison_section(
                     f"{b_metrics['split_rate_gt2']}%",
                     f"{b_metrics['unk_rate']}%",
                     f"{b_metrics['compression_ratio']}",
-                    f"{status} ({delta:+.1f}%)",
+                    ", ".join(deltas),
                 ]
             )
 
-        # Summarize where Leke wins and loses on fertility.
-        beaten = [b["model"] for b in lang_baselines if metrics["fertility"] < b["fertility"]]
-        ahead = [b["model"] for b in lang_baselines if b["fertility"] <= metrics["fertility"]]
-        line = (
-            f"- **{label}**: Leke fertility {metrics['fertility']}, "
-            f"`<unk>` rate {metrics['unk_rate']}%."
-        )
-        if beaten:
-            line += f" Lower fertility than: {', '.join(beaten)}."
-        if ahead:
-            line += f" Higher fertility than: {', '.join(ahead)}."
-        summary_items.append(line)
+        # Summarize where each Leke model wins and loses on fertility.
+        for name, _, metrics in leke_metrics:
+            beaten = [b["model"] for b in lang_baselines if metrics["fertility"] < b["fertility"]]
+            ahead = [b["model"] for b in lang_baselines if b["fertility"] <= metrics["fertility"]]
+            line = (
+                f"- **{label}, {name}**: fertility {metrics['fertility']}, "
+                f"`<unk>` rate {metrics['unk_rate']}%."
+            )
+            if beaten:
+                line += f" Lower fertility than: {', '.join(beaten)}."
+            if ahead:
+                line += f" Higher or equal fertility: {', '.join(ahead)}."
+            summary_items.append(line)
 
     headers = [
         "Model",
@@ -282,7 +299,7 @@ def _comparison_section(
 
 
 def evaluate_all(
-    model_path: Path = Path("models/bpe-16k/tokenizer.json"),
+    models: Optional[List[Tuple[str, str, Path]]] = None,
     splits_dir: Path = Path("data/splits"),
     output_report_path: Optional[Path] = Path("specs/eval_results.md"),
     baselines_path: Path = DEFAULT_BASELINES_PATH,
@@ -291,7 +308,8 @@ def evaluate_all(
     """Runs evaluation across all target languages on held-out test splits.
 
     Args:
-        model_path (Path, optional): Path to the tokenizer.json file.
+        models (Optional[List[Tuple[str, str, Path]]], optional): `(name, vocab,
+            bundle_dir)` tuples to evaluate. Defaults to `LEKE_MODELS`.
         splits_dir (Path, optional): Directory containing language split folders.
         output_report_path (Optional[Path], optional): File to save markdown leaderboard.
         baselines_path (Path, optional): Measured baseline metrics JSON.
@@ -302,7 +320,7 @@ def evaluate_all(
         str: Formatted Markdown leaderboard report.
 
     Notes:
-        1. Loads the specified model bundle into `LekeTokenizer`.
+        1. Loads each model bundle into `LekeTokenizer`.
         2. Loads each `test.txt` split and any FLORES+ devtest files in `flores_dir`.
         3. Computes metrics and compares against baselines measured on the same
            splits (NLLB-200, Goldfish, Wikilangs) from `baselines_path`.
@@ -310,8 +328,11 @@ def evaluate_all(
            unknown token rate, and compression.
         5. Saves the leaderboard report to `output_report_path` and returns markdown text.
     """
-    # Step 1: Load tokenizer and measured baselines from disk.
-    tokenizer = LekeTokenizer.from_file(model_path)
+    # Step 1: Load every Leke model bundle.
+    leke_models = [
+        (name, vocab, LekeTokenizer.from_file(bundle / "tokenizer.json"))
+        for name, vocab, bundle in (models or LEKE_MODELS)
+    ]
 
     # Step 2: Collect in-domain test splits and, if downloaded, FLORES+ devtest files.
     split_sets = []
@@ -327,11 +348,11 @@ def evaluate_all(
 
     # Step 3: Build a comparison table and summary for each evaluation set.
     split_table, split_summary = _comparison_section(
-        tokenizer, split_sets, load_measured_baselines(baselines_path, "test_split")
+        leke_models, split_sets, load_measured_baselines(baselines_path, "test_split")
     )
     report = f"""# Leke Subword Tokenizer — Evaluation Leaderboard
 
-This report compares Leke against baseline tokenizers (NLLB-200, Goldfish, Wikilangs) measured on the same text by `scripts/measure_baselines.py`.
+This report compares the Leke models (16k and 32k vocabularies, same training data) against baseline tokenizers (NLLB-200, Goldfish, Wikilangs) measured on the same text by `scripts/measure_baselines.py`.
 
 ## Held-Out Test Splits (in-domain)
 
@@ -343,7 +364,7 @@ Sentences held out from the same sources as the training data (`data/splits/<lan
 """
     if flores_sets:
         flores_table, flores_summary = _comparison_section(
-            tokenizer, flores_sets, load_measured_baselines(baselines_path, "flores_devtest")
+            leke_models, flores_sets, load_measured_baselines(baselines_path, "flores_devtest")
         )
         report += f"""
 ## FLORES+ devtest (out-of-domain)
@@ -371,8 +392,8 @@ def main() -> None:
     parser.add_argument(
         "--model",
         type=str,
-        default="models/bpe-16k/tokenizer.json",
-        help="Path to tokenizer.json",
+        default=None,
+        help="Path to one tokenizer.json to evaluate (default: every model in LEKE_MODELS)",
     )
     parser.add_argument(
         "--splits-dir",
@@ -389,8 +410,12 @@ def main() -> None:
 
     # Step 2: Parse arguments and run evaluation.
     args = parser.parse_args()
+    models = None
+    if args.model:
+        bundle = Path(args.model).parent
+        models = [(f"Leke ({bundle.name})", bundle.name, bundle)]
     report = evaluate_all(
-        model_path=Path(args.model),
+        models=models,
         splits_dir=Path(args.splits_dir),
         output_report_path=Path(args.report_out),
     )

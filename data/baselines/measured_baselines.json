@@ -70,6 +70,76 @@
     "compression_ratio": 3.94
   },
   {
+    "model": "Leke BPE (32k)",
+    "vocab": "32k",
+    "eval_set": "test_split",
+    "lang": "twi",
+    "fertility": 1.29,
+    "split_rate_gt2": 5.8,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.27
+  },
+  {
+    "model": "Leke BPE (32k)",
+    "vocab": "32k",
+    "eval_set": "test_split",
+    "lang": "ewe",
+    "fertility": 1.34,
+    "split_rate_gt2": 7.4,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.37
+  },
+  {
+    "model": "Leke BPE (32k)",
+    "vocab": "32k",
+    "eval_set": "test_split",
+    "lang": "gaa",
+    "fertility": 1.29,
+    "split_rate_gt2": 4.8,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.75
+  },
+  {
+    "model": "Leke BPE (32k)",
+    "vocab": "32k",
+    "eval_set": "test_split",
+    "lang": "fat",
+    "fertility": 1.25,
+    "split_rate_gt2": 3.9,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.41
+  },
+  {
+    "model": "Leke BPE (32k)",
+    "vocab": "32k",
+    "eval_set": "flores_devtest",
+    "lang": "twi_asante",
+    "fertility": 1.4,
+    "split_rate_gt2": 8.3,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.89
+  },
+  {
+    "model": "Leke BPE (32k)",
+    "vocab": "32k",
+    "eval_set": "flores_devtest",
+    "lang": "twi_akuapem",
+    "fertility": 1.36,
+    "split_rate_gt2": 7.7,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.92
+  },
+  {
+    "model": "Leke BPE (32k)",
+    "vocab": "32k",
+    "eval_set": "flores_devtest",
+    "lang": "ewe",
+    "fertility": 1.33,
+    "split_rate_gt2": 6.8,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.21
+  },
+  {
     "model": "NLLB-200 (multilingual)",
     "vocab": "256k",
     "eval_set": "test_split",

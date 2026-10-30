@@ -17,7 +17,7 @@
 Standard multilingual tokenizers (LLaMA, Mistral, GPT-4, NLLB) are built around high-resource languages and fragment West African words into more subword pieces than necessary. This inflates context window costs, increases inference latency, and causes hallucination loops in ASR/TTS and speech translation.
 
 Leke solves this with:
-1. **Low Fertility**: one 16k vocabulary shared across Twi, Ewe, Ga, and Fante gives **1.34 – 1.45** tokens per word on held-out curriculum text (11–28% fewer than NLLB-200) and **1.43 – 1.49** on out-of-domain FLORES+ text (2–7% fewer than NLLB-200). Dedicated single-language tokenizers still do better on Twi; see [Benchmark Highlights](#benchmark-highlights).
+1. **Low Fertility**: one vocabulary shared across Twi, Ewe, Ga, and Fante, in two sizes. The 16k model gives **1.34 – 1.45** tokens per word on held-out curriculum text (11–28% fewer than NLLB-200) and **1.43 – 1.49** on out-of-domain FLORES+ text (2–7% fewer than NLLB-200). The 32k model gives **1.25 – 1.34** and **1.33 – 1.40**, matching single-language tokenizers of its size on FLORES+ Twi Asante and Ewe. Dedicated Twi tokenizers still do better on Twi Akuapem and the Wikipedia-heavy Twi test split; see [Benchmark Highlights](#benchmark-highlights).
 2. **Zero Unknown Tokens**: Byte-Level BPE ensures arbitrary byte sequences, names, or loanwords never produce `<unk>`.
 3. **Canonical Normalization**: Maps chaotic Unicode variations of `ɛ`, `ɔ`, `ŋ`, `ɖ`, `ƒ`, `ɣ` (including textbook lookalikes `ͻ`, `Ͻ`, `ↄ`, `ᴐ`, `⊃`, `φ`, `ε`, `γ`, `ð`, `Đ`, `ט`) to standard NFC codepoints, and strips zero-width characters.
 4. **Tone Preservation**: Tone marks are preserved by default, protecting phonemic pitch distinctions for Kwa speech and language AI.
@@ -77,13 +77,15 @@ uv run --with huggingface_hub,pyarrow python scripts/fetch_wikipedia.py
 uv run python -m leke.corpus --alpha 0.2 --extra-train-dir data/raw/madlad data/raw/wikipedia \
   --pooled-out data/raw/pooled_train_extended.txt --total-samples 500000
 
-# 4. Train Byte-Level BPE (16,384 vocab) and run evaluation
+# 4. Train Byte-Level BPE (16,384 and 32,768 vocab) and run evaluation
 uv run python -m leke.trainer --algorithm bpe --corpus data/raw/pooled_train_extended.txt \
   --output-dir models/bpe-16k --vocab-size 16384
+uv run python -m leke.trainer --algorithm bpe --corpus data/raw/pooled_train_extended.txt \
+  --output-dir models/bpe-32k --vocab-size 32768
 uv run python -m leke.evaluate
 ```
 
-MADLAD-400 and Wikipedia text is used only for training; dev/test splits contain curriculum text only. MADLAD lines overlapping a dev/test or FLORES+ sentence are removed, and so is every Wikipedia article containing one. `models/bpe-16k/training_receipt.json` records the SHA-256 of the pooled training file, which matches `data/data_manifest.json`.
+MADLAD-400 and Wikipedia text is used only for training; dev/test splits contain curriculum text only. MADLAD lines overlapping a dev/test or FLORES+ sentence are removed, and so is every Wikipedia article containing one. Each model's `training_receipt.json` records the SHA-256 of the pooled training file, which matches `data/data_manifest.json`.
 
 ---
 
@@ -133,32 +135,32 @@ fn main() {
 
 ## Benchmark Highlights
 
-Fertility is tokens per word (lower is better). Every tokenizer is scored with the same metric code on the same text (`scripts/measure_baselines.py`). Leke uses one 16k vocabulary for all four languages; each Wikilangs and Goldfish tokenizer covers a single language.
+Fertility is tokens per word (lower is better). Every tokenizer is scored with the same metric code on the same text (`scripts/measure_baselines.py`). Each Leke model uses one vocabulary for all four languages; each Wikilangs and Goldfish tokenizer covers a single language. Leke ships in two sizes trained on the same data: 16k (`acquayefrank/leke-bpe-16k`, the default) for small models trained on little data, and 32k (`acquayefrank/leke-bpe-32k`) when sequence length matters more than embedding size.
 
 ### 1. Out-of-domain: FLORES+ devtest
 
 Professionally translated sentences that none of the compared tokenizers were trained on. FLORES+ has no Ga or Fante.
 
-| Language | Leke BPE (16k) | NLLB-200 (256k) | Wikilangs (16k) | Best monolingual (any size) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Twi (Asante)** | 1.49 | 1.59 (Leke −6%) | **1.45** | 1.40 (Wikilangs 32k) |
-| **Twi (Akuapem)** | 1.44 | 1.47 (Leke −2%) | **1.37** | 1.31 (Wikilangs 32k) |
-| **Ewe** | **1.43** | 1.54 (Leke −7%) | 1.44 | 1.33 (Goldfish 50k) |
-| **Unknown rate** | **0.0%** | 0.02% – 1.52% | 0.05% – 2.57% | 0.0% – 2.74% |
+| Language | Leke BPE (16k) | Leke BPE (32k) | NLLB-200 (256k) | Wikilangs (16k) | Best monolingual (any size) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Twi (Asante)** | 1.49 | **1.40** | 1.59 | 1.45 | **1.40** (Wikilangs 32k) |
+| **Twi (Akuapem)** | 1.44 | 1.36 | 1.47 | 1.37 | **1.31** (Wikilangs 32k) |
+| **Ewe** | 1.43 | **1.33** | 1.54 | 1.44 | **1.33** (Goldfish 50k) |
+| **Unknown rate** | **0.0%** | **0.0%** | 0.02% – 1.52% | 0.05% – 2.57% | 0.0% – 2.74% |
 
-Leke beats NLLB-200 on all three, and narrowly beats the same-size 16k Ewe-only tokenizer on Ewe. Ewe monolingual tokenizers lose 2.5–2.7% of tokens to `<unk>`, mostly the Greek lookalike `ͻ` used for `ɔ` in FLORES+, which Leke normalizes. On Twi, dedicated Twi tokenizers are still 3–5% more compact at the same vocabulary size.
+Both Leke models beat NLLB-200 on all three (16k by 2–7%, 32k by 7–14%). The 16k model narrowly beats the same-size Ewe-only tokenizer on Ewe; the 32k model ties the best monolingual tokenizer on Twi Asante and Ewe and beats every 16k single-language one. Ewe monolingual tokenizers lose 2.5–2.7% of tokens to `<unk>`, mostly the Greek lookalike `ͻ` used for `ɔ` in FLORES+, which Leke normalizes. On Twi, dedicated 16k Twi tokenizers are still 3–5% more compact than Leke 16k, and on Twi Akuapem the best Twi tokenizer is 4% more compact than Leke 32k.
 
 ### 2. In-domain: held-out curriculum test splits
 
 Sentences held out from the same sources as the curriculum training text. The Twi split is mostly Twi Wikipedia, which the Wikilangs and Goldfish tokenizers were likely trained on; Leke also trains on Twi Wikipedia, minus every article containing a test sentence.
 
-| Language | Leke BPE (16k) | NLLB-200 (256k) | Wikilangs (16k) | Best monolingual (any size) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Akan / Twi** | 1.38 | 1.55 (Leke −11%) | **1.28** | 1.24 (Wikilangs 32k) |
-| **Ewe** | 1.45 | 1.65 (Leke −12%) | **1.38** | 1.34 (Wikilangs 32k) |
-| **Ga** | **1.39** | 1.93 (Leke −28%) | none | none |
-| **Fante** | 1.34 | 1.70 (Leke −21%) | **1.30** | 1.26 (Wikilangs 32k) |
-| **Unknown rate** | **0.0%** | 0.08% – 0.61% | 0.02% – 0.11% | 0.0% – 0.11% |
+| Language | Leke BPE (16k) | Leke BPE (32k) | NLLB-200 (256k) | Wikilangs (16k) | Best monolingual (any size) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Akan / Twi** | 1.38 | 1.29 | 1.55 | 1.28 | **1.24** (Wikilangs 32k) |
+| **Ewe** | 1.45 | **1.34** | 1.65 | 1.38 | **1.34** (Wikilangs 32k) |
+| **Ga** | 1.39 | **1.29** | 1.93 | none | none |
+| **Fante** | 1.34 | **1.25** | 1.70 | 1.30 | 1.26 (Wikilangs 32k) |
+| **Unknown rate** | **0.0%** | **0.0%** | 0.08% – 0.61% | 0.02% – 0.11% | 0.0% – 0.11% |
 
 *See full evaluation report in [`specs/eval_results.md`](specs/eval_results.md) and algorithm decision in [`specs/algorithm_decision.md`](specs/algorithm_decision.md).*
 
@@ -185,7 +187,8 @@ leke/
 │   ├── baselines/         # Baseline tokenizer metrics on the same test sets
 │   └── data_manifest.json # Provenance manifest with SHA-256 hashes
 ├── models/
-│   ├── bpe-16k/           # Production Byte-Level BPE tokenizer bundle (curriculum + MADLAD-400 + Wikipedia)
+│   ├── bpe-16k/           # Default Byte-Level BPE tokenizer bundle (curriculum + MADLAD-400 + Wikipedia)
+│   ├── bpe-32k/           # Larger 32k sibling trained on the same data
 │   ├── unigram-16k/       # Unigram comparison model bundle
 │   └── bpe-8k/            # Legacy 8k model (curriculum text only)
 ├── python/leke/           # Python package wrapper (tokenizer, trainer, corpus, evaluate)
