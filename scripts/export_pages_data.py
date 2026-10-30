@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from leke import LekeTokenizer, calculate_metrics, normalize
-from leke.evaluate import LEKE_MODEL_NAME, LEKE_VOCAB, load_measured_baselines
+from leke.evaluate import LEKE_MODELS, load_measured_baselines
 from tokenizers.pre_tokenizers import ByteLevel
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -11,13 +11,13 @@ ROOT = Path(__file__).resolve().parent.parent
 with open(ROOT / "data" / "char_mappings.json", "r", encoding="utf-8") as f:
     char_mappings_raw = json.load(f)
 
-# 2. Load BPE 8k tokenizer.json
+# 2. Load the default (16k) tokenizer.json for the live demo
 with open(ROOT / "models" / "bpe-16k" / "tokenizer.json", "r", encoding="utf-8") as f:
     tok_json = json.load(f)
 
 vocab = tok_json["model"]["vocab"]
 merges = tok_json["model"]["merges"]
-byte_alphabet = ByteLevel.alphabet()
+byte_alphabet = sorted(ByteLevel.alphabet())
 
 # 3. Test sentences with real tokenization
 tok = LekeTokenizer.from_file(str(ROOT / "models" / "bpe-16k" / "tokenizer.json"))
@@ -100,9 +100,16 @@ leaderboard = []
 for lang_code, lang_name, description in LANGUAGE_INFO:
     test_path = ROOT / "data" / "splits" / lang_code / "test.txt"
     test_lines = test_path.read_text(encoding="utf-8").splitlines()
+    models = []
+    for leke_name, leke_vocab, bundle in LEKE_MODELS:
+        leke_tok = LekeTokenizer.from_file(str(ROOT / bundle / "tokenizer.json"))
+        models.append(
+            leaderboard_row(
+                leke_name, leke_vocab, calculate_metrics(leke_tok, test_lines), True, "Leke"
+            )
+        )
+    # Baseline deltas are relative to the default (16k) model.
     leke_metrics = calculate_metrics(tok, test_lines)
-
-    models = [leaderboard_row(LEKE_MODEL_NAME, LEKE_VOCAB, leke_metrics, True, "Leke")]
     lang_baselines = sorted(
         (b for b in baselines if b["lang"] == lang_code), key=lambda b: b["fertility"]
     )
@@ -119,7 +126,7 @@ for lang_code, lang_name, description in LANGUAGE_INFO:
 benchmarks = {
     "encode_speed": "~450,000 tokens/sec",
     "decode_speed": "~100,000 sentences/sec",
-    "vocab_size": "8,192",
+    "vocab_size": "16,384",
     "unk_rate": "0.00%",
     "languages": ["Akan / Twi", "Ewe", "Ga", "Fante"],
 }

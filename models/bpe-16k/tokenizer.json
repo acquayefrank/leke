@@ -58,16 +58,9 @@
       {
         "type": "Replace",
         "pattern": {
-          "String": "Ↄ"
+          "String": " "
         },
-        "content": "Ɔ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "ↄ"
-        },
-        "content": "ɔ"
+        "content": " "
       },
       {
         "type": "Replace",
@@ -79,111 +72,6 @@
       {
         "type": "Replace",
         "pattern": {
-          "String": "φ"
-        },
-        "content": "ƒ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": " "
-        },
-        "content": " "
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": " "
-        },
-        "content": " "
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": " "
-        },
-        "content": " "
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "ϵ"
-        },
-        "content": "ɛ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "є"
-        },
-        "content": "ɛ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": " "
-        },
-        "content": " "
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "γ"
-        },
-        "content": "ɣ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "Ͻ"
-        },
-        "content": "Ɔ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "Γ"
-        },
-        "content": "Ɣ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "ϕ"
-        },
-        "content": "ƒ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "Ε"
-        },
-        "content": "Ɛ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "⊃"
-        },
-        "content": "ɔ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": " "
-        },
-        "content": " "
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "ͻ"
-        },
-        "content": "ɔ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
           "String": "ð"
         },
         "content": "ɖ"
@@ -191,9 +79,16 @@
       {
         "type": "Replace",
         "pattern": {
-          "String": " "
+          "String": "Đ"
         },
-        "content": " "
+        "content": "Ɖ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "đ"
+        },
+        "content": "ɖ"
       },
       {
         "type": "Replace",
@@ -205,7 +100,126 @@
       {
         "type": "Replace",
         "pattern": {
-          "String": " "
+          "String": "ɲ"
+        },
+        "content": "ŋ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "ɳ"
+        },
+        "content": "ŋ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "ͻ"
+        },
+        "content": "ɔ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "Γ"
+        },
+        "content": "Ɣ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "Ε"
+        },
+        "content": "Ɛ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "Φ"
+        },
+        "content": "Ƒ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "γ"
+        },
+        "content": "ɣ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "ε"
+        },
+        "content": "ɛ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "φ"
+        },
+        "content": "ƒ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "ϕ"
+        },
+        "content": "ƒ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "ϵ"
+        },
+        "content": "ɛ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "Ͻ"
+        },
+        "content": "Ɔ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "Є"
+        },
+        "content": "Ɛ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "є"
+        },
+        "content": "ɛ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "ט"
+        },
+        "content": "ʋ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "ᴐ"
+        },
+        "content": "ɔ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": " "
+        },
+        "content": " "
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": " "
         },
         "content": " "
       },
@@ -226,56 +240,7 @@
       {
         "type": "Replace",
         "pattern": {
-          "String": "Є"
-        },
-        "content": "Ɛ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": " "
-        },
-        "content": " "
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "Đ"
-        },
-        "content": "Ɖ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "ט"
-        },
-        "content": "ʋ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "​"
-        },
-        "content": ""
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "﻿"
-        },
-        "content": ""
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "đ"
-        },
-        "content": "ɖ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "　"
+          "String": " "
         },
         "content": " "
       },
@@ -289,44 +254,23 @@
       {
         "type": "Replace",
         "pattern": {
-          "String": "ᴐ"
-        },
-        "content": "ɔ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "ɳ"
-        },
-        "content": "ŋ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": " "
+          "String": " "
         },
         "content": " "
       },
       {
         "type": "Replace",
         "pattern": {
-          "String": "ɲ"
+          "String": " "
         },
-        "content": "ŋ"
+        "content": " "
       },
       {
         "type": "Replace",
         "pattern": {
-          "String": "ε"
+          "String": " "
         },
-        "content": "ɛ"
-      },
-      {
-        "type": "Replace",
-        "pattern": {
-          "String": "Φ"
-        },
-        "content": "Ƒ"
+        "content": " "
       },
       {
         "type": "Replace",
@@ -338,9 +282,65 @@
       {
         "type": "Replace",
         "pattern": {
-          "String": " "
+          "String": " "
         },
         "content": " "
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "​"
+        },
+        "content": ""
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": " "
+        },
+        "content": " "
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": " "
+        },
+        "content": " "
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "Ↄ"
+        },
+        "content": "Ɔ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "ↄ"
+        },
+        "content": "ɔ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "⊃"
+        },
+        "content": "ɔ"
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "　"
+        },
+        "content": " "
+      },
+      {
+        "type": "Replace",
+        "pattern": {
+          "String": "﻿"
+        },
+        "content": ""
       }
     ]
   },
