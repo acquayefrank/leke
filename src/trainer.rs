@@ -129,7 +129,11 @@ pub fn build_kwa_normalizer_sequence() -> Result<Sequence, Box<dyn std::error::E
     normalizers.push(NFC.into());
 
     // Step 3: Append Replace normalizers for each mapped lookalike character pair.
-    for (from_str, to_str) in mapping_data.mappings {
+    // HashMap iteration order is random per run, so sort the pairs to make the
+    // serialized tokenizer.json byte-for-byte reproducible across rebuilds.
+    let mut pairs: Vec<(String, String)> = mapping_data.mappings.into_iter().collect();
+    pairs.sort();
+    for (from_str, to_str) in pairs {
         if let Ok(replace_norm) = Replace::new(from_str.as_str(), to_str.as_str()) {
             normalizers.push(replace_norm.into());
         }
@@ -431,5 +435,15 @@ mod tests {
             compute_sha256(&path).unwrap(),
             "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
         );
+    }
+
+    #[test]
+    fn test_normalizer_sequence_is_deterministic() {
+        // Each HashMap gets a fresh random seed, so unsorted rules would reorder here.
+        let first = serde_json::to_string(&build_kwa_normalizer_sequence().unwrap()).unwrap();
+        for _ in 0..5 {
+            let again = serde_json::to_string(&build_kwa_normalizer_sequence().unwrap()).unwrap();
+            assert_eq!(first, again);
+        }
     }
 }

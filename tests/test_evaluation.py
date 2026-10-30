@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from leke import calculate_metrics, evaluate_all
+from leke.evaluate import LEKE_MODELS
 
 
 class DummyTokenizer:
@@ -32,13 +33,11 @@ def test_calculate_metrics_formulas():
 
 
 def test_evaluate_all_generates_report(tmp_path):
-    model_path = Path("models/bpe-16k/tokenizer.json")
-    if not model_path.exists():
+    if not all((bundle / "tokenizer.json").exists() for _, _, bundle in LEKE_MODELS):
         return
 
     report_path = tmp_path / "eval_results.md"
     report = evaluate_all(
-        model_path=model_path,
         splits_dir=Path("data/splits"),
         output_report_path=report_path,
     )
@@ -48,3 +47,5 @@ def test_evaluate_all_generates_report(tmp_path):
     assert "Akan / Twi" in report
     assert "Ewe" in report
     assert "0.0%" in report
+    for name, _, _ in LEKE_MODELS:
+        assert name in report

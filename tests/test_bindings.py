@@ -1,11 +1,14 @@
 from pathlib import Path
 
+import pytest
 from leke import LekeTokenizer
 from tokenizers import Tokenizer as HFTokenizer
 
+MODEL_PATHS = ["models/bpe-16k/tokenizer.json", "models/bpe-32k/tokenizer.json"]
 
-def test_leke_tokenizer_bindings():
-    model_path = "models/bpe-16k/tokenizer.json"
+
+@pytest.mark.parametrize("model_path", MODEL_PATHS)
+def test_leke_tokenizer_bindings(model_path):
     if not Path(model_path).exists():
         # Fallback if run in isolation
         return
@@ -44,8 +47,8 @@ def test_leke_tokenizer_bindings():
         assert leke_tok.decode(leke_enc.ids) == hf_tok.decode(hf_enc.ids)
 
 
-def test_batch_encoding_and_decoding():
-    model_path = "models/bpe-16k/tokenizer.json"
+@pytest.mark.parametrize("model_path", MODEL_PATHS)
+def test_batch_encoding_and_decoding(model_path):
     if not Path(model_path).exists():
         return
 
@@ -63,8 +66,8 @@ def test_batch_encoding_and_decoding():
     assert "Mìedó" in decoded_batch[1]
 
 
-def test_transformers_interop():
-    model_path = "models/bpe-16k/tokenizer.json"
+@pytest.mark.parametrize("model_path", MODEL_PATHS)
+def test_transformers_interop(model_path):
     if not Path(model_path).exists():
         return
 

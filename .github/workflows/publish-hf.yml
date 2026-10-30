@@ -1,7 +1,8 @@
 name: Publish tokenizer to Hugging Face
 
-# Uploads models/bpe-16k to https://huggingface.co/acquayefrank/leke-bpe-16k whenever
-# the model bundle changes on main, after the test suite passes.
+# Uploads models/bpe-16k and models/bpe-32k to https://huggingface.co/acquayefrank/leke-bpe-16k
+# and https://huggingface.co/acquayefrank/leke-bpe-32k whenever a model bundle changes on
+# main, after the test suite passes. Each upload is a no-op on the Hub if nothing changed.
 # Requires a repository secret HF_TOKEN with write access to the Hugging Face repo.
 
 on:
@@ -9,6 +10,7 @@ on:
     branches: ["main"]
     paths:
       - "models/bpe-16k/**"
+      - "models/bpe-32k/**"
   workflow_dispatch:
 
 permissions:
@@ -25,6 +27,10 @@ jobs:
   publish:
     needs: test
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        model: ["bpe-16k", "bpe-32k"]
     environment: huggingface
     steps:
       - uses: actions/checkout@v4
@@ -45,8 +51,8 @@ jobs:
           import json
           from tokenizers import Tokenizer
 
-          tok = Tokenizer.from_file("models/bpe-16k/tokenizer.json")
-          receipt = json.load(open("models/bpe-16k/training_receipt.json"))
+          tok = Tokenizer.from_file("models/${{ matrix.model }}/tokenizer.json")
+          receipt = json.load(open("models/${{ matrix.model }}/training_receipt.json"))
           assert tok.get_vocab_size() == receipt["actual_vocab_size"], "vocab size mismatch"
           print("OK:", tok.encode("Akwaaba ba Ghana man mu.").tokens)
           PY
@@ -55,4 +61,5 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: >
           uv run --no-project --with huggingface_hub python scripts/upload_hf.py
-          --commit-message "Sync models/bpe-16k from ${{ github.repository }}@${{ github.sha }}"
+          --model-dir models/${{ matrix.model }} --repo-id acquayefrank/leke-${{ matrix.model }}
+          --commit-message "Sync models/${{ matrix.model }} from ${{ github.repository }}@${{ github.sha }}"
