@@ -756,29 +756,32 @@
         <div class="tbl">
           <table>
             <thead>
-              <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>Leke fertility vs. this model</th></tr>
+              <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>Leke 16k / 32k fertility vs. this model</th></tr>
             </thead>
             <tbody>
               <tr><td><b>Leke BPE (16k)</b></td><td>Twi (Asante)</td><td class="n"><b>1.49</b></td><td class="n">10.6%</td><td class="n"><b>0.0%</b></td><td class="n">3.67</td><td>reference</td></tr>
-              <tr><td>Wikilangs Twi (32k)</td><td>Twi (Asante)</td><td class="n">1.40</td><td class="n">8.5%</td><td class="n">0.05%</td><td class="n">3.90</td><td>+6.4%</td></tr>
-              <tr><td>Goldfish Akan (50k)</td><td>Twi (Asante)</td><td class="n">1.42</td><td class="n">9.1%</td><td class="n">0.0%</td><td class="n">3.84</td><td>+4.9%</td></tr>
-              <tr><td>Goldfish Twi (50k)</td><td>Twi (Asante)</td><td class="n">1.43</td><td class="n">9.6%</td><td class="n">0.0%</td><td class="n">3.81</td><td>+4.2%</td></tr>
-              <tr><td>Wikilangs Twi (16k)</td><td>Twi (Asante)</td><td class="n">1.45</td><td class="n">10.0%</td><td class="n">0.05%</td><td class="n">3.76</td><td>+2.8%</td></tr>
-              <tr><td>Wikilangs Twi (8k)</td><td>Twi (Asante)</td><td class="n">1.53</td><td class="n">12.3%</td><td class="n">0.05%</td><td class="n">3.57</td><td><b>−2.6%</b></td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Twi (Asante)</td><td class="n">1.59</td><td class="n">13.9%</td><td class="n">1.52%</td><td class="n">3.42</td><td><b>−6.3%</b></td></tr>
+              <tr><td><b>Leke BPE (32k)</b></td><td>Twi (Asante)</td><td class="n"><b>1.40</b></td><td class="n">8.3%</td><td class="n"><b>0.0%</b></td><td class="n">3.89</td><td>reference</td></tr>
+              <tr><td>Wikilangs Twi (32k)</td><td>Twi (Asante)</td><td class="n">1.40</td><td class="n">8.5%</td><td class="n">0.05%</td><td class="n">3.90</td><td>+6.4% / +0.0%</td></tr>
+              <tr><td>Goldfish Akan (50k)</td><td>Twi (Asante)</td><td class="n">1.42</td><td class="n">9.1%</td><td class="n">0.0%</td><td class="n">3.84</td><td>+4.9% / <b>−1.4%</b></td></tr>
+              <tr><td>Goldfish Twi (50k)</td><td>Twi (Asante)</td><td class="n">1.43</td><td class="n">9.6%</td><td class="n">0.0%</td><td class="n">3.81</td><td>+4.2% / <b>−2.1%</b></td></tr>
+              <tr><td>Wikilangs Twi (16k)</td><td>Twi (Asante)</td><td class="n">1.45</td><td class="n">10.0%</td><td class="n">0.05%</td><td class="n">3.76</td><td>+2.8% / <b>−3.4%</b></td></tr>
+              <tr><td>Wikilangs Twi (8k)</td><td>Twi (Asante)</td><td class="n">1.53</td><td class="n">12.3%</td><td class="n">0.05%</td><td class="n">3.57</td><td><b>−2.6%</b> / <b>−8.5%</b></td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Twi (Asante)</td><td class="n">1.59</td><td class="n">13.9%</td><td class="n">1.52%</td><td class="n">3.42</td><td><b>−6.3%</b> / <b>−11.9%</b></td></tr>
               <tr><td><b>Leke BPE (16k)</b></td><td>Twi (Akuapem)</td><td class="n"><b>1.44</b></td><td class="n">9.6%</td><td class="n"><b>0.0%</b></td><td class="n">3.70</td><td>reference</td></tr>
-              <tr><td>Wikilangs Twi (32k)</td><td>Twi (Akuapem)</td><td class="n">1.31</td><td class="n">6.4%</td><td class="n">0.07%</td><td class="n">4.07</td><td>+9.9%</td></tr>
-              <tr><td>Goldfish Akan (50k)</td><td>Twi (Akuapem)</td><td class="n">1.32</td><td class="n">6.8%</td><td class="n">0.0%</td><td class="n">4.02</td><td>+9.1%</td></tr>
-              <tr><td>Goldfish Twi (50k)</td><td>Twi (Akuapem)</td><td class="n">1.33</td><td class="n">6.9%</td><td class="n">0.0%</td><td class="n">4.00</td><td>+8.3%</td></tr>
-              <tr><td>Wikilangs Twi (16k)</td><td>Twi (Akuapem)</td><td class="n">1.37</td><td class="n">8.1%</td><td class="n">0.07%</td><td class="n">3.90</td><td>+5.1%</td></tr>
-              <tr><td>Wikilangs Twi (8k)</td><td>Twi (Akuapem)</td><td class="n">1.44</td><td class="n">10.1%</td><td class="n">0.07%</td><td class="n">3.70</td><td>+0.0%</td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Twi (Akuapem)</td><td class="n">1.47</td><td class="n">10.7%</td><td class="n">0.92%</td><td class="n">3.63</td><td><b>−2.0%</b></td></tr>
+              <tr><td><b>Leke BPE (32k)</b></td><td>Twi (Akuapem)</td><td class="n"><b>1.36</b></td><td class="n">7.7%</td><td class="n"><b>0.0%</b></td><td class="n">3.92</td><td>reference</td></tr>
+              <tr><td>Wikilangs Twi (32k)</td><td>Twi (Akuapem)</td><td class="n">1.31</td><td class="n">6.4%</td><td class="n">0.07%</td><td class="n">4.07</td><td>+9.9% / +3.8%</td></tr>
+              <tr><td>Goldfish Akan (50k)</td><td>Twi (Akuapem)</td><td class="n">1.32</td><td class="n">6.8%</td><td class="n">0.0%</td><td class="n">4.02</td><td>+9.1% / +3.0%</td></tr>
+              <tr><td>Goldfish Twi (50k)</td><td>Twi (Akuapem)</td><td class="n">1.33</td><td class="n">6.9%</td><td class="n">0.0%</td><td class="n">4.00</td><td>+8.3% / +2.3%</td></tr>
+              <tr><td>Wikilangs Twi (16k)</td><td>Twi (Akuapem)</td><td class="n">1.37</td><td class="n">8.1%</td><td class="n">0.07%</td><td class="n">3.90</td><td>+5.1% / <b>−0.7%</b></td></tr>
+              <tr><td>Wikilangs Twi (8k)</td><td>Twi (Akuapem)</td><td class="n">1.44</td><td class="n">10.1%</td><td class="n">0.07%</td><td class="n">3.70</td><td>+0.0% / <b>−5.6%</b></td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Twi (Akuapem)</td><td class="n">1.47</td><td class="n">10.7%</td><td class="n">0.92%</td><td class="n">3.63</td><td><b>−2.0%</b> / <b>−7.5%</b></td></tr>
               <tr><td><b>Leke BPE (16k)</b></td><td>Ewe</td><td class="n"><b>1.43</b></td><td class="n">9.3%</td><td class="n"><b>0.0%</b></td><td class="n">3.94</td><td>reference</td></tr>
-              <tr><td>Goldfish Ewe (50k)</td><td>Ewe</td><td class="n">1.33</td><td class="n">6.9%</td><td class="n">2.74%</td><td class="n">4.22</td><td>+7.5%</td></tr>
-              <tr><td>Wikilangs Ewe (32k)</td><td>Ewe</td><td class="n">1.39</td><td class="n">8.8%</td><td class="n">2.66%</td><td class="n">4.03</td><td>+2.9%</td></tr>
-              <tr><td>Wikilangs Ewe (16k)</td><td>Ewe</td><td class="n">1.44</td><td class="n">10.1%</td><td class="n">2.57%</td><td class="n">3.91</td><td><b>−0.7%</b></td></tr>
-              <tr><td>Wikilangs Ewe (8k)</td><td>Ewe</td><td class="n">1.49</td><td class="n">11.5%</td><td class="n">2.48%</td><td class="n">3.76</td><td><b>−4.0%</b></td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Ewe</td><td class="n">1.54</td><td class="n">12.7%</td><td class="n">0.02%</td><td class="n">3.64</td><td><b>−7.1%</b></td></tr>
+              <tr><td><b>Leke BPE (32k)</b></td><td>Ewe</td><td class="n"><b>1.33</b></td><td class="n">6.8%</td><td class="n"><b>0.0%</b></td><td class="n">4.21</td><td>reference</td></tr>
+              <tr><td>Goldfish Ewe (50k)</td><td>Ewe</td><td class="n">1.33</td><td class="n">6.9%</td><td class="n">2.74%</td><td class="n">4.22</td><td>+7.5% / +0.0%</td></tr>
+              <tr><td>Wikilangs Ewe (32k)</td><td>Ewe</td><td class="n">1.39</td><td class="n">8.8%</td><td class="n">2.66%</td><td class="n">4.03</td><td>+2.9% / <b>−4.3%</b></td></tr>
+              <tr><td>Wikilangs Ewe (16k)</td><td>Ewe</td><td class="n">1.44</td><td class="n">10.1%</td><td class="n">2.57%</td><td class="n">3.91</td><td><b>−0.7%</b> / <b>−7.6%</b></td></tr>
+              <tr><td>Wikilangs Ewe (8k)</td><td>Ewe</td><td class="n">1.49</td><td class="n">11.5%</td><td class="n">2.48%</td><td class="n">3.76</td><td><b>−4.0%</b> / <b>−10.7%</b></td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Ewe</td><td class="n">1.54</td><td class="n">12.7%</td><td class="n">0.02%</td><td class="n">3.64</td><td><b>−7.1%</b> / <b>−13.6%</b></td></tr>
             </tbody>
           </table>
         </div>
@@ -788,39 +791,44 @@
         <div class="tbl">
           <table>
             <thead>
-              <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>Leke fertility vs. this model</th></tr>
+              <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>Leke 16k / 32k fertility vs. this model</th></tr>
             </thead>
             <tbody>
               <tr><td><b>Leke BPE (16k)</b></td><td>Akan / Twi</td><td class="n"><b>1.38</b></td><td class="n">8.0%</td><td class="n"><b>0.0%</b></td><td class="n">4.01</td><td>reference</td></tr>
-              <tr><td>Wikilangs Twi (32k)</td><td>Akan / Twi</td><td class="n">1.24</td><td class="n">4.5%</td><td class="n">0.11%</td><td class="n">4.46</td><td>+11.3%</td></tr>
-              <tr><td>Goldfish Twi (50k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.4%</td><td class="n">0.0%</td><td class="n">4.31</td><td>+7.8%</td></tr>
-              <tr><td>Goldfish Akan (50k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.2%</td><td class="n">0.0%</td><td class="n">4.31</td><td>+7.8%</td></tr>
-              <tr><td>Wikilangs Twi (16k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.6%</td><td class="n">0.1%</td><td class="n">4.33</td><td>+7.8%</td></tr>
-              <tr><td>Wikilangs Twi (8k)</td><td>Akan / Twi</td><td class="n">1.34</td><td class="n">7.4%</td><td class="n">0.1%</td><td class="n">4.12</td><td>+3.0%</td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Akan / Twi</td><td class="n">1.55</td><td class="n">12.6%</td><td class="n">0.26%</td><td class="n">3.57</td><td><b>−11.0%</b></td></tr>
+              <tr><td><b>Leke BPE (32k)</b></td><td>Akan / Twi</td><td class="n"><b>1.29</b></td><td class="n">5.8%</td><td class="n"><b>0.0%</b></td><td class="n">4.27</td><td>reference</td></tr>
+              <tr><td>Wikilangs Twi (32k)</td><td>Akan / Twi</td><td class="n">1.24</td><td class="n">4.5%</td><td class="n">0.11%</td><td class="n">4.46</td><td>+11.3% / +4.0%</td></tr>
+              <tr><td>Goldfish Twi (50k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.4%</td><td class="n">0.0%</td><td class="n">4.31</td><td>+7.8% / +0.8%</td></tr>
+              <tr><td>Goldfish Akan (50k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.2%</td><td class="n">0.0%</td><td class="n">4.31</td><td>+7.8% / +0.8%</td></tr>
+              <tr><td>Wikilangs Twi (16k)</td><td>Akan / Twi</td><td class="n">1.28</td><td class="n">5.6%</td><td class="n">0.1%</td><td class="n">4.33</td><td>+7.8% / +0.8%</td></tr>
+              <tr><td>Wikilangs Twi (8k)</td><td>Akan / Twi</td><td class="n">1.34</td><td class="n">7.4%</td><td class="n">0.1%</td><td class="n">4.12</td><td>+3.0% / <b>−3.7%</b></td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Akan / Twi</td><td class="n">1.55</td><td class="n">12.6%</td><td class="n">0.26%</td><td class="n">3.57</td><td><b>−11.0%</b> / <b>−16.8%</b></td></tr>
               <tr><td><b>Leke BPE (16k)</b></td><td>Ewe</td><td class="n"><b>1.45</b></td><td class="n">10.4%</td><td class="n"><b>0.0%</b></td><td class="n">4.03</td><td>reference</td></tr>
-              <tr><td>Wikilangs Ewe (32k)</td><td>Ewe</td><td class="n">1.34</td><td class="n">7.7%</td><td class="n">0.11%</td><td class="n">4.34</td><td>+8.2%</td></tr>
-              <tr><td>Goldfish Ewe (50k)</td><td>Ewe</td><td class="n">1.35</td><td class="n">8.3%</td><td class="n">0.03%</td><td class="n">4.32</td><td>+7.4%</td></tr>
-              <tr><td>Wikilangs Ewe (16k)</td><td>Ewe</td><td class="n">1.38</td><td class="n">9.0%</td><td class="n">0.11%</td><td class="n">4.22</td><td>+5.1%</td></tr>
-              <tr><td>Wikilangs Ewe (8k)</td><td>Ewe</td><td class="n">1.44</td><td class="n">10.3%</td><td class="n">0.11%</td><td class="n">4.07</td><td>+0.7%</td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Ewe</td><td class="n">1.65</td><td class="n">15.9%</td><td class="n">0.3%</td><td class="n">3.53</td><td><b>−12.1%</b></td></tr>
+              <tr><td><b>Leke BPE (32k)</b></td><td>Ewe</td><td class="n"><b>1.34</b></td><td class="n">7.4%</td><td class="n"><b>0.0%</b></td><td class="n">4.37</td><td>reference</td></tr>
+              <tr><td>Wikilangs Ewe (32k)</td><td>Ewe</td><td class="n">1.34</td><td class="n">7.7%</td><td class="n">0.11%</td><td class="n">4.34</td><td>+8.2% / +0.0%</td></tr>
+              <tr><td>Goldfish Ewe (50k)</td><td>Ewe</td><td class="n">1.35</td><td class="n">8.3%</td><td class="n">0.03%</td><td class="n">4.32</td><td>+7.4% / <b>−0.7%</b></td></tr>
+              <tr><td>Wikilangs Ewe (16k)</td><td>Ewe</td><td class="n">1.38</td><td class="n">9.0%</td><td class="n">0.11%</td><td class="n">4.22</td><td>+5.1% / <b>−2.9%</b></td></tr>
+              <tr><td>Wikilangs Ewe (8k)</td><td>Ewe</td><td class="n">1.44</td><td class="n">10.3%</td><td class="n">0.11%</td><td class="n">4.07</td><td>+0.7% / <b>−6.9%</b></td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Ewe</td><td class="n">1.65</td><td class="n">15.9%</td><td class="n">0.3%</td><td class="n">3.53</td><td><b>−12.1%</b> / <b>−18.8%</b></td></tr>
               <tr><td><b>Leke BPE (16k)</b></td><td>Ga</td><td class="n"><b>1.39</b></td><td class="n">7.9%</td><td class="n"><b>0.0%</b></td><td class="n">4.39</td><td>reference</td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Ga</td><td class="n">1.93</td><td class="n">25.1%</td><td class="n">0.08%</td><td class="n">3.16</td><td><b>−28.0%</b></td></tr>
+              <tr><td><b>Leke BPE (32k)</b></td><td>Ga</td><td class="n"><b>1.29</b></td><td class="n">4.8%</td><td class="n"><b>0.0%</b></td><td class="n">4.75</td><td>reference</td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Ga</td><td class="n">1.93</td><td class="n">25.1%</td><td class="n">0.08%</td><td class="n">3.16</td><td><b>−28.0%</b> / <b>−33.2%</b></td></tr>
               <tr><td><b>Leke BPE (16k)</b></td><td>Fante</td><td class="n"><b>1.34</b></td><td class="n">6.2%</td><td class="n"><b>0.0%</b></td><td class="n">4.11</td><td>reference</td></tr>
-              <tr><td>Wikilangs Fante (32k)</td><td>Fante</td><td class="n">1.26</td><td class="n">5.0%</td><td class="n">0.02%</td><td class="n">4.36</td><td>+6.3%</td></tr>
-              <tr><td>Wikilangs Fante (16k)</td><td>Fante</td><td class="n">1.30</td><td class="n">6.2%</td><td class="n">0.02%</td><td class="n">4.23</td><td>+3.1%</td></tr>
-              <tr><td>Wikilangs Fante (8k)</td><td>Fante</td><td class="n">1.38</td><td class="n">8.5%</td><td class="n">0.02%</td><td class="n">3.99</td><td><b>−2.9%</b></td></tr>
-              <tr><td>Goldfish Akan (50k)</td><td>Fante</td><td class="n">1.39</td><td class="n">8.1%</td><td class="n">0.0%</td><td class="n">3.95</td><td><b>−3.6%</b></td></tr>
-              <tr><td>Wikilangs Twi (32k)</td><td>Fante</td><td class="n">1.51</td><td class="n">11.3%</td><td class="n">0.05%</td><td class="n">3.64</td><td><b>−11.3%</b></td></tr>
-              <tr><td>Wikilangs Twi (16k)</td><td>Fante</td><td class="n">1.60</td><td class="n">13.9%</td><td class="n">0.04%</td><td class="n">3.43</td><td><b>−16.2%</b></td></tr>
-              <tr><td>NLLB-200 (256k)</td><td>Fante</td><td class="n">1.70</td><td class="n">17.2%</td><td class="n">0.61%</td><td class="n">3.24</td><td><b>−21.2%</b></td></tr>
-              <tr><td>Wikilangs Twi (8k)</td><td>Fante</td><td class="n">1.71</td><td class="n">16.5%</td><td class="n">0.04%</td><td class="n">3.22</td><td><b>−21.6%</b></td></tr>
+              <tr><td><b>Leke BPE (32k)</b></td><td>Fante</td><td class="n"><b>1.25</b></td><td class="n">3.9%</td><td class="n"><b>0.0%</b></td><td class="n">4.41</td><td>reference</td></tr>
+              <tr><td>Wikilangs Fante (32k)</td><td>Fante</td><td class="n">1.26</td><td class="n">5.0%</td><td class="n">0.02%</td><td class="n">4.36</td><td>+6.3% / <b>−0.8%</b></td></tr>
+              <tr><td>Wikilangs Fante (16k)</td><td>Fante</td><td class="n">1.30</td><td class="n">6.2%</td><td class="n">0.02%</td><td class="n">4.23</td><td>+3.1% / <b>−3.8%</b></td></tr>
+              <tr><td>Wikilangs Fante (8k)</td><td>Fante</td><td class="n">1.38</td><td class="n">8.5%</td><td class="n">0.02%</td><td class="n">3.99</td><td><b>−2.9%</b> / <b>−9.4%</b></td></tr>
+              <tr><td>Goldfish Akan (50k)</td><td>Fante</td><td class="n">1.39</td><td class="n">8.1%</td><td class="n">0.0%</td><td class="n">3.95</td><td><b>−3.6%</b> / <b>−10.1%</b></td></tr>
+              <tr><td>Wikilangs Twi (32k)</td><td>Fante</td><td class="n">1.51</td><td class="n">11.3%</td><td class="n">0.05%</td><td class="n">3.64</td><td><b>−11.3%</b> / <b>−17.2%</b></td></tr>
+              <tr><td>Wikilangs Twi (16k)</td><td>Fante</td><td class="n">1.60</td><td class="n">13.9%</td><td class="n">0.04%</td><td class="n">3.43</td><td><b>−16.2%</b> / <b>−21.9%</b></td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Fante</td><td class="n">1.70</td><td class="n">17.2%</td><td class="n">0.61%</td><td class="n">3.24</td><td><b>−21.2%</b> / <b>−26.5%</b></td></tr>
+              <tr><td>Wikilangs Twi (8k)</td><td>Fante</td><td class="n">1.71</td><td class="n">16.5%</td><td class="n">0.04%</td><td class="n">3.22</td><td><b>−21.6%</b> / <b>−26.9%</b></td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="pitfall"><span class="label">Reading the comparison honestly</span>
-          <p>Leke uses <b>one 16k vocabulary for four languages</b>, trained on curriculum text plus MADLAD-400 web text (Akan, Ewe) and Wikipedia (Twi, Ewe, Fante). On FLORES+ it beats NLLB-200 on Asante Twi (−6.3%), Akuapem Twi (−2.0%) and Ewe (−7.1%), and narrowly beats the same-size 16k Ewe-only Wikilangs tokenizer. Dedicated Twi tokenizers are still 3–5% more compact on Twi at the same vocabulary size, and larger single-language tokenizers (Wikilangs 32k, Goldfish 50k) reach lower fertility on every language they cover. On curriculum text Leke beats NLLB-200 by 28% on Ga and 21% on Fante; the only dedicated Fante tokenizer, Wikilangs Fante 16k, is 3% more compact.</p>
+          <p>Each Leke model uses <b>one vocabulary for four languages</b>, trained on curriculum text plus MADLAD-400 web text (Akan, Ewe) and Wikipedia (Twi, Ewe, Fante). Leke ships in two sizes trained on the same data: <code>bpe-16k</code> (the default) and <code>bpe-32k</code>.</p>
+          <p>On FLORES+, Leke 16k beats NLLB-200 on Asante Twi (−6.3%), Akuapem Twi (−2.0%) and Ewe (−7.1%), and narrowly beats the same-size 16k Ewe-only Wikilangs tokenizer. Dedicated Twi tokenizers are still 3–5% more compact than Leke 16k on Twi. Leke 32k uses 6–8% fewer tokens than Leke 16k: it ties the best single-language tokenizer on Asante Twi (1.40) and Ewe (1.33) and beats every 16k one, but Wikilangs Twi 32k and both Goldfish models are still 2–4% more compact on Akuapem Twi. On curriculum text Leke 16k beats NLLB-200 by 28% on Ga and 21% on Fante, and Leke 32k (1.25) edges out every dedicated Fante tokenizer.</p>
           <p>Every baseline emits some <code>&lt;unk&gt;</code> tokens; Leke stays at a <b>strict 0.0%</b>. The Ewe-only tokenizers lose 2.5–2.7% of FLORES+ Ewe tokens to <code>&lt;unk&gt;</code>, mostly the Greek lookalike <code>ͻ</code> used for <code>ɔ</code>, which Leke normalizes.</p>
         </div>
 
@@ -1090,7 +1098,7 @@ Cyrillic lookalike  є (U+0454):  0xD1 0x94</code></pre>
 
         <h3>The training algorithm</h3>
         <ol>
-          <li><b>Initialize the base alphabet <i>V</i><sub>0</sub>:</b> Seed the vocabulary with all 256 byte symbols (<code>0x00</code>..<code>0xFF</code>) plus special tokens (<code>&lt;pad&gt;</code>, <code>&lt;unk&gt;</code>, <code>&lt;bos&gt;</code>, <code>&lt;eos&gt;</code>). Pre-tokenize text at whitespace boundaries, replacing leading spaces with the visible marker <code>Ġ</code> (<code>U+0120</code>).</li>
+          <li><b>Initialize the base alphabet <i>V</i><sub>0</sub>:</b> Seed the vocabulary with all 256 byte symbols (<code>0x00</code>..<code>0xFF</code>) plus special tokens (<code>&lt;unk&gt;</code>, <code>&lt;s&gt;</code>, <code>&lt;/s&gt;</code>, <code>&lt;pad&gt;</code>, <code>&lt;mask&gt;</code>). Pre-tokenize text at whitespace boundaries, replacing leading spaces with the visible marker <code>Ġ</code> (<code>U+0120</code>).</li>
           <li><b>Count adjacent pairs:</b> Across all words <i>w</i> weighted by corpus frequency <i>f</i>(<i>w</i>), count every adjacent symbol pair (<i>u</i>, <i>v</i>):</li>
         </ol>
         <div class="formula">
@@ -1387,7 +1395,7 @@ tok_id = tok.token_to_id("Akwaaba")
 tok_str = tok.id_to_token(tok_id)</code></pre>
 
         <h3>4. Hugging Face <code>transformers</code> integration</h3>
-        <p>Every Leke bundle is a standard Hugging Face <code>tokenizer.json</code> and converts directly into a <code>PreTrainedTokenizerFast</code> with <code>&lt;pad&gt;</code>, <code>&lt;unk&gt;</code>, <code>&lt;bos&gt;</code>, and <code>&lt;eos&gt;</code> configured:</p>
+        <p>Every Leke bundle is a standard Hugging Face <code>tokenizer.json</code> and converts directly into a <code>PreTrainedTokenizerFast</code> with <code>&lt;pad&gt;</code>, <code>&lt;unk&gt;</code>, <code>&lt;s&gt;</code> (BOS), and <code>&lt;/s&gt;</code> (EOS) configured. Both shipped sizes are on the Hugging Face Hub as <code>acquayefrank/leke-bpe-16k</code> and <code>acquayefrank/leke-bpe-32k</code>:</p>
         <pre><code>from leke import LekeTokenizer
 from transformers import PreTrainedTokenizerFast
 
@@ -1400,9 +1408,13 @@ hf_tok = PreTrainedTokenizerFast(
     tokenizer_file="models/bpe-16k/tokenizer.json",
     unk_token="&lt;unk&gt;",
     pad_token="&lt;pad&gt;",
-    bos_token="&lt;bos&gt;",
-    eos_token="&lt;eos&gt;",
+    bos_token="&lt;s&gt;",
+    eos_token="&lt;/s&gt;",
 )
+
+# Option C: Download a released model from the Hugging Face Hub
+from transformers import AutoTokenizer
+hf_tok = AutoTokenizer.from_pretrained("acquayefrank/leke-bpe-32k")  # or leke-bpe-16k
 
 # Ready for PyTorch / JAX training loops with padding &amp; attention masks
 batch_tensors = hf_tok(
@@ -1463,7 +1475,7 @@ uv run python -m leke.evaluate \
             <label><input type="radio" name="q-11" value="a"> <span><code>tok.to_transformers()</code></span></label>
             <label><input type="radio" name="q-11" value="b"> <span><code>tok.encode_batch()</code></span></label>
             <label><input type="radio" name="q-11" value="c"> <span><code>leke.version()</code></span></label>
-            <div class="why" hidden><b></b><code>tok.to_transformers()</code> wraps the underlying <code>tokenizer.json</code> path into a <code>transformers.PreTrainedTokenizerFast</code> with <code>&lt;unk&gt;</code>, <code>&lt;pad&gt;</code>, <code>&lt;bos&gt;</code>, and <code>&lt;eos&gt;</code> pre-populated.</div>
+            <div class="why" hidden><b></b><code>tok.to_transformers()</code> wraps the underlying <code>tokenizer.json</code> path into a <code>transformers.PreTrainedTokenizerFast</code> with <code>&lt;unk&gt;</code>, <code>&lt;pad&gt;</code>, <code>&lt;s&gt;</code> (BOS), and <code>&lt;/s&gt;</code> (EOS) pre-populated.</div>
           </div>
         </div>
 
