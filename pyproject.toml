@@ -10,17 +10,36 @@ readme = "README.md"
 requires-python = ">=3.9"
 authors = [{ name = "Frank Acquaye", email = "acquayefrank@gmail.com" }]
 license = { text = "Apache-2.0" }
+keywords = ["tokenizer", "bpe", "nlp", "twi", "akan", "ewe", "ga", "fante", "kwa"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+]
 dependencies = [
-    "tokenizers>=0.19.0",
-    "transformers>=4.40.0",
-    "pytest>=8.0.0",
     "tabulate>=0.9.0",
-    "maturin>=1.7.0",
-    "ruff>=0.4.0",
 ]
 
 [project.optional-dependencies]
+hf = [
+    "transformers>=4.40.0",
+]
+
+[project.urls]
+Homepage = "https://acquayefrank.github.io/leke/"
+Repository = "https://github.com/acquayefrank/leke"
+"Hugging Face" = "https://huggingface.co/acquayefrank/leke-bpe-16k"
+
+[dependency-groups]
 dev = [
+    "tokenizers>=0.19.0",
+    "transformers>=4.40.0",
+    "pytest>=8.0.0",
+    "maturin>=1.7.0",
     "ruff>=0.4.0",
 ]
 

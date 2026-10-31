@@ -47,11 +47,31 @@ Leke solves this with:
 
 ## Installation & Setup
 
-### Prerequisites
+### Install from PyPI
+
+Prebuilt wheels cover Linux (x86_64, aarch64), macOS (Intel, Apple Silicon) and Windows (x64) on Python 3.9+:
+
+```bash
+pip install leke            # tokenizer, normalizer, trainer and evaluation helpers
+pip install "leke[hf]"      # adds transformers for LekeTokenizer.to_transformers()
+```
+
+The trained tokenizers are on the Hugging Face Hub ([`leke-bpe-16k`](https://huggingface.co/acquayefrank/leke-bpe-16k), [`leke-bpe-32k`](https://huggingface.co/acquayefrank/leke-bpe-32k)):
+
+```python
+from huggingface_hub import hf_hub_download
+from leke import LekeTokenizer
+
+tok = LekeTokenizer.from_file(hf_hub_download("acquayefrank/leke-bpe-16k", "tokenizer.json"))
+```
+
+### Building from source
+
+#### Prerequisites
 - Python 3.9+ and [`uv`](https://github.com/astral-sh/uv)
 - Rust toolchain (`cargo`, `rustc` 1.75+)
 
-### Quick Build
+#### Quick Build
 ```bash
 # Clone the repository
 git clone https://github.com/acquayefrank/leke.git

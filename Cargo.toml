@@ -6,6 +6,9 @@ authors = ["Frank Acquaye <acquayefrank@gmail.com>"]
 description = "High-performance subword tokenizer for Kwa languages (Akan/Twi, Ewe, Ga, Fante)"
 readme = "README.md"
 license = "Apache-2.0"
+repository = "https://github.com/acquayefrank/leke"
+# Keep the source distribution to what the build needs; the corpus, models and docs stay in git.
+include = ["/src/**/*.rs", "/benches/**/*.rs", "/data/char_mappings.json", "/README.md", "/LICENSE"]
 
 [lib]
 name = "_leke"
