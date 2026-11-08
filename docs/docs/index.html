@@ -786,6 +786,31 @@
           </table>
         </div>
 
+        <h3>Out-of-domain benchmark: Ga and Fante</h3>
+        <p>FLORES+ has no Ga or Fante, so Leke uses two other sources for them (<code>scripts/fetch_ga_fante_eval.py</code>), both CC BY 4.0. <b>Ga:</b> the Ga side of Google SMOL, 2,472 sentences professionally translated from English. <b>Fante:</b> the 1,171 scripts read aloud for Google WAXAL text-to-speech (University of Ghana), with the bracketed digits that mark numbers removed. No line of either appears in Leke's training corpus, and no Goldfish or Wikilangs tokenizer covers Ga.</p>
+        <div class="tbl">
+          <table>
+            <thead>
+              <tr><th>Model</th><th>Language</th><th class="n">Fertility ↓</th><th class="n">Split &gt;2 ↓</th><th class="n">Unk (%) ↓</th><th class="n">Bytes/Tok ↑</th><th>Leke 16k / 32k fertility vs. this model</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Ga (SMOL)</td><td class="n"><b>1.55</b></td><td class="n">12.5%</td><td class="n"><b>0.0%</b></td><td class="n">3.54</td><td>reference</td></tr>
+              <tr><td><b>Leke BPE (32k)</b></td><td>Ga (SMOL)</td><td class="n"><b>1.44</b></td><td class="n">9.1%</td><td class="n"><b>0.0%</b></td><td class="n">3.79</td><td>reference</td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Ga (SMOL)</td><td class="n">1.71</td><td class="n">16.4%</td><td class="n">0.08%</td><td class="n">3.20</td><td><b>−9.4%</b> / <b>−15.8%</b></td></tr>
+              <tr><td><b>Leke BPE (16k)</b></td><td>Fante (WAXAL)</td><td class="n"><b>1.41</b></td><td class="n">8.4%</td><td class="n"><b>0.0%</b></td><td class="n">3.86</td><td>reference</td></tr>
+              <tr><td><b>Leke BPE (32k)</b></td><td>Fante (WAXAL)</td><td class="n"><b>1.32</b></td><td class="n">5.8%</td><td class="n"><b>0.0%</b></td><td class="n">4.13</td><td>reference</td></tr>
+              <tr><td>Wikilangs Fante (32k)</td><td>Fante (WAXAL)</td><td class="n">1.29</td><td class="n">5.7%</td><td class="n">1.37%</td><td class="n">4.23</td><td>+9.3% / +2.3%</td></tr>
+              <tr><td>Wikilangs Fante (16k)</td><td>Fante (WAXAL)</td><td class="n">1.32</td><td class="n">6.5%</td><td class="n">1.34%</td><td class="n">4.12</td><td>+6.8% / +0.0%</td></tr>
+              <tr><td>Wikilangs Fante (8k)</td><td>Fante (WAXAL)</td><td class="n">1.40</td><td class="n">8.8%</td><td class="n">1.26%</td><td class="n">3.89</td><td>+0.7% / <b>−5.7%</b></td></tr>
+              <tr><td>Goldfish Akan (50k)</td><td>Fante (WAXAL)</td><td class="n">1.42</td><td class="n">8.7%</td><td class="n">0.0%</td><td class="n">3.83</td><td><b>−0.7%</b> / <b>−7.0%</b></td></tr>
+              <tr><td>Wikilangs Twi (32k)</td><td>Fante (WAXAL)</td><td class="n">1.49</td><td class="n">10.8%</td><td class="n">0.0%</td><td class="n">3.65</td><td><b>−5.4%</b> / <b>−11.4%</b></td></tr>
+              <tr><td>Wikilangs Twi (16k)</td><td>Fante (WAXAL)</td><td class="n">1.59</td><td class="n">13.7%</td><td class="n">0.0%</td><td class="n">3.42</td><td><b>−11.3%</b> / <b>−17.0%</b></td></tr>
+              <tr><td>NLLB-200 (256k)</td><td>Fante (WAXAL)</td><td class="n">1.69</td><td class="n">16.7%</td><td class="n">0.61%</td><td class="n">3.22</td><td><b>−16.6%</b> / <b>−21.9%</b></td></tr>
+              <tr><td>Wikilangs Twi (8k)</td><td>Fante (WAXAL)</td><td class="n">1.70</td><td class="n">17.2%</td><td class="n">0.0%</td><td class="n">3.20</td><td><b>−17.1%</b> / <b>−22.4%</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+
         <h3>In-domain benchmark: held-out curriculum test splits</h3>
         <p>These sentences are held out from the same sources as Leke's curriculum training text. The Twi split is mostly Twi Wikipedia, which the Wikilangs and Goldfish tokenizers were likely trained on, so their Twi numbers here are optimistic. Leke also trains on Twi Wikipedia, with every article containing a dev/test sentence removed.</p>
         <div class="tbl">
@@ -828,8 +853,8 @@
 
         <div class="pitfall"><span class="label">Reading the comparison honestly</span>
           <p>Each Leke model uses <b>one vocabulary for four languages</b>, trained on curriculum text plus MADLAD-400 web text (Akan, Ewe) and Wikipedia (Twi, Ewe, Fante). Leke ships in two sizes trained on the same data: <code>bpe-16k</code> (the default) and <code>bpe-32k</code>.</p>
-          <p>On FLORES+, Leke 16k beats NLLB-200 on Asante Twi (−6.3%), Akuapem Twi (−2.0%) and Ewe (−7.1%), and narrowly beats the same-size 16k Ewe-only Wikilangs tokenizer. Dedicated Twi tokenizers are still 3–5% more compact than Leke 16k on Twi. Leke 32k uses 6–8% fewer tokens than Leke 16k: it ties the best single-language tokenizer on Asante Twi (1.40) and Ewe (1.33) and beats every 16k one, but Wikilangs Twi 32k and both Goldfish models are still 2–4% more compact on Akuapem Twi. On curriculum text Leke 16k beats NLLB-200 by 28% on Ga and 21% on Fante, and Leke 32k (1.25) edges out every dedicated Fante tokenizer.</p>
-          <p>Every baseline emits some <code>&lt;unk&gt;</code> tokens; Leke stays at a <b>strict 0.0%</b>. The Ewe-only tokenizers lose 2.5–2.7% of FLORES+ Ewe tokens to <code>&lt;unk&gt;</code>, mostly the Greek lookalike <code>ͻ</code> used for <code>ɔ</code>, which Leke normalizes.</p>
+          <p>On FLORES+, Leke 16k beats NLLB-200 on Asante Twi (−6.3%), Akuapem Twi (−2.0%) and Ewe (−7.1%), and narrowly beats the same-size 16k Ewe-only Wikilangs tokenizer. Dedicated Twi tokenizers are still 3–5% more compact than Leke 16k on Twi. Leke 32k uses 6–8% fewer tokens than Leke 16k: it ties the best single-language tokenizer on Asante Twi (1.40) and Ewe (1.33) and beats every 16k one, but Wikilangs Twi 32k and both Goldfish models are still 2–4% more compact on Akuapem Twi. On out-of-domain Ga and Fante, Leke 16k beats NLLB-200 by 9% and 17%; the 16k Fante-only Wikilangs tokenizer is 7% more compact than Leke 16k on Fante and ties Leke 32k. Both languages tokenize less compactly out of domain than on curriculum text (Ga 1.55 vs 1.39, Fante 1.41 vs 1.34 for Leke 16k), where Leke 16k beats NLLB-200 by 28% and 21% and Leke 32k (1.25) edges out every dedicated Fante tokenizer.</p>
+          <p>Every baseline emits some <code>&lt;unk&gt;</code> tokens; Leke stays at a <b>strict 0.0%</b>. The Ewe-only tokenizers lose 2.5–2.7% of FLORES+ Ewe tokens to <code>&lt;unk&gt;</code>, mostly the Greek lookalike <code>ͻ</code> used for <code>ɔ</code>, and the Fante-only tokenizers lose 1.3% of WAXAL Fante tokens to <code>ↄ</code> used the same way. Leke normalizes both.</p>
         </div>
 
         <div class="quiz">

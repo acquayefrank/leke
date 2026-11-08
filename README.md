@@ -157,18 +157,20 @@ fn main() {
 
 Fertility is tokens per word (lower is better). Every tokenizer is scored with the same metric code on the same text (`scripts/measure_baselines.py`). Each Leke model uses one vocabulary for all four languages; each Wikilangs and Goldfish tokenizer covers a single language. Leke ships in two sizes trained on the same data: 16k (`acquayefrank/leke-bpe-16k`, the default) for small models trained on little data, and 32k (`acquayefrank/leke-bpe-32k`) when sequence length matters more than embedding size.
 
-### 1. Out-of-domain: FLORES+ devtest
+### 1. Out-of-domain test sets
 
-Professionally translated sentences that none of the compared tokenizers were trained on. FLORES+ has no Ga or Fante.
+Text from outside Leke's training sources. Twi and Ewe use FLORES+ devtest, professionally translated sentences that none of the compared tokenizers were trained on. FLORES+ has no Ga or Fante, so Ga uses the Ga side of Google SMOL (2,472 sentences translated from English) and Fante uses the scripts read for Google WAXAL text-to-speech (1,171 sentences); no line of either appears in Leke's training corpus.
 
 | Language | Leke BPE (16k) | Leke BPE (32k) | NLLB-200 (256k) | Wikilangs (16k) | Best monolingual (any size) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Twi (Asante)** | 1.49 | **1.40** | 1.59 | 1.45 | **1.40** (Wikilangs 32k) |
 | **Twi (Akuapem)** | 1.44 | 1.36 | 1.47 | 1.37 | **1.31** (Wikilangs 32k) |
 | **Ewe** | 1.43 | **1.33** | 1.54 | 1.44 | **1.33** (Goldfish 50k) |
+| **Ga** (SMOL) | 1.55 | **1.44** | 1.71 | none | none |
+| **Fante** (WAXAL) | 1.41 | 1.32 | 1.69 | 1.32 | **1.29** (Wikilangs 32k) |
 | **Unknown rate** | **0.0%** | **0.0%** | 0.02% – 1.52% | 0.05% – 2.57% | 0.0% – 2.74% |
 
-Both Leke models beat NLLB-200 on all three (16k by 2–7%, 32k by 7–14%). The 16k model narrowly beats the same-size Ewe-only tokenizer on Ewe; the 32k model ties the best monolingual tokenizer on Twi Asante and Ewe and beats every 16k single-language one. Ewe monolingual tokenizers lose 2.5–2.7% of tokens to `<unk>`, mostly the Greek lookalike `ͻ` used for `ɔ` in FLORES+, which Leke normalizes. On Twi, dedicated 16k Twi tokenizers are still 3–5% more compact than Leke 16k, and on Twi Akuapem the best Twi tokenizer is 4% more compact than Leke 32k.
+Both Leke models beat NLLB-200 on all five (16k by 2–17%, 32k by 7–22%). The 16k model narrowly beats the same-size Ewe-only tokenizer on Ewe; the 32k model ties the best monolingual tokenizer on Twi Asante and Ewe and beats every 16k single-language one on Twi and Ewe. Ewe monolingual tokenizers lose 2.5–2.7% of tokens to `<unk>`, mostly the Greek lookalike `ͻ` used for `ɔ` in FLORES+, which Leke normalizes. On Twi, dedicated 16k Twi tokenizers are still 3–5% more compact than Leke 16k, and on Twi Akuapem the best Twi tokenizer is 4% more compact than Leke 32k. On Fante the 16k Fante-only tokenizer is 7% more compact than Leke 16k and ties Leke 32k, but loses 1.3% of tokens to `<unk>`, mostly `ↄ` written for `ɔ`. Out of domain, Ga and Fante fertility is higher than on the curriculum splits below (Ga 1.55 vs 1.39, Fante 1.41 vs 1.34 for Leke 16k).
 
 ### 2. In-domain: held-out curriculum test splits
 
