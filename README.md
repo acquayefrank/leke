@@ -209,8 +209,8 @@ leke/
 ├── models/
 │   ├── bpe-16k/           # Default Byte-Level BPE tokenizer bundle (curriculum + MADLAD-400 + Wikipedia)
 │   ├── bpe-32k/           # Larger 32k sibling trained on the same data
-│   ├── unigram-16k/       # Unigram comparison model bundle
-│   └── bpe-8k/            # Legacy 8k model (curriculum text only)
+│   ├── unigram-16k/       # Experiment: Unigram comparison model (not published)
+│   └── bpe-8k/            # Legacy 8k model, curriculum text only (not published)
 ├── python/leke/           # Python package wrapper (tokenizer, trainer, corpus, evaluate)
 ├── specs/                 # Project Constitution & feature specifications
 ├── src/                   # Rust core engine (lib.rs, normalizer.rs, trainer.rs, py_tokenizer.rs)
