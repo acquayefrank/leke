@@ -69,8 +69,8 @@
         </div>
         <div class="feature-card" style="padding: 20px;">
           <div style="font-size: 13px; color: var(--color-muted);">Lower fertility vs. NLLB-200</div>
-          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">−2% to −28%</div>
-          <div style="font-size: 13px; color: var(--color-subtle); margin-top: 4px;">FLORES+ and curriculum test sets</div>
+          <div style="font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text); margin-top: 8px; font-variant-numeric: tabular-nums;">−2% to −17%</div>
+          <div style="font-size: 13px; color: var(--color-subtle); margin-top: 4px;">Leke 16k, out-of-domain text in all four languages</div>
         </div>
         <div class="feature-card" style="padding: 20px;">
           <div style="font-size: 13px; color: var(--color-muted);">Hard &lt;unk&gt; rate, guaranteed</div>
@@ -157,7 +157,7 @@
     <section id="leaderboard" style="padding: 56px 0 72px; border-top: 1px solid var(--color-divider);">
       <span style="display: block; font-size: 13px; color: var(--color-muted); margin-bottom: 10px;">Leaderboard</span>
       <h2 style="font-size: clamp(26px, 3vw, 34px); font-weight: 600; letter-spacing: -0.025em; margin: 0;">One vocabulary, four languages, no lost characters.</h2>
-      <p style="font-size: 15px; line-height: 1.65; max-width: 60ch; margin: 12px 0 0; color: var(--color-muted);">Fertility (tokens per word, lower is better), with every tokenizer measured on the same text. FLORES+ is out-of-domain text no tokenizer here was trained on; it has no Ga or Fante, so those use held-out curriculum text. Leke ships in two sizes trained on the same data; the monolingual column is the 16k Wikilangs tokenizer for that language.</p>
+      <p style="font-size: 15px; line-height: 1.65; max-width: 60ch; margin: 12px 0 0; color: var(--color-muted);">Fertility (tokens per word, lower is better), with every tokenizer measured on the same text. Every test set here is out-of-domain: FLORES+ for Twi and Ewe, and, since FLORES+ has no Ga or Fante, Google SMOL translations for Ga and Google WAXAL speech scripts for Fante. Leke ships in two sizes trained on the same data; the monolingual column is the 16k Wikilangs tokenizer for that language.</p>
       <div class="table-card" style="margin-top: 28px;">
         <table class="table" style="min-width: 760px;">
           <thead>
@@ -193,21 +193,21 @@
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Ga</td>
-              <td>Curriculum</td>
-              <td style="color: var(--color-text); font-weight: 600;">1.39</td>
-              <td style="color: var(--color-text); font-weight: 600;">1.29</td>
-              <td>1.93</td>
+              <td>SMOL</td>
+              <td style="color: var(--color-text); font-weight: 600;">1.55</td>
+              <td style="color: var(--color-text); font-weight: 600;">1.44</td>
+              <td>1.71</td>
               <td>none</td>
-              <td><span class="tag tag-accent">−28% / −33%</span></td>
+              <td><span class="tag tag-accent">−9% / −16%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Fante</td>
-              <td>Curriculum</td>
-              <td style="color: var(--color-text); font-weight: 600;">1.34</td>
-              <td style="color: var(--color-text); font-weight: 600;">1.25</td>
-              <td>1.70</td>
-              <td>1.30</td>
-              <td><span class="tag tag-accent">−21% / −26%</span></td>
+              <td>WAXAL</td>
+              <td style="color: var(--color-text); font-weight: 600;">1.41</td>
+              <td style="color: var(--color-text); font-weight: 600;">1.32</td>
+              <td>1.69</td>
+              <td>1.32</td>
+              <td><span class="tag tag-accent">−17% / −22%</span></td>
             </tr>
             <tr>
               <td style="color: var(--color-text); font-weight: 500;">Unknown rate</td>
@@ -215,13 +215,13 @@
               <td style="color: var(--color-text); font-weight: 600;">0.0%</td>
               <td style="color: var(--color-text); font-weight: 600;">0.0%</td>
               <td>0.02–1.52%</td>
-              <td>0.02–2.57%</td>
+              <td>0.05–2.57%</td>
               <td><span class="tag tag-accent">Guaranteed</span></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p style="font-size: 13.5px; margin: 16px 0 0; color: var(--color-muted);">Both sizes beat NLLB-200 everywhere. Leke 32k beats every 16k single-language tokenizer and ties the best one of any size on FLORES+ Twi Asante and Ewe; dedicated Twi tokenizers stay 3–5% more compact than Leke 16k on Twi. Ewe monolingual tokenizers lose 2.5% of tokens to &lt;unk&gt; on FLORES+, mostly the lookalike ͻ that Leke normalizes to ɔ.</p>
+      <p style="font-size: 13.5px; margin: 16px 0 0; color: var(--color-muted);">Both sizes beat NLLB-200 everywhere. Leke 32k matches or beats every 16k single-language tokenizer and ties the best one of any size on FLORES+ Twi Asante and Ewe; dedicated Twi tokenizers stay 3–5% more compact than Leke 16k on Twi, and the Fante one 7% on Fante. The Ewe and Fante monolingual tokenizers lose 1.3–2.6% of tokens to &lt;unk&gt;, mostly lookalikes (ͻ, ↄ) that Leke normalizes to ɔ.</p>
       <p style="font-size: 13.5px; margin: 8px 0 0; color: var(--color-muted);">Deep dive &amp; interactive benches: <a href="docs/#fertility-metrics">Evaluation results in Docs →</a></p>
     </section>
 

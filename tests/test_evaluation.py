@@ -49,3 +49,26 @@ def test_evaluate_all_generates_report(tmp_path):
     assert "0.0%" in report
     for name, _, _ in LEKE_MODELS:
         assert name in report
+
+
+def test_evaluate_all_adds_ga_fante_section(tmp_path):
+    if not all((bundle / "tokenizer.json").exists() for _, _, bundle in LEKE_MODELS):
+        return
+
+    eval_dir = tmp_path / "eval"
+    (eval_dir / "smol").mkdir(parents=True)
+    (eval_dir / "smol" / "gaa.txt").write_text("Te oyoo tɛŋŋ? Mi yɛ jogbaŋŋ.\n", encoding="utf-8")
+
+    report = evaluate_all(
+        splits_dir=Path("data/splits"),
+        output_report_path=None,
+        baselines_path=tmp_path / "missing.json",
+        flores_dir=tmp_path / "no-flores",
+        eval_dir=eval_dir,
+    )
+
+    assert "## Ga and Fante (out-of-domain)" in report
+    assert "Ga (SMOL)" in report
+    # The WAXAL file is absent, so its rows are skipped rather than failing.
+    assert "Fante (WAXAL)" not in report
+    assert "## FLORES+ devtest" not in report

@@ -70,6 +70,26 @@
     "compression_ratio": 3.94
   },
   {
+    "model": "Leke BPE (16k)",
+    "vocab": "16k",
+    "eval_set": "smol",
+    "lang": "gaa",
+    "fertility": 1.55,
+    "split_rate_gt2": 12.5,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.54
+  },
+  {
+    "model": "Leke BPE (16k)",
+    "vocab": "16k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.41,
+    "split_rate_gt2": 8.4,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.86
+  },
+  {
     "model": "Leke BPE (32k)",
     "vocab": "32k",
     "eval_set": "test_split",
@@ -138,6 +158,26 @@
     "split_rate_gt2": 6.8,
     "unk_rate": 0.0,
     "compression_ratio": 4.21
+  },
+  {
+    "model": "Leke BPE (32k)",
+    "vocab": "32k",
+    "eval_set": "smol",
+    "lang": "gaa",
+    "fertility": 1.44,
+    "split_rate_gt2": 9.1,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.79
+  },
+  {
+    "model": "Leke BPE (32k)",
+    "vocab": "32k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.32,
+    "split_rate_gt2": 5.8,
+    "unk_rate": 0.0,
+    "compression_ratio": 4.13
   },
   {
     "model": "NLLB-200 (multilingual)",
@@ -210,6 +250,26 @@
     "compression_ratio": 3.64
   },
   {
+    "model": "NLLB-200 (multilingual)",
+    "vocab": "256k",
+    "eval_set": "smol",
+    "lang": "gaa",
+    "fertility": 1.71,
+    "split_rate_gt2": 16.4,
+    "unk_rate": 0.08,
+    "compression_ratio": 3.2
+  },
+  {
+    "model": "NLLB-200 (multilingual)",
+    "vocab": "256k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.69,
+    "split_rate_gt2": 16.7,
+    "unk_rate": 0.61,
+    "compression_ratio": 3.22
+  },
+  {
     "model": "Goldfish Twi (twi_latn_full)",
     "vocab": "50k",
     "eval_set": "test_split",
@@ -280,6 +340,16 @@
     "compression_ratio": 4.02
   },
   {
+    "model": "Goldfish Akan (aka_latn_full)",
+    "vocab": "50k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.42,
+    "split_rate_gt2": 8.7,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.83
+  },
+  {
     "model": "Goldfish Ewe (ewe_latn_full)",
     "vocab": "50k",
     "eval_set": "test_split",
@@ -340,6 +410,16 @@
     "compression_ratio": 3.7
   },
   {
+    "model": "Wikilangs Twi (tw, 8k)",
+    "vocab": "8k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.7,
+    "split_rate_gt2": 17.2,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.2
+  },
+  {
     "model": "Wikilangs Twi (tw, 16k)",
     "vocab": "16k",
     "eval_set": "test_split",
@@ -380,6 +460,16 @@
     "compression_ratio": 3.9
   },
   {
+    "model": "Wikilangs Twi (tw, 16k)",
+    "vocab": "16k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.59,
+    "split_rate_gt2": 13.7,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.42
+  },
+  {
     "model": "Wikilangs Twi (tw, 32k)",
     "vocab": "32k",
     "eval_set": "test_split",
@@ -418,6 +508,16 @@
     "split_rate_gt2": 6.4,
     "unk_rate": 0.07,
     "compression_ratio": 4.07
+  },
+  {
+    "model": "Wikilangs Twi (tw, 32k)",
+    "vocab": "32k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.49,
+    "split_rate_gt2": 10.8,
+    "unk_rate": 0.0,
+    "compression_ratio": 3.65
   },
   {
     "model": "Wikilangs Ewe (ee, 8k)",
@@ -490,6 +590,16 @@
     "compression_ratio": 3.99
   },
   {
+    "model": "Wikilangs Fante (fat, 8k)",
+    "vocab": "8k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.4,
+    "split_rate_gt2": 8.8,
+    "unk_rate": 1.26,
+    "compression_ratio": 3.89
+  },
+  {
     "model": "Wikilangs Fante (fat, 16k)",
     "vocab": "16k",
     "eval_set": "test_split",
@@ -500,6 +610,16 @@
     "compression_ratio": 4.23
   },
   {
+    "model": "Wikilangs Fante (fat, 16k)",
+    "vocab": "16k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.32,
+    "split_rate_gt2": 6.5,
+    "unk_rate": 1.34,
+    "compression_ratio": 4.12
+  },
+  {
     "model": "Wikilangs Fante (fat, 32k)",
     "vocab": "32k",
     "eval_set": "test_split",
@@ -508,5 +628,15 @@
     "split_rate_gt2": 5.0,
     "unk_rate": 0.02,
     "compression_ratio": 4.36
+  },
+  {
+    "model": "Wikilangs Fante (fat, 32k)",
+    "vocab": "32k",
+    "eval_set": "waxal_tts",
+    "lang": "fat",
+    "fertility": 1.29,
+    "split_rate_gt2": 5.7,
+    "unk_rate": 1.37,
+    "compression_ratio": 4.23
   }
 ]

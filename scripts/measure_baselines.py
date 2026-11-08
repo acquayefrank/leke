@@ -7,6 +7,9 @@ are directly comparable. Two evaluation sets are used:
     - `test_split`: the held-out `data/splits/<lang>/test.txt` files (in-domain).
     - `flores_devtest`: FLORES+ devtest for Ewe and Twi (Asante, Akuapem), fetched
       by `scripts/fetch_flores.py`; skipped if not downloaded.
+    - `smol` (Ga) and `waxal_tts` (Fante): out-of-domain text for the two languages
+      FLORES+ lacks, fetched by `scripts/fetch_ga_fante_eval.py`; skipped if not
+      downloaded.
 
 Baselines:
     - NLLB-200 (facebook/nllb-200-distilled-600M, 256k SentencePiece)
@@ -35,6 +38,9 @@ LANGUAGES = ["twi", "ewe", "gaa", "fat"]
 
 # FLORES+ evaluation name -> Leke language whose baselines apply to it
 FLORES_LANGS = {"twi_asante": "twi", "twi_akuapem": "twi", "ewe": "ewe"}
+
+# Out-of-domain Ga and Fante sets: (eval_set, language, file under data/eval)
+GA_FANTE_SETS = [("smol", "gaa", "smol/gaa.txt"), ("waxal_tts", "fat", "waxal/fat.txt")]
 
 
 class HFTokenizer:
@@ -116,6 +122,12 @@ def load_eval_sets():
             )
         else:
             print(f"[skip] {path} not found; run scripts/fetch_flores.py")
+    for eval_set, lang, rel_path in GA_FANTE_SETS:
+        path = ROOT / "data" / "eval" / rel_path
+        if path.exists():
+            sets.append((eval_set, lang, lang, path.read_text(encoding="utf-8").splitlines()))
+        else:
+            print(f"[skip] {path} not found; run scripts/fetch_ga_fante_eval.py")
     return sets
 
 

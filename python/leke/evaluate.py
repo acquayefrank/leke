@@ -83,6 +83,14 @@ FLORES_NAMES: Dict[str, str] = {
     "ewe": "Ewe",
 }
 
+# Out-of-domain Ga and Fante files fetched by scripts/fetch_ga_fante_eval.py (git-ignored),
+# as (eval_set, language, display name, path under the eval directory).
+DEFAULT_EVAL_DIR = Path("data/eval")
+GA_FANTE_SETS: List[Tuple[str, str, str, Path]] = [
+    ("smol", "gaa", "Ga (SMOL)", Path("smol/gaa.txt")),
+    ("waxal_tts", "fat", "Fante (WAXAL)", Path("waxal/fat.txt")),
+]
+
 
 def load_measured_baselines(
     path: Path = DEFAULT_BASELINES_PATH, eval_set: str = "test_split"
@@ -91,8 +99,8 @@ def load_measured_baselines(
 
     Args:
         path (Path, optional): Path to `measured_baselines.json`.
-        eval_set (str, optional): Evaluation set to return (`test_split` or
-            `flores_devtest`).
+        eval_set (str, optional): Evaluation set to return (`test_split`,
+            `flores_devtest`, `smol` or `waxal_tts`).
 
     Returns:
         List[Dict[str, Any]]: Baseline rows (Leke rows excluded), each with `model`,
@@ -304,6 +312,7 @@ def evaluate_all(
     output_report_path: Optional[Path] = Path("specs/eval_results.md"),
     baselines_path: Path = DEFAULT_BASELINES_PATH,
     flores_dir: Path = DEFAULT_FLORES_DIR,
+    eval_dir: Path = DEFAULT_EVAL_DIR,
 ) -> str:
     """Runs evaluation across all target languages on held-out test splits.
 
@@ -315,13 +324,16 @@ def evaluate_all(
         baselines_path (Path, optional): Measured baseline metrics JSON.
         flores_dir (Path, optional): Directory of FLORES+ devtest files from
             `scripts/fetch_flores.py`; the FLORES+ section is skipped if absent.
+        eval_dir (Path, optional): Directory holding the Ga and Fante files from
+            `scripts/fetch_ga_fante_eval.py`; each is skipped if absent.
 
     Returns:
         str: Formatted Markdown leaderboard report.
 
     Notes:
         1. Loads each model bundle into `LekeTokenizer`.
-        2. Loads each `test.txt` split and any FLORES+ devtest files in `flores_dir`.
+        2. Loads each `test.txt` split, any FLORES+ devtest files in `flores_dir` and
+           any Ga and Fante out-of-domain files in `eval_dir`.
         3. Computes metrics and compares against baselines measured on the same
            splits (NLLB-200, Goldfish, Wikilangs) from `baselines_path`.
         4. Formats a GitHub-flavored Markdown table comparing fertility, split rate,
@@ -344,6 +356,11 @@ def evaluate_all(
         (name, label, flores_dir / f"{name}.txt")
         for name, label in FLORES_NAMES.items()
         if (flores_dir / f"{name}.txt").exists()
+    ]
+    ga_fante_sets = [
+        (eval_set, lang, label, eval_dir / rel_path)
+        for eval_set, lang, label, rel_path in GA_FANTE_SETS
+        if (eval_dir / rel_path).exists()
     ]
 
     # Step 3: Build a comparison table and summary for each evaluation set.
@@ -374,6 +391,26 @@ Professionally translated sentences (`openlanguagedata/flores_plus`, CC BY-SA 4.
 {flores_table}
 
 {flores_summary}
+"""
+    if ga_fante_sets:
+        ga_fante_baselines = [
+            b
+            for eval_set, _, _, _ in ga_fante_sets
+            for b in load_measured_baselines(baselines_path, eval_set)
+        ]
+        ga_fante_table, ga_fante_summary = _comparison_section(
+            leke_models,
+            [(lang, label, path) for _, lang, label, path in ga_fante_sets],
+            ga_fante_baselines,
+        )
+        report += f"""
+## Ga and Fante (out-of-domain)
+
+FLORES+ has no Ga or Fante, so these use text from other sources; `scripts/fetch_ga_fante_eval.py` checks that no sentence appears verbatim in the Leke training corpus. Ga: the Ga side of Google SMOL (`google/smol`, SmolSent and SmolDoc, CC BY 4.0), professionally translated from English. Fante: the scripts read aloud for Google WAXAL text-to-speech (`google/WaxalNLP`, `fat_tts`, CC BY 4.0, University of Ghana), with the bracketed digits that mark numbers removed. No Goldfish or Wikilangs tokenizer covers Ga. The WAXAL Fante scripts often write `ↄ` for `ɔ`, which Leke normalizes and the Wikilangs Fante tokenizers count as unknown.
+
+{ga_fante_table}
+
+{ga_fante_summary}
 """
 
     # Step 4: Save markdown leaderboard report to disk if path is provided.

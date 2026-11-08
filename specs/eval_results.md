@@ -82,3 +82,28 @@ Professionally translated sentences (`openlanguagedata/flores_plus`, CC BY-SA 4.
 - **Twi (Akuapem), Leke BPE (32k)**: fertility 1.36, `<unk>` rate 0.0%. Lower fertility than: Wikilangs Twi (tw, 16k), Wikilangs Twi (tw, 8k), NLLB-200 (multilingual). Higher or equal fertility: Wikilangs Twi (tw, 32k), Goldfish Akan (aka_latn_full), Goldfish Twi (twi_latn_full).
 - **Ewe, Leke BPE (16k)**: fertility 1.43, `<unk>` rate 0.0%. Lower fertility than: Wikilangs Ewe (ee, 16k), Wikilangs Ewe (ee, 8k), NLLB-200 (multilingual). Higher or equal fertility: Goldfish Ewe (ewe_latn_full), Wikilangs Ewe (ee, 32k).
 - **Ewe, Leke BPE (32k)**: fertility 1.33, `<unk>` rate 0.0%. Lower fertility than: Wikilangs Ewe (ee, 32k), Wikilangs Ewe (ee, 16k), Wikilangs Ewe (ee, 8k), NLLB-200 (multilingual). Higher or equal fertility: Goldfish Ewe (ewe_latn_full).
+
+## Ga and Fante (out-of-domain)
+
+FLORES+ has no Ga or Fante, so these use text from other sources; `scripts/fetch_ga_fante_eval.py` checks that no sentence appears verbatim in the Leke training corpus. Ga: the Ga side of Google SMOL (`google/smol`, SmolSent and SmolDoc, CC BY 4.0), professionally translated from English. Fante: the scripts read aloud for Google WAXAL text-to-speech (`google/WaxalNLP`, `fat_tts`, CC BY 4.0, University of Ghana), with the bracketed digits that mark numbers removed. No Goldfish or Wikilangs tokenizer covers Ga. The WAXAL Fante scripts often write `ↄ` for `ɔ`, which Leke normalizes and the Wikilangs Fante tokenizers count as unknown.
+
+| Model                         | Vocab   | Language      | Fertility (tok/word)   | Split >2 (%)   | Unknown (%)   |   Compression (bytes/tok) | Leke fertility vs. baseline   |
+|-------------------------------|---------|---------------|------------------------|----------------|---------------|---------------------------|-------------------------------|
+| **Leke BPE (16k)**            | 16k     | Ga (SMOL)     | **1.55**               | 12.5%          | **0.0%**      |                      3.54 | —                             |
+| **Leke BPE (32k)**            | 32k     | Ga (SMOL)     | **1.44**               | 9.1%           | **0.0%**      |                      3.79 | —                             |
+| NLLB-200 (multilingual)       | 256k    | Ga (SMOL)     | 1.71                   | 16.4%          | 0.08%         |                      3.2  | ✅ 16k -9.4%, ✅ 32k -15.8%     |
+| **Leke BPE (16k)**            | 16k     | Fante (WAXAL) | **1.41**               | 8.4%           | **0.0%**      |                      3.86 | —                             |
+| **Leke BPE (32k)**            | 32k     | Fante (WAXAL) | **1.32**               | 5.8%           | **0.0%**      |                      4.13 | —                             |
+| Wikilangs Fante (fat, 32k)    | 32k     | Fante (WAXAL) | 1.29                   | 5.7%           | 1.37%         |                      4.23 | ⚠️ 16k +9.3%, ⚠️ 32k +2.3%    |
+| Wikilangs Fante (fat, 16k)    | 16k     | Fante (WAXAL) | 1.32                   | 6.5%           | 1.34%         |                      4.12 | ⚠️ 16k +6.8%, ⚠️ 32k +0.0%    |
+| Wikilangs Fante (fat, 8k)     | 8k      | Fante (WAXAL) | 1.4                    | 8.8%           | 1.26%         |                      3.89 | ⚠️ 16k +0.7%, ✅ 32k -5.7%     |
+| Goldfish Akan (aka_latn_full) | 50k     | Fante (WAXAL) | 1.42                   | 8.7%           | 0.0%          |                      3.83 | ✅ 16k -0.7%, ✅ 32k -7.0%      |
+| Wikilangs Twi (tw, 32k)       | 32k     | Fante (WAXAL) | 1.49                   | 10.8%          | 0.0%          |                      3.65 | ✅ 16k -5.4%, ✅ 32k -11.4%     |
+| Wikilangs Twi (tw, 16k)       | 16k     | Fante (WAXAL) | 1.59                   | 13.7%          | 0.0%          |                      3.42 | ✅ 16k -11.3%, ✅ 32k -17.0%    |
+| NLLB-200 (multilingual)       | 256k    | Fante (WAXAL) | 1.69                   | 16.7%          | 0.61%         |                      3.22 | ✅ 16k -16.6%, ✅ 32k -21.9%    |
+| Wikilangs Twi (tw, 8k)        | 8k      | Fante (WAXAL) | 1.7                    | 17.2%          | 0.0%          |                      3.2  | ✅ 16k -17.1%, ✅ 32k -22.4%    |
+
+- **Ga (SMOL), Leke BPE (16k)**: fertility 1.55, `<unk>` rate 0.0%. Lower fertility than: NLLB-200 (multilingual).
+- **Ga (SMOL), Leke BPE (32k)**: fertility 1.44, `<unk>` rate 0.0%. Lower fertility than: NLLB-200 (multilingual).
+- **Fante (WAXAL), Leke BPE (16k)**: fertility 1.41, `<unk>` rate 0.0%. Lower fertility than: Goldfish Akan (aka_latn_full), Wikilangs Twi (tw, 32k), Wikilangs Twi (tw, 16k), NLLB-200 (multilingual), Wikilangs Twi (tw, 8k). Higher or equal fertility: Wikilangs Fante (fat, 32k), Wikilangs Fante (fat, 16k), Wikilangs Fante (fat, 8k).
+- **Fante (WAXAL), Leke BPE (32k)**: fertility 1.32, `<unk>` rate 0.0%. Lower fertility than: Wikilangs Fante (fat, 8k), Goldfish Akan (aka_latn_full), Wikilangs Twi (tw, 32k), Wikilangs Twi (tw, 16k), NLLB-200 (multilingual), Wikilangs Twi (tw, 8k). Higher or equal fertility: Wikilangs Fante (fat, 32k), Wikilangs Fante (fat, 16k).
